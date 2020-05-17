@@ -344,15 +344,17 @@ class _GameScreenState extends State<GameScreen> {
     List<PlayingCard> allCards = [];
 
     // Add all cards to deck
-    CardSuit.values.forEach((suit) {
-      CardType.values.forEach((type) {
-        allCards.add(PlayingCard(
-          cardType: type,
-          cardSuit: suit,
-          faceUp: false,
-        ));
+    for (var i = 0; i < 2; i++) {
+      CardSuit.values.forEach((suit) {
+        CardType.values.forEach((type) {
+          allCards.add(PlayingCard(
+            cardType: type,
+            cardSuit: suit,
+            faceUp: false,
+          ));
+        });
       });
-    });
+    }
 
     Random random = Random();
 
