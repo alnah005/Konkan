@@ -40,27 +40,27 @@ class _TransformedCardState extends State<TransformedCard> {
   Widget _buildCard() {
     return !widget.playingCard.faceUp
         ? Container(
-      height: 60.0,
-      width: 40.0,
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        border: Border.all(color: Colors.black),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-    )
+            height: 60.0,
+            width: 40.0,
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              border: Border.all(color: Colors.black),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          )
         : Draggable<Map>(
-      child: _buildFaceUpCard(),
-      feedback: CardColumn(
-        cards: widget.attachedCards,
-        columnIndex: 1,
-        onCardsAdded: (card, position) {},
-      ),
-      childWhenDragging: _buildFaceUpCard(),
-      data: {
-        "cards": widget.attachedCards,
-        "fromIndex": widget.columnIndex,
-      },
-    );
+            child: _buildFaceUpCard(),
+            feedback: CardColumn(
+              cards: widget.attachedCards,
+              columnIndex: 1,
+              onCardsAdded: (card, position) {},
+            ),
+            childWhenDragging: _buildFaceUpCard(),
+            data: {
+              "cards": widget.attachedCards,
+              "fromIndex": widget.columnIndex,
+            },
+          );
   }
 
   Widget _buildFaceUpCard() {
@@ -159,13 +159,13 @@ class _TransformedCardState extends State<TransformedCard> {
   Image _suitToImage() {
     switch (widget.playingCard.cardSuit) {
       case CardSuit.hearts:
-        return Image.asset('images/hearts.png');
+        return Image.asset('assets/images/hearts.png');
       case CardSuit.diamonds:
-        return Image.asset('images/diamonds.png');
+        return Image.asset('assets/images/diamonds.png');
       case CardSuit.clubs:
-        return Image.asset('images/clubs.png');
+        return Image.asset('assets/images/clubs.png');
       case CardSuit.spades:
-        return Image.asset('images/spades.png');
+        return Image.asset('assets/images/spades.png');
       default:
         return null;
     }
