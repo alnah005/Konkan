@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:solitaire/card_column.dart';
-import 'package:solitaire/playing_card.dart';
-import 'package:solitaire/transformed_card.dart';
+import 'package:solitaire/utils/playing_card.dart';
+import 'package:solitaire/widgets/card_column.dart';
+import 'package:solitaire/widgets/transformed_card.dart';
 
 // The deck of cards which accept the final cards (Ace to King)
 class EmptyCardDeck extends StatefulWidget {

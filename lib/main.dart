@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:solitaire/game_screen.dart';
+import 'package:solitaire/pages/game_screen.dart';
 
 void main() => runApp(MyApp());
 

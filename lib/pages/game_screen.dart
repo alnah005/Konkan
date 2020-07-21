@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:solitaire/card_column.dart';
-import 'package:solitaire/empty_card.dart';
-import 'package:solitaire/playing_card.dart';
-import 'package:solitaire/transformed_card.dart';
+import 'package:solitaire/utils/playing_card.dart';
+import 'package:solitaire/widgets/card_column.dart';
+import 'package:solitaire/widgets/empty_card.dart';
+import 'package:solitaire/widgets/transformed_card.dart';
 
 class GameScreen extends StatefulWidget {
   @override
@@ -196,23 +196,23 @@ class _GameScreenState extends State<GameScreen> {
           InkWell(
             child: cardDeckClosed.isNotEmpty
                 ? Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: TransformedCard(
-                playingCard: cardDeckClosed.last,
-              ),
-            )
+                    padding: const EdgeInsets.all(4.0),
+                    child: TransformedCard(
+                      playingCard: cardDeckClosed.last,
+                    ),
+                  )
                 : Opacity(
-              opacity: 0.4,
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: TransformedCard(
-                  playingCard: PlayingCard(
-                    cardSuit: CardSuit.diamonds,
-                    cardType: CardType.five,
+                    opacity: 0.4,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: TransformedCard(
+                        playingCard: PlayingCard(
+                          cardSuit: CardSuit.diamonds,
+                          cardType: CardType.five,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
             onTap: () {
               setState(() {
                 if (cardDeckClosed.isEmpty) {
@@ -234,18 +234,18 @@ class _GameScreenState extends State<GameScreen> {
           ),
           cardDeckOpened.isNotEmpty
               ? Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: TransformedCard(
-              playingCard: cardDeckOpened.last,
-              attachedCards: [
-                cardDeckOpened.last,
-              ],
-              columnIndex: 0,
-            ),
-          )
+                  padding: const EdgeInsets.all(4.0),
+                  child: TransformedCard(
+                    playingCard: cardDeckOpened.last,
+                    attachedCards: [
+                      cardDeckOpened.last,
+                    ],
+                    columnIndex: 0,
+                  ),
+                )
               : Container(
-            width: 40.0,
-          ),
+                  width: 40.0,
+                ),
         ],
       ),
     );
@@ -457,9 +457,9 @@ class _GameScreenState extends State<GameScreen> {
 
   void _refreshList(int index) {
     if (finalDiamondsDeck.length +
-        finalHeartsDeck.length +
-        finalClubsDeck.length +
-        finalSpadesDeck.length ==
+            finalHeartsDeck.length +
+            finalClubsDeck.length +
+            finalSpadesDeck.length ==
         52) {
       _handleWin();
     }
