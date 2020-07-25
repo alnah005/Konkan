@@ -271,51 +271,51 @@ class _GameScreenState extends State<GameScreen> {
               columnIndex: 8,
             ),
           ),
-//          Padding(
-//            padding: const EdgeInsets.all(4.0),
-//            child: EmptyCardDeck(
-//              cardSuit: CardSuit.diamonds,
-//              cardsAdded: finalDiamondsDeck,
-//              onCardAdded: (cards, index) {
-//                finalDiamondsDeck.addAll(cards);
-//                int length = _getListFromIndex(index).length;
-//                _getListFromIndex(index)
-//                    .removeRange(length - cards.length, length);
-//                _refreshList(index);
-//              },
-//              columnIndex: 9,
-//            ),
-//          ),
-//          Padding(
-//            padding: const EdgeInsets.all(4.0),
-//            child: EmptyCardDeck(
-//              cardSuit: CardSuit.spades,
-//              cardsAdded: finalSpadesDeck,
-//              onCardAdded: (cards, index) {
-//                finalSpadesDeck.addAll(cards);
-//                int length = _getListFromIndex(index).length;
-//                _getListFromIndex(index)
-//                    .removeRange(length - cards.length, length);
-//                _refreshList(index);
-//              },
-//              columnIndex: 10,
-//            ),
-//          ),
-//          Padding(
-//            padding: const EdgeInsets.all(4.0),
-//            child: EmptyCardDeck(
-//              cardSuit: CardSuit.clubs,
-//              cardsAdded: finalClubsDeck,
-//              onCardAdded: (cards, index) {
-//                finalClubsDeck.addAll(cards);
-//                int length = _getListFromIndex(index).length;
-//                _getListFromIndex(index)
-//                    .removeRange(length - cards.length, length);
-//                _refreshList(index);
-//              },
-//              columnIndex: 11,
-//            ),
-//          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: EmptyCardDeck(
+              cardSuit: CardSuit.diamonds,
+              cardsAdded: finalDiamondsDeck,
+              onCardAdded: (cards, index) {
+                finalDiamondsDeck.addAll(cards);
+                int length = _getListFromIndex(index).length;
+                _getListFromIndex(index)
+                    .removeRange(length - cards.length, length);
+                _refreshList(index);
+              },
+              columnIndex: 9,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: EmptyCardDeck(
+              cardSuit: CardSuit.spades,
+              cardsAdded: finalSpadesDeck,
+              onCardAdded: (cards, index) {
+                finalSpadesDeck.addAll(cards);
+                int length = _getListFromIndex(index).length;
+                _getListFromIndex(index)
+                    .removeRange(length - cards.length, length);
+                _refreshList(index);
+              },
+              columnIndex: 10,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: EmptyCardDeck(
+              cardSuit: CardSuit.clubs,
+              cardsAdded: finalClubsDeck,
+              onCardAdded: (cards, index) {
+                finalClubsDeck.addAll(cards);
+                int length = _getListFromIndex(index).length;
+                _getListFromIndex(index)
+                    .removeRange(length - cards.length, length);
+                _refreshList(index);
+              },
+              columnIndex: 11,
+            ),
+          ),
         ],
       ),
     );
@@ -359,7 +359,7 @@ class _GameScreenState extends State<GameScreen> {
     Random random = Random();
 
     // Add cards to columns and remaining to deck
-    for (int i = 0; i < 28; i++) {
+    for (int i = 0; i < 56; i++) {
       int randomNumber = random.nextInt(allCards.length);
 
       if (i == 0) {
@@ -370,8 +370,8 @@ class _GameScreenState extends State<GameScreen> {
             ..faceUp = true,
         );
         allCards.removeAt(randomNumber);
-      } else if (i > 0 && i < 3) {
-        if (i == 2) {
+      } else if (i > 0 && i < 6) {
+        if (i == 5) {
           PlayingCard card = allCards[randomNumber];
           cardColumn2.add(
             card
@@ -382,8 +382,8 @@ class _GameScreenState extends State<GameScreen> {
           cardColumn2.add(allCards[randomNumber]);
         }
         allCards.removeAt(randomNumber);
-      } else if (i > 2 && i < 6) {
-        if (i == 5) {
+      } else if (i > 5 && i < 12) {
+        if (i == 11) {
           PlayingCard card = allCards[randomNumber];
           cardColumn3.add(
             card
@@ -394,8 +394,8 @@ class _GameScreenState extends State<GameScreen> {
           cardColumn3.add(allCards[randomNumber]);
         }
         allCards.removeAt(randomNumber);
-      } else if (i > 5 && i < 10) {
-        if (i == 9) {
+      } else if (i > 11 && i < 22) {
+        if (i == 21) {
           PlayingCard card = allCards[randomNumber];
           cardColumn4.add(
             card
@@ -406,8 +406,8 @@ class _GameScreenState extends State<GameScreen> {
           cardColumn4.add(allCards[randomNumber]);
         }
         allCards.removeAt(randomNumber);
-      } else if (i > 9 && i < 15) {
-        if (i == 14) {
+      } else if (i > 21 && i < 30) {
+        if (i == 29) {
           PlayingCard card = allCards[randomNumber];
           cardColumn5.add(
             card
@@ -418,8 +418,8 @@ class _GameScreenState extends State<GameScreen> {
           cardColumn5.add(allCards[randomNumber]);
         }
         allCards.removeAt(randomNumber);
-      } else if (i > 14 && i < 21) {
-        if (i == 20) {
+      } else if (i > 29 && i < 42) {
+        if (i == 41) {
           PlayingCard card = allCards[randomNumber];
           cardColumn6.add(
             card
@@ -431,7 +431,7 @@ class _GameScreenState extends State<GameScreen> {
         }
         allCards.removeAt(randomNumber);
       } else {
-        if (i == 27) {
+        if (i == 55) {
           PlayingCard card = allCards[randomNumber];
           cardColumn7.add(
             card
@@ -460,7 +460,7 @@ class _GameScreenState extends State<GameScreen> {
             finalHeartsDeck.length +
             finalClubsDeck.length +
             finalSpadesDeck.length ==
-        52) {
+        104) {
       _handleWin();
     }
     setState(() {

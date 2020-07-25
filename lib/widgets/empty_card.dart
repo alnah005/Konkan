@@ -68,7 +68,6 @@ class _EmptyCardDeckState extends State<EmptyCardDeck> {
             return true;
           }
         }
-
         return false;
       },
       onAccept: (value) {
