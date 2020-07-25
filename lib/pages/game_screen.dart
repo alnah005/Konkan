@@ -271,51 +271,51 @@ class _GameScreenState extends State<GameScreen> {
               columnIndex: 8,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: EmptyCardDeck(
-              cardSuit: CardSuit.diamonds,
-              cardsAdded: finalDiamondsDeck,
-              onCardAdded: (cards, index) {
-                finalDiamondsDeck.addAll(cards);
-                int length = _getListFromIndex(index).length;
-                _getListFromIndex(index)
-                    .removeRange(length - cards.length, length);
-                _refreshList(index);
-              },
-              columnIndex: 9,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: EmptyCardDeck(
-              cardSuit: CardSuit.spades,
-              cardsAdded: finalSpadesDeck,
-              onCardAdded: (cards, index) {
-                finalSpadesDeck.addAll(cards);
-                int length = _getListFromIndex(index).length;
-                _getListFromIndex(index)
-                    .removeRange(length - cards.length, length);
-                _refreshList(index);
-              },
-              columnIndex: 10,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: EmptyCardDeck(
-              cardSuit: CardSuit.clubs,
-              cardsAdded: finalClubsDeck,
-              onCardAdded: (cards, index) {
-                finalClubsDeck.addAll(cards);
-                int length = _getListFromIndex(index).length;
-                _getListFromIndex(index)
-                    .removeRange(length - cards.length, length);
-                _refreshList(index);
-              },
-              columnIndex: 11,
-            ),
-          ),
+//          Padding(
+//            padding: const EdgeInsets.all(4.0),
+//            child: EmptyCardDeck(
+//              cardSuit: CardSuit.diamonds,
+//              cardsAdded: finalDiamondsDeck,
+//              onCardAdded: (cards, index) {
+//                finalDiamondsDeck.addAll(cards);
+//                int length = _getListFromIndex(index).length;
+//                _getListFromIndex(index)
+//                    .removeRange(length - cards.length, length);
+//                _refreshList(index);
+//              },
+//              columnIndex: 9,
+//            ),
+//          ),
+//          Padding(
+//            padding: const EdgeInsets.all(4.0),
+//            child: EmptyCardDeck(
+//              cardSuit: CardSuit.spades,
+//              cardsAdded: finalSpadesDeck,
+//              onCardAdded: (cards, index) {
+//                finalSpadesDeck.addAll(cards);
+//                int length = _getListFromIndex(index).length;
+//                _getListFromIndex(index)
+//                    .removeRange(length - cards.length, length);
+//                _refreshList(index);
+//              },
+//              columnIndex: 10,
+//            ),
+//          ),
+//          Padding(
+//            padding: const EdgeInsets.all(4.0),
+//            child: EmptyCardDeck(
+//              cardSuit: CardSuit.clubs,
+//              cardsAdded: finalClubsDeck,
+//              onCardAdded: (cards, index) {
+//                finalClubsDeck.addAll(cards);
+//                int length = _getListFromIndex(index).length;
+//                _getListFromIndex(index)
+//                    .removeRange(length - cards.length, length);
+//                _refreshList(index);
+//              },
+//              columnIndex: 11,
+//            ),
+//          ),
         ],
       ),
     );
