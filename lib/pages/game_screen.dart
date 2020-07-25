@@ -1,10 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/widgets/card_column.dart';
 import 'package:solitaire/widgets/empty_card.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
+
+enum CardList { P1, P2, P3, P4, P1SET, P2SET, P3SET, P4SET, DROPPED, REMAINING }
 
 class GameScreen extends StatefulWidget {
   @override
@@ -13,23 +16,22 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   // Stores the cards on the seven columns
-  List<PlayingCard> cardColumn1 = [];
-  List<PlayingCard> cardColumn2 = [];
-  List<PlayingCard> cardColumn3 = [];
-  List<PlayingCard> cardColumn4 = [];
-  List<PlayingCard> cardColumn5 = [];
-  List<PlayingCard> cardColumn6 = [];
-  List<PlayingCard> cardColumn7 = [];
-
+  Player player1 = new Player(PositionOnScreen.bottom);
+  Player player2 = new Player(PositionOnScreen.left);
+  Player player3 = new Player(PositionOnScreen.top);
+  Player player4 = new Player(PositionOnScreen.right);
+  List<CardList> playerCardLists = [
+    CardList.P1,
+    CardList.P2,
+    CardList.P3,
+    CardList.P4
+  ];
   // Stores the card deck
   List<PlayingCard> cardDeckClosed = [];
   List<PlayingCard> cardDeckOpened = [];
 
   // Stores the card in the upper boxes
-  List<PlayingCard> finalHeartsDeck = [];
-  List<PlayingCard> finalDiamondsDeck = [];
-  List<PlayingCard> finalSpadesDeck = [];
-  List<PlayingCard> finalClubsDeck = [];
+  List<PlayingCard> droppedCards = [];
 
   @override
   void initState() {
@@ -42,7 +44,7 @@ class _GameScreenState extends State<GameScreen> {
     return Scaffold(
       backgroundColor: Colors.green,
       appBar: AppBar(
-        title: Text("Flutter Solitaire"),
+        title: Text("Flutter Konkan"),
         elevation: 0.0,
         backgroundColor: Colors.green,
         actions: <Widget>[
@@ -78,107 +80,62 @@ class _GameScreenState extends State<GameScreen> {
             children: <Widget>[
               Expanded(
                 child: CardColumn(
-                  cards: cardColumn1,
+                  cards: player1.cards,
                   onCardsAdded: (cards, index) {
                     setState(() {
-                      cardColumn1.addAll(cards);
+                      player1.cards.addAll(cards);
                       int length = _getListFromIndex(index).length;
                       _getListFromIndex(index)
                           .removeRange(length - cards.length, length);
                       _refreshList(index);
                     });
                   },
-                  columnIndex: 1,
+                  columnIndex: CardList.P1,
                 ),
               ),
               Expanded(
                 child: CardColumn(
-                  cards: cardColumn2,
+                  cards: player2.cards,
                   onCardsAdded: (cards, index) {
                     setState(() {
-                      cardColumn2.addAll(cards);
+                      player2.cards.addAll(cards);
                       int length = _getListFromIndex(index).length;
                       _getListFromIndex(index)
                           .removeRange(length - cards.length, length);
                       _refreshList(index);
                     });
                   },
-                  columnIndex: 2,
+                  columnIndex: CardList.P2,
                 ),
               ),
               Expanded(
                 child: CardColumn(
-                  cards: cardColumn3,
+                  cards: player3.cards,
                   onCardsAdded: (cards, index) {
                     setState(() {
-                      cardColumn3.addAll(cards);
+                      player3.cards.addAll(cards);
                       int length = _getListFromIndex(index).length;
                       _getListFromIndex(index)
                           .removeRange(length - cards.length, length);
                       _refreshList(index);
                     });
                   },
-                  columnIndex: 3,
+                  columnIndex: CardList.P3,
                 ),
               ),
               Expanded(
                 child: CardColumn(
-                  cards: cardColumn4,
+                  cards: player4.cards,
                   onCardsAdded: (cards, index) {
                     setState(() {
-                      cardColumn4.addAll(cards);
+                      player4.cards.addAll(cards);
                       int length = _getListFromIndex(index).length;
                       _getListFromIndex(index)
                           .removeRange(length - cards.length, length);
                       _refreshList(index);
                     });
                   },
-                  columnIndex: 4,
-                ),
-              ),
-              Expanded(
-                child: CardColumn(
-                  cards: cardColumn5,
-                  onCardsAdded: (cards, index) {
-                    setState(() {
-                      cardColumn5.addAll(cards);
-                      int length = _getListFromIndex(index).length;
-                      _getListFromIndex(index)
-                          .removeRange(length - cards.length, length);
-                      _refreshList(index);
-                    });
-                  },
-                  columnIndex: 5,
-                ),
-              ),
-              Expanded(
-                child: CardColumn(
-                  cards: cardColumn6,
-                  onCardsAdded: (cards, index) {
-                    setState(() {
-                      cardColumn6.addAll(cards);
-                      int length = _getListFromIndex(index).length;
-                      _getListFromIndex(index)
-                          .removeRange(length - cards.length, length);
-                      _refreshList(index);
-                    });
-                  },
-                  columnIndex: 6,
-                ),
-              ),
-              Expanded(
-                child: CardColumn(
-                  cards: cardColumn7,
-                  onCardsAdded: (cards, index) {
-                    setState(() {
-                      cardColumn7.addAll(cards);
-                      int length = _getListFromIndex(index).length;
-                      _getListFromIndex(index)
-                          .removeRange(length - cards.length, length);
-                      _refreshList(index);
-                    });
-                  },
-                  columnIndex: 7,
+                  columnIndex: CardList.P4,
                 ),
               ),
             ],
@@ -240,7 +197,7 @@ class _GameScreenState extends State<GameScreen> {
                     attachedCards: [
                       cardDeckOpened.last,
                     ],
-                    columnIndex: 0,
+                    columnIndex: CardList.REMAINING,
                   ),
                 )
               : Container(
@@ -260,60 +217,15 @@ class _GameScreenState extends State<GameScreen> {
             padding: const EdgeInsets.all(4.0),
             child: EmptyCardDeck(
               cardSuit: CardSuit.hearts,
-              cardsAdded: finalHeartsDeck,
+              cardsAdded: droppedCards,
               onCardAdded: (cards, index) {
-                finalHeartsDeck.addAll(cards);
+                droppedCards.addAll(cards);
                 int length = _getListFromIndex(index).length;
                 _getListFromIndex(index)
                     .removeRange(length - cards.length, length);
                 _refreshList(index);
               },
-              columnIndex: 8,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: EmptyCardDeck(
-              cardSuit: CardSuit.diamonds,
-              cardsAdded: finalDiamondsDeck,
-              onCardAdded: (cards, index) {
-                finalDiamondsDeck.addAll(cards);
-                int length = _getListFromIndex(index).length;
-                _getListFromIndex(index)
-                    .removeRange(length - cards.length, length);
-                _refreshList(index);
-              },
-              columnIndex: 9,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: EmptyCardDeck(
-              cardSuit: CardSuit.spades,
-              cardsAdded: finalSpadesDeck,
-              onCardAdded: (cards, index) {
-                finalSpadesDeck.addAll(cards);
-                int length = _getListFromIndex(index).length;
-                _getListFromIndex(index)
-                    .removeRange(length - cards.length, length);
-                _refreshList(index);
-              },
-              columnIndex: 10,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: EmptyCardDeck(
-              cardSuit: CardSuit.clubs,
-              cardsAdded: finalClubsDeck,
-              onCardAdded: (cards, index) {
-                finalClubsDeck.addAll(cards);
-                int length = _getListFromIndex(index).length;
-                _getListFromIndex(index)
-                    .removeRange(length - cards.length, length);
-                _refreshList(index);
-              },
-              columnIndex: 11,
+              columnIndex: CardList.DROPPED,
             ),
           ),
         ],
@@ -323,23 +235,17 @@ class _GameScreenState extends State<GameScreen> {
 
   // Initialise a new game
   void _initialiseGame() {
-    cardColumn1 = [];
-    cardColumn2 = [];
-    cardColumn3 = [];
-    cardColumn4 = [];
-    cardColumn5 = [];
-    cardColumn6 = [];
-    cardColumn7 = [];
+    player1.initialize();
+    player2.initialize();
+    player3.initialize();
+    player4.initialize();
 
     // Stores the card deck
     cardDeckClosed = [];
     cardDeckOpened = [];
 
     // Stores the card in the upper boxes
-    finalHeartsDeck = [];
-    finalDiamondsDeck = [];
-    finalSpadesDeck = [];
-    finalClubsDeck = [];
+    droppedCards = [];
 
     List<PlayingCard> allCards = [];
 
@@ -357,97 +263,24 @@ class _GameScreenState extends State<GameScreen> {
     }
 
     Random random = Random();
-
-    // Add cards to columns and remaining to deck
-    for (int i = 0; i < 56; i++) {
-      int randomNumber = random.nextInt(allCards.length);
-
-      if (i == 0) {
+    for (int cards = 0; cards < 14; cards++) {
+      for (int players = 0; players < playerCardLists.length; players++) {
+        int randomNumber = random.nextInt(allCards.length);
+        var cardList = _getListFromIndex(playerCardLists[players]);
         PlayingCard card = allCards[randomNumber];
-        cardColumn1.add(
+        cardList.add(
           card
             ..opened = true
             ..faceUp = true,
         );
         allCards.removeAt(randomNumber);
-      } else if (i > 0 && i < 6) {
-        if (i == 5) {
-          PlayingCard card = allCards[randomNumber];
-          cardColumn2.add(
-            card
-              ..opened = true
-              ..faceUp = true,
-          );
-        } else {
-          cardColumn2.add(allCards[randomNumber]);
-        }
-        allCards.removeAt(randomNumber);
-      } else if (i > 5 && i < 12) {
-        if (i == 11) {
-          PlayingCard card = allCards[randomNumber];
-          cardColumn3.add(
-            card
-              ..opened = true
-              ..faceUp = true,
-          );
-        } else {
-          cardColumn3.add(allCards[randomNumber]);
-        }
-        allCards.removeAt(randomNumber);
-      } else if (i > 11 && i < 22) {
-        if (i == 21) {
-          PlayingCard card = allCards[randomNumber];
-          cardColumn4.add(
-            card
-              ..opened = true
-              ..faceUp = true,
-          );
-        } else {
-          cardColumn4.add(allCards[randomNumber]);
-        }
-        allCards.removeAt(randomNumber);
-      } else if (i > 21 && i < 30) {
-        if (i == 29) {
-          PlayingCard card = allCards[randomNumber];
-          cardColumn5.add(
-            card
-              ..opened = true
-              ..faceUp = true,
-          );
-        } else {
-          cardColumn5.add(allCards[randomNumber]);
-        }
-        allCards.removeAt(randomNumber);
-      } else if (i > 29 && i < 42) {
-        if (i == 41) {
-          PlayingCard card = allCards[randomNumber];
-          cardColumn6.add(
-            card
-              ..opened = true
-              ..faceUp = true,
-          );
-        } else {
-          cardColumn6.add(allCards[randomNumber]);
-        }
-        allCards.removeAt(randomNumber);
-      } else {
-        if (i == 55) {
-          PlayingCard card = allCards[randomNumber];
-          cardColumn7.add(
-            card
-              ..opened = true
-              ..faceUp = true,
-          );
-        } else {
-          cardColumn7.add(allCards[randomNumber]);
-        }
-        allCards.removeAt(randomNumber);
       }
     }
-
     cardDeckClosed = allCards;
+
+    // add card in the bottom to the "burnt" cards
     cardDeckOpened.add(
-      cardDeckClosed.removeLast()
+      cardDeckClosed.removeAt(0)
         ..opened = true
         ..faceUp = true,
     );
@@ -455,13 +288,11 @@ class _GameScreenState extends State<GameScreen> {
     setState(() {});
   }
 
-  void _refreshList(int index) {
-    if (finalDiamondsDeck.length +
-            finalHeartsDeck.length +
-            finalClubsDeck.length +
-            finalSpadesDeck.length ==
-        104) {
-      _handleWin();
+  void _refreshList(CardList index) {
+    for (int players = 0; players < playerCardLists.length; players++) {
+      if (_getListFromIndex(playerCardLists[players]).length == 0) {
+        _handleWin(playerCardLists[players]);
+      }
     }
     setState(() {
       if (_getListFromIndex(index).length != 0) {
@@ -473,13 +304,13 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   // Handle a win condition
-  void _handleWin() {
+  void _handleWin(CardList whichPlayer) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Congratulations!"),
-          content: Text("You Win!"),
+          title: Text("Game Over"),
+          content: Text(_nameFromIndex(whichPlayer) + " won!"),
           actions: <Widget>[
             FlatButton(
               onPressed: () {
@@ -494,32 +325,45 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  List<PlayingCard> _getListFromIndex(int index) {
+  String _nameFromIndex(CardList index) {
     switch (index) {
-      case 0:
+      case CardList.P1:
+        return player1.name;
+      case CardList.P2:
+        return player2.name;
+      case CardList.P3:
+        return player3.name;
+      case CardList.P4:
+        return player4.name;
+      default:
+        return "Null";
+    }
+  }
+
+  List<PlayingCard> _getListFromIndex(CardList index) {
+    switch (index) {
+      case CardList.REMAINING:
         return cardDeckOpened;
-      case 1:
-        return cardColumn1;
-      case 2:
-        return cardColumn2;
-      case 3:
-        return cardColumn3;
-      case 4:
-        return cardColumn4;
-      case 5:
-        return cardColumn5;
-      case 6:
-        return cardColumn6;
-      case 7:
-        return cardColumn7;
-      case 8:
-        return finalHeartsDeck;
-      case 9:
-        return finalDiamondsDeck;
-      case 10:
-        return finalSpadesDeck;
-      case 11:
-        return finalClubsDeck;
+      case CardList.REMAINING:
+        return cardDeckClosed;
+      case CardList.P1:
+        return player1.cards;
+      case CardList.P2:
+        return player2.cards;
+      case CardList.P3:
+        return player3.cards;
+      case CardList.P4:
+        return player4.cards;
+      case CardList.P1SET:
+        return player1.openCards;
+      case CardList.P2SET:
+        return player2.openCards;
+      case CardList.P3SET:
+        return player3.openCards;
+      case CardList.P4SET:
+        return player4.openCards;
+      case CardList.DROPPED:
+        return droppedCards;
       default:
         return null;
     }

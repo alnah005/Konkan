@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/playing_card.dart';
+import 'package:solitaire/pages/game_screen.dart';
 import 'package:solitaire/widgets/card_column.dart';
 
 // TransformedCard makes the card draggable and translates it according to
@@ -8,7 +9,7 @@ class TransformedCard extends StatefulWidget {
   final PlayingCard playingCard;
   final double transformDistance;
   final int transformIndex;
-  final int columnIndex;
+  final CardList columnIndex;
   final List<PlayingCard> attachedCards;
 
   TransformedCard({
@@ -52,7 +53,7 @@ class _TransformedCardState extends State<TransformedCard> {
             child: _buildFaceUpCard(),
             feedback: CardColumn(
               cards: widget.attachedCards,
-              columnIndex: 1,
+              columnIndex: CardList.REMAINING,
               onCardsAdded: (card, position) {},
             ),
             childWhenDragging: _buildFaceUpCard(),

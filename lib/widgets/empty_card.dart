@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/playing_card.dart';
+import 'package:solitaire/pages/game_screen.dart';
 import 'package:solitaire/widgets/card_column.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
 
@@ -8,7 +9,7 @@ class EmptyCardDeck extends StatefulWidget {
   final CardSuit cardSuit;
   final List<PlayingCard> cardsAdded;
   final CardAcceptCallback onCardAdded;
-  final int columnIndex;
+  final CardList columnIndex;
 
   EmptyCardDeck({
     @required this.cardSuit,
@@ -33,22 +34,15 @@ class _EmptyCardDeckState extends State<EmptyCardDeck> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
                     color: Colors.white,
-                  ),
-                  height: 60.0,
-                  width: 40,
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Center(
-                          child: Container(
-                            height: 20.0,
-                            child: _suitToImage(),
-                          ),
-                        )
-                      ],
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        "https://spectramagazine.org/wp-content/uploads/2018/09/bb.jpg",
+                      ),
+                      fit: BoxFit.fill,
                     ),
                   ),
+                  height: 60.0,
+                  width: 40.0,
                 ),
               )
             : TransformedCard(
