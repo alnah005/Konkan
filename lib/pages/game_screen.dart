@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:solitaire/utils/playing_card.dart';
+import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/widgets/card_column.dart';
 import 'package:solitaire/widgets/empty_card.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
