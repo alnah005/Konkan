@@ -17,9 +17,10 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   // Stores the cards on the seven columns
   Player player1 = new Player(PositionOnScreen.bottom);
-  Player player2 = new Player(PositionOnScreen.left);
+  Player player2 = new Player(PositionOnScreen.right);
   Player player3 = new Player(PositionOnScreen.top);
-  Player player4 = new Player(PositionOnScreen.right);
+  Player player4 = new Player(PositionOnScreen.left);
+  Player currentTurn;
   List<CardList> playerCardLists = [
     CardList.P1,
     CardList.P2,
@@ -37,6 +38,7 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     _initialiseGame();
+    currentTurn = player1;
   }
 
   @override
@@ -173,18 +175,21 @@ class _GameScreenState extends State<GameScreen> {
             onTap: () {
               setState(() {
                 if (cardDeckClosed.isEmpty) {
-                  cardDeckClosed.addAll(cardDeckOpened.map((card) {
+                  cardDeckClosed.addAll(droppedCards.map((card) {
                     return card
                       ..opened = false
                       ..faceUp = false;
                   }));
-                  cardDeckOpened.clear();
+                  droppedCards.clear();
                 } else {
-                  cardDeckOpened.add(
-                    cardDeckClosed.removeLast()
-                      ..faceUp = true
-                      ..opened = true,
-                  );
+                  if (currentTurn.discarded) {
+                    currentTurn.cards.add(
+                      cardDeckClosed.removeLast()
+                        ..faceUp = true
+                        ..opened = true,
+                    );
+                    currentTurn.discarded = false;
+                  }
                 }
               });
             },
@@ -365,6 +370,19 @@ class _GameScreenState extends State<GameScreen> {
         return player4.name;
       default:
         return "Null";
+    }
+  }
+
+  Player _getNextPlayer(Player currentPlayer) {
+    switch (currentPlayer.position) {
+      case PositionOnScreen.bottom:
+        return player2;
+      case PositionOnScreen.right:
+        return player3;
+      case PositionOnScreen.top:
+        return player4;
+      case PositionOnScreen.left:
+        return player1;
     }
   }
 

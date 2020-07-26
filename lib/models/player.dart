@@ -35,6 +35,7 @@ class Player {
   PositionOnScreen position;
   PlayerInfo personalInfo = new PlayerInfo();
   Player(this.position);
+  bool discarded = true;
 
   void recordGame(int score, bool won) {
     personalInfo.avgScore =
