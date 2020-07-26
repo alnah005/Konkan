@@ -10,7 +10,6 @@ class EmptyCardDeck extends StatefulWidget {
   final List<PlayingCard> cardsAdded;
   final CardAcceptCallback onCardAdded;
   final CardList columnIndex;
-
   EmptyCardDeck({
     @required this.cardSuit,
     @required this.cardsAdded,
@@ -23,6 +22,12 @@ class EmptyCardDeck extends StatefulWidget {
 }
 
 class _EmptyCardDeckState extends State<EmptyCardDeck> {
+  final List<CardList> playerCardLists = [
+    CardList.P1,
+    CardList.P2,
+    CardList.P3,
+    CardList.P4
+  ];
   @override
   Widget build(BuildContext context) {
     return DragTarget<Map>(
@@ -55,10 +60,9 @@ class _EmptyCardDeckState extends State<EmptyCardDeck> {
       },
       onWillAccept: (value) {
         PlayingCard cardAdded = value["cards"].last;
-
-        if (cardAdded.cardSuit == widget.cardSuit) {
-          if (CardType.values.indexOf(cardAdded.cardType) ==
-              widget.cardsAdded.length) {
+        CardList cardIndex = value["fromIndex"];
+        for (int players = 0; players < playerCardLists.length; players++) {
+          if (cardIndex == playerCardLists[players]) {
             return true;
           }
         }

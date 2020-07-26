@@ -235,10 +235,10 @@ class _GameScreenState extends State<GameScreen> {
 
   // Initialise a new game
   void _initialiseGame() {
-    player1.initialize();
-    player2.initialize();
-    player3.initialize();
-    player4.initialize();
+    player1.initialize('P1');
+    player2.initialize('P2');
+    player3.initialize('P3');
+    player4.initialize('P4');
 
     // Stores the card deck
     cardDeckClosed = [];

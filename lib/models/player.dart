@@ -9,14 +9,23 @@ class PlayerInfo {
   int losses;
   double avgScore;
   int id;
-  String name = "";
-  PlayerInfo({
-    this.avatarPath = "",
-    this.age = 18,
-    this.wins = 0,
-    this.losses = 0,
-    this.avgScore = 0.0,
-  });
+  String name;
+  PlayerInfo(
+      {this.avatarPath = "",
+      this.age = 18,
+      this.wins = 0,
+      this.losses = 0,
+      this.avgScore = 0.0,
+      this.id = 999999,
+      this.name = 'P'});
+
+  set playerName(String newName) {
+    this.name = newName;
+  }
+
+  String get playerName {
+    return this.name;
+  }
 }
 
 class Player {
@@ -24,8 +33,8 @@ class Player {
   List<PlayingCard> openCards = [];
   PlayingCard extraCard;
   PositionOnScreen position;
-  PlayerInfo personalInfo;
-  Player(this.position, {this.personalInfo});
+  PlayerInfo personalInfo = new PlayerInfo();
+  Player(this.position);
 
   void recordGame(int score, bool won) {
     personalInfo.avgScore =
@@ -39,12 +48,17 @@ class Player {
         (personalInfo.wins + personalInfo.losses);
   }
 
-  void initialize() {
+  void initialize(String name) {
     cards = [];
     openCards = [];
+    this.name = name;
+  }
+
+  set name(var newName) {
+    this.personalInfo.playerName = newName;
   }
 
   String get name {
-    return this.personalInfo.name;
+    return this.personalInfo.playerName;
   }
 }
