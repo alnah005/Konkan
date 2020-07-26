@@ -305,6 +305,34 @@ class _GameScreenState extends State<GameScreen> {
 
   // Handle a win condition
   void _handleWin(CardList whichPlayer) {
+    switch (whichPlayer) {
+      case CardList.P1:
+        player1.recordGame(0, true);
+        player2.recordGame(100, false);
+        player3.recordGame(100, false);
+        player4.recordGame(100, false);
+        break;
+      case CardList.P2:
+        player2.recordGame(0, true);
+        player1.recordGame(100, false);
+        player3.recordGame(100, false);
+        player4.recordGame(100, false);
+        break;
+      case CardList.P3:
+        player3.recordGame(0, true);
+        player2.recordGame(100, false);
+        player1.recordGame(100, false);
+        player4.recordGame(100, false);
+        break;
+      case CardList.P4:
+        player4.recordGame(0, true);
+        player2.recordGame(100, false);
+        player3.recordGame(100, false);
+        player1.recordGame(100, false);
+        break;
+      default:
+        print('No player found');
+    }
     showDialog(
       context: context,
       builder: (context) {
