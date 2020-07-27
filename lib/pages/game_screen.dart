@@ -22,6 +22,12 @@ enum CardList {
 }
 
 class GameScreen extends StatefulWidget {
+  static final List<CardList> playerCardLists = [
+    CardList.P1,
+    CardList.P2,
+    CardList.P3,
+    CardList.P4
+  ];
   @override
   _GameScreenState createState() => _GameScreenState();
 }
@@ -35,12 +41,7 @@ class _GameScreenState extends State<GameScreen> {
     new Player(PositionOnScreen.left)
   ];
   Player currentTurn;
-  List<CardList> playerCardLists = [
-    CardList.P1,
-    CardList.P2,
-    CardList.P3,
-    CardList.P4
-  ];
+
   // Stores the card deck
   List<PlayingCard> cardDeckClosed = [];
   List<PlayingCard> cardDeckOpened = [];
@@ -286,9 +287,11 @@ class _GameScreenState extends State<GameScreen> {
 
     Random random = Random();
     for (int cards = 0; cards < 14; cards++) {
-      for (int players = 0; players < playerCardLists.length; players++) {
+      for (int players = 0;
+          players < GameScreen.playerCardLists.length;
+          players++) {
         int randomNumber = random.nextInt(allCards.length);
-        var cardList = _getListFromIndex(playerCardLists[players]);
+        var cardList = _getListFromIndex(GameScreen.playerCardLists[players]);
         PlayingCard card = allCards[randomNumber];
         cardList.add(
           card
@@ -312,9 +315,11 @@ class _GameScreenState extends State<GameScreen> {
 
   // todo remove turning the card in the bottom of the column face-up
   void _refreshList(CardList index) {
-    for (int players = 0; players < playerCardLists.length; players++) {
-      if (_getListFromIndex(playerCardLists[players]).length == 0) {
-        _handleWin(playerCardLists[players]);
+    for (int players = 0;
+        players < GameScreen.playerCardLists.length;
+        players++) {
+      if (_getListFromIndex(GameScreen.playerCardLists[players]).length == 0) {
+        _handleWin(GameScreen.playerCardLists[players]);
       }
     }
     setState(() {

@@ -59,7 +59,6 @@ class _EmptyCardDeckState extends State<EmptyCardDeck> {
               );
       },
       onWillAccept: (value) {
-        PlayingCard cardAdded = value["cards"].last;
         CardList cardIndex = value["fromIndex"];
         for (int players = 0; players < playerCardLists.length; players++) {
           if (cardIndex == playerCardLists[players]) {
