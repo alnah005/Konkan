@@ -37,16 +37,57 @@ class Player {
   Player(this.position);
   bool discarded = true;
 
-  void recordGame(int score, bool won) {
+  void recordGame(PositionOnScreen winnerPosition) {
     personalInfo.avgScore =
         personalInfo.avgScore * (personalInfo.wins + personalInfo.losses);
-    if (won) {
+    if (winnerPosition == this.position) {
       personalInfo.wins += 1;
     } else {
       personalInfo.wins += 1;
     }
-    personalInfo.avgScore = (personalInfo.avgScore + score) /
+    personalInfo.avgScore = (personalInfo.avgScore + _getScore()) /
         (personalInfo.wins + personalInfo.losses);
+  }
+
+  double _getScore() {
+    double result = 0.0;
+    for (int i = 0; i < cards.length; i++) {
+      result = _cardTypeToPenalty(cards[i].cardType);
+    }
+    return result;
+  }
+
+  double _cardTypeToPenalty(CardType cardType) {
+    switch (cardType) {
+      case CardType.one:
+        return 11;
+      case CardType.two:
+        return 2;
+      case CardType.three:
+        return 3;
+      case CardType.four:
+        return 4;
+      case CardType.five:
+        return 5;
+      case CardType.six:
+        return 6;
+      case CardType.seven:
+        return 7;
+      case CardType.eight:
+        return 8;
+      case CardType.nine:
+        return 9;
+      case CardType.ten:
+        return 10;
+      case CardType.jack:
+        return 10;
+      case CardType.queen:
+        return 10;
+      case CardType.king:
+        return 10;
+      default:
+        return 0;
+    }
   }
 
   void initialize(String name) {

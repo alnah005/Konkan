@@ -28,10 +28,12 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   // Stores the cards on the seven columns
-  Player player1 = new Player(PositionOnScreen.bottom);
-  Player player2 = new Player(PositionOnScreen.right);
-  Player player3 = new Player(PositionOnScreen.top);
-  Player player4 = new Player(PositionOnScreen.left);
+  List<Player> playersList = [
+    new Player(PositionOnScreen.bottom),
+    new Player(PositionOnScreen.right),
+    new Player(PositionOnScreen.top),
+    new Player(PositionOnScreen.left)
+  ];
   Player currentTurn;
   List<CardList> playerCardLists = [
     CardList.P1,
@@ -50,7 +52,7 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     _initialiseGame();
-    currentTurn = player1;
+    currentTurn = playersList[0];
   }
 
   // todo must be updated to eliminate players from exchanging cards
@@ -95,10 +97,10 @@ class _GameScreenState extends State<GameScreen> {
             children: <Widget>[
               Expanded(
                 child: CardColumn(
-                  cards: player1.cards,
+                  cards: playersList[0].cards,
                   onCardsAdded: (cards, index) {
                     setState(() {
-                      player1.cards.addAll(cards);
+                      playersList[0].cards.addAll(cards);
                       int length = _getListFromIndex(index).length;
                       _getListFromIndex(index)
                           .removeRange(length - cards.length, length);
@@ -110,10 +112,10 @@ class _GameScreenState extends State<GameScreen> {
               ),
               Expanded(
                 child: CardColumn(
-                  cards: player2.cards,
+                  cards: playersList[1].cards,
                   onCardsAdded: (cards, index) {
                     setState(() {
-                      player2.cards.addAll(cards);
+                      playersList[1].cards.addAll(cards);
                       int length = _getListFromIndex(index).length;
                       _getListFromIndex(index)
                           .removeRange(length - cards.length, length);
@@ -125,10 +127,10 @@ class _GameScreenState extends State<GameScreen> {
               ),
               Expanded(
                 child: CardColumn(
-                  cards: player3.cards,
+                  cards: playersList[2].cards,
                   onCardsAdded: (cards, index) {
                     setState(() {
-                      player3.cards.addAll(cards);
+                      playersList[2].cards.addAll(cards);
                       int length = _getListFromIndex(index).length;
                       _getListFromIndex(index)
                           .removeRange(length - cards.length, length);
@@ -140,10 +142,10 @@ class _GameScreenState extends State<GameScreen> {
               ),
               Expanded(
                 child: CardColumn(
-                  cards: player4.cards,
+                  cards: playersList[3].cards,
                   onCardsAdded: (cards, index) {
                     setState(() {
-                      player4.cards.addAll(cards);
+                      playersList[3].cards.addAll(cards);
                       int length = _getListFromIndex(index).length;
                       _getListFromIndex(index)
                           .removeRange(length - cards.length, length);
@@ -238,7 +240,7 @@ class _GameScreenState extends State<GameScreen> {
               cardSuit: CardSuit.hearts,
               cardsAdded: droppedCards,
               onCardAdded: (cards, index) {
-                if (_getpositionFromIndex(index) == currentTurn.position &&
+                if (_getPositionFromIndex(index) == currentTurn.position &&
                     !currentTurn.discarded) {
                   droppedCards.add(cards.first);
                   _getListFromIndex(index).removeAt(0);
@@ -257,11 +259,9 @@ class _GameScreenState extends State<GameScreen> {
 
   // Initialise a new game
   void _initialiseGame() {
-    player1.initialize('P1');
-    player2.initialize('P2');
-    player3.initialize('P3');
-    player4.initialize('P4');
-
+    for (int i = 0; i < playersList.length; i++) {
+      playersList[i].initialize("Player " + i.toString());
+    }
     // Stores the card deck
     cardDeckClosed = [];
     cardDeckOpened = [];
@@ -310,6 +310,7 @@ class _GameScreenState extends State<GameScreen> {
     setState(() {});
   }
 
+  // todo remove turning the card in the bottom of the column face-up
   void _refreshList(CardList index) {
     for (int players = 0; players < playerCardLists.length; players++) {
       if (_getListFromIndex(playerCardLists[players]).length == 0) {
@@ -327,33 +328,9 @@ class _GameScreenState extends State<GameScreen> {
 
   // Handle a win condition
   void _handleWin(CardList whichPlayer) {
-    switch (whichPlayer) {
-      case CardList.P1:
-        player1.recordGame(0, true);
-        player2.recordGame(100, false);
-        player3.recordGame(100, false);
-        player4.recordGame(100, false);
-        break;
-      case CardList.P2:
-        player2.recordGame(0, true);
-        player1.recordGame(100, false);
-        player3.recordGame(100, false);
-        player4.recordGame(100, false);
-        break;
-      case CardList.P3:
-        player3.recordGame(0, true);
-        player2.recordGame(100, false);
-        player1.recordGame(100, false);
-        player4.recordGame(100, false);
-        break;
-      case CardList.P4:
-        player4.recordGame(0, true);
-        player2.recordGame(100, false);
-        player3.recordGame(100, false);
-        player1.recordGame(100, false);
-        break;
-      default:
-        print('No player found');
+    PositionOnScreen winnerPosition = _getPositionFromIndex(whichPlayer);
+    for (int i = 0; i < playersList.length; i++) {
+      playersList[i].recordGame(winnerPosition);
     }
     showDialog(
       context: context,
@@ -378,19 +355,19 @@ class _GameScreenState extends State<GameScreen> {
   String _getNameFromIndex(CardList index) {
     switch (index) {
       case CardList.P1:
-        return player1.name;
+        return playersList[0].name;
       case CardList.P2:
-        return player2.name;
+        return playersList[1].name;
       case CardList.P3:
-        return player3.name;
+        return playersList[2].name;
       case CardList.P4:
-        return player4.name;
+        return playersList[3].name;
       default:
         return "Null";
     }
   }
 
-  PositionOnScreen _getpositionFromIndex(CardList index) {
+  PositionOnScreen _getPositionFromIndex(CardList index) {
     switch (index) {
       case CardList.P1:
         return PositionOnScreen.bottom;
@@ -408,13 +385,15 @@ class _GameScreenState extends State<GameScreen> {
   Player _getNextPlayer(Player currentPlayer) {
     switch (currentPlayer.position) {
       case PositionOnScreen.bottom:
-        return player2;
+        return playersList[1];
       case PositionOnScreen.right:
-        return player3;
+        return playersList[2];
       case PositionOnScreen.top:
-        return player4;
+        return playersList[3];
       case PositionOnScreen.left:
-        return player1;
+        return playersList[0];
+      default:
+        return playersList[0];
     }
   }
 
@@ -425,21 +404,21 @@ class _GameScreenState extends State<GameScreen> {
       case CardList.REMAINING:
         return cardDeckClosed;
       case CardList.P1:
-        return player1.cards;
+        return playersList[0].cards;
       case CardList.P2:
-        return player2.cards;
+        return playersList[1].cards;
       case CardList.P3:
-        return player3.cards;
+        return playersList[2].cards;
       case CardList.P4:
-        return player4.cards;
+        return playersList[3].cards;
       case CardList.P1SET:
-        return player1.openCards;
+        return playersList[0].openCards;
       case CardList.P2SET:
-        return player2.openCards;
+        return playersList[1].openCards;
       case CardList.P3SET:
-        return player3.openCards;
+        return playersList[2].openCards;
       case CardList.P4SET:
-        return player4.openCards;
+        return playersList[3].openCards;
       case CardList.DROPPED:
         return droppedCards;
       default:
