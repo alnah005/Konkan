@@ -238,11 +238,14 @@ class _GameScreenState extends State<GameScreen> {
               cardSuit: CardSuit.hearts,
               cardsAdded: droppedCards,
               onCardAdded: (cards, index) {
-                droppedCards.addAll(cards);
-                int length = _getListFromIndex(index).length;
-                _getListFromIndex(index)
-                    .removeRange(length - cards.length, length);
-                _refreshList(index);
+                if (_getpositionFromIndex(index) == currentTurn.position &&
+                    !currentTurn.discarded) {
+                  droppedCards.add(cards.first);
+                  _getListFromIndex(index).removeAt(0);
+                  _refreshList(index);
+                  currentTurn = _getNextPlayer(currentTurn);
+                  currentTurn.discarded = true;
+                }
               },
               columnIndex: CardList.DROPPED,
             ),
@@ -357,7 +360,7 @@ class _GameScreenState extends State<GameScreen> {
       builder: (context) {
         return AlertDialog(
           title: Text("Game Over"),
-          content: Text(_nameFromIndex(whichPlayer) + " won!"),
+          content: Text(_getNameFromIndex(whichPlayer) + " won!"),
           actions: <Widget>[
             FlatButton(
               onPressed: () {
@@ -372,7 +375,7 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  String _nameFromIndex(CardList index) {
+  String _getNameFromIndex(CardList index) {
     switch (index) {
       case CardList.P1:
         return player1.name;
@@ -384,6 +387,21 @@ class _GameScreenState extends State<GameScreen> {
         return player4.name;
       default:
         return "Null";
+    }
+  }
+
+  PositionOnScreen _getpositionFromIndex(CardList index) {
+    switch (index) {
+      case CardList.P1:
+        return PositionOnScreen.bottom;
+      case CardList.P2:
+        return PositionOnScreen.right;
+      case CardList.P3:
+        return PositionOnScreen.top;
+      case CardList.P4:
+        return PositionOnScreen.left;
+      default:
+        return null;
     }
   }
 

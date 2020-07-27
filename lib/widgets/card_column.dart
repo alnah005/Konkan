@@ -31,8 +31,8 @@ class _CardColumnState extends State<CardColumn> {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.topCenter,
-//      height: 4 * 20.0,
-//      width: 70.0,
+      height: 4 * 20.0,
+      width: 70.0,
       margin: EdgeInsets.all(2.0),
       child: DragTarget<Map>(
         builder: (context, listOne, listTwo) {
