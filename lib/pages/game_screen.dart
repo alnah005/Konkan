@@ -56,6 +56,7 @@ class _GameScreenState extends State<GameScreen> {
     currentTurn = playersList[0];
   }
 
+// todo card_columns don't do anything when dragged to.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,6 +103,7 @@ class _GameScreenState extends State<GameScreen> {
                     setState(() {
                       playersList[0].cards.addAll(cards);
                       int length = _getListFromIndex(index).length;
+                      print("awesome");
                       _getListFromIndex(index)
                           .removeRange(length - cards.length, length);
                       _refreshList(index);
@@ -243,7 +245,8 @@ class _GameScreenState extends State<GameScreen> {
                 if (_getPositionFromIndex(index) == currentTurn.position &&
                     !currentTurn.discarded) {
                   droppedCards.add(cards.first);
-                  _getListFromIndex(index).removeAt(0);
+                  _getListFromIndex(index)
+                      .removeAt(_getListFromIndex(index).indexOf(cards.first));
                   _refreshList(index);
                   currentTurn = _getNextPlayer(currentTurn);
                   currentTurn.discarded = true;

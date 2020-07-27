@@ -52,13 +52,13 @@ class _TransformedCardState extends State<TransformedCard> {
         : Draggable<Map>(
             child: _buildFaceUpCard(),
             feedback: CardColumn(
-              cards: widget.attachedCards,
-              columnIndex: CardList.REMAINING,
+              cards: [widget.playingCard],
+              columnIndex: widget.columnIndex,
               onCardsAdded: (card, position) {},
             ),
             childWhenDragging: _buildFaceUpCard(),
             data: {
-              "cards": widget.attachedCards,
+              "cards": [widget.playingCard],
               "fromIndex": widget.columnIndex,
             },
           );
