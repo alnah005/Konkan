@@ -7,7 +7,19 @@ import 'package:solitaire/widgets/card_column.dart';
 import 'package:solitaire/widgets/empty_card.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
 
-enum CardList { P1, P2, P3, P4, P1SET, P2SET, P3SET, P4SET, DROPPED, REMAINING }
+enum CardList {
+  P1,
+  P2,
+  P3,
+  P4,
+  P1SET,
+  P2SET,
+  P3SET,
+  P4SET,
+  DROPPED,
+  REMAINING,
+  BURNT
+}
 
 class GameScreen extends StatefulWidget {
   @override
@@ -41,6 +53,7 @@ class _GameScreenState extends State<GameScreen> {
     currentTurn = player1;
   }
 
+  // todo must be updated to eliminate players from exchanging cards
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,6 +160,7 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  // This is where the deck and the burnt card deck are drawn.
   // Build the deck of cards left after building card columns
   Widget _buildCardDeck() {
     return Container(
@@ -202,7 +216,7 @@ class _GameScreenState extends State<GameScreen> {
                     attachedCards: [
                       cardDeckOpened.last,
                     ],
-                    columnIndex: CardList.REMAINING,
+                    columnIndex: CardList.BURNT,
                   ),
                 )
               : Container(
@@ -388,7 +402,7 @@ class _GameScreenState extends State<GameScreen> {
 
   List<PlayingCard> _getListFromIndex(CardList index) {
     switch (index) {
-      case CardList.REMAINING:
+      case CardList.BURNT:
         return cardDeckOpened;
       case CardList.REMAINING:
         return cardDeckClosed;

@@ -14,7 +14,7 @@ class TransformedCard extends StatefulWidget {
 
   TransformedCard({
     @required this.playingCard,
-    this.transformDistance = 15.0,
+    this.transformDistance = 20.0,
     this.transformIndex = 0,
     this.columnIndex,
     this.attachedCards,
