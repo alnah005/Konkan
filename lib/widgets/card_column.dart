@@ -25,7 +25,6 @@ class CardColumn extends StatefulWidget {
   _CardColumnState createState() => _CardColumnState();
 }
 
-// todo fix cross column card exchange here
 class _CardColumnState extends State<CardColumn> {
   @override
   Widget build(BuildContext context) {

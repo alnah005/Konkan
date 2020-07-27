@@ -56,7 +56,6 @@ class _GameScreenState extends State<GameScreen> {
     currentTurn = playersList[0];
   }
 
-  // todo must be updated to eliminate players from exchanging cards
   @override
   Widget build(BuildContext context) {
     return Scaffold(
