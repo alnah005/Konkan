@@ -365,13 +365,13 @@ class _GameScreenState extends State<GameScreen> {
   PositionOnScreen _getPositionFromIndex(CardList index) {
     switch (index) {
       case CardList.P1:
-        return PositionOnScreen.bottom;
-      case CardList.P2:
-        return PositionOnScreen.right;
-      case CardList.P3:
-        return PositionOnScreen.top;
-      case CardList.P4:
         return PositionOnScreen.left;
+      case CardList.P2:
+        return PositionOnScreen.top;
+      case CardList.P3:
+        return PositionOnScreen.right;
+      case CardList.P4:
+        return PositionOnScreen.bottom;
       default:
         return null;
     }
@@ -379,13 +379,13 @@ class _GameScreenState extends State<GameScreen> {
 
   Player _getNextPlayer(Player currentPlayer) {
     switch (currentPlayer.position) {
-      case PositionOnScreen.bottom:
-        return playersList[1];
-      case PositionOnScreen.right:
-        return playersList[2];
-      case PositionOnScreen.top:
-        return playersList[3];
       case PositionOnScreen.left:
+        return playersList[1];
+      case PositionOnScreen.top:
+        return playersList[2];
+      case PositionOnScreen.right:
+        return playersList[3];
+      case PositionOnScreen.bottom:
         return playersList[0];
       default:
         return playersList[0];
