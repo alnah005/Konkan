@@ -23,7 +23,6 @@ class TransformedCard extends StatefulWidget {
   _TransformedCardState createState() => _TransformedCardState();
 }
 
-// todo modify transform to create columns and rows of players
 class _TransformedCardState extends State<TransformedCard> {
   @override
   Widget build(BuildContext context) {
@@ -100,7 +99,7 @@ class _TransformedCardState extends State<TransformedCard> {
               child: Align(
                 alignment: Alignment.topRight,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
