@@ -54,8 +54,8 @@ class _CardColumnState extends State<CardColumn> {
                       return TransformedCard(
                         playingCard: card,
                         transformIndex: index,
-                        attachedCards:
-                            widget.cards.sublist(index, widget.cards.length),
+//                        attachedCards:
+//                            widget.cards.sublist(index, widget.cards.length),
                         columnIndex: widget.columnIndex,
                       );
                     },

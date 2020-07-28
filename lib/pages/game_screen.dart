@@ -89,9 +89,8 @@ class _GameScreenState extends State<GameScreen> {
             onCardsAdded: (cards, index) {
               setState(() {
                 playersList[1].cards.addAll(cards);
-                int length = _getListFromIndex(index).length;
                 _getListFromIndex(index)
-                    .removeRange(length - cards.length, length);
+                    .removeAt(_getListFromIndex(index).indexOf(cards.first));
                 _refreshList(index);
               });
             },
@@ -104,7 +103,7 @@ class _GameScreenState extends State<GameScreen> {
                 cards: playersList[0].cards,
                 onCardsAdded: (cards, index) {
                   setState(() {
-                    //playersList[0].cards.addAll(cards);
+                    playersList[0].cards.addAll(cards);
                     _getListFromIndex(index).removeAt(
                         _getListFromIndex(index).indexOf(cards.first));
                     _refreshList(index);
@@ -123,9 +122,8 @@ class _GameScreenState extends State<GameScreen> {
                 onCardsAdded: (cards, index) {
                   setState(() {
                     playersList[2].cards.addAll(cards);
-                    int length = _getListFromIndex(index).length;
-                    _getListFromIndex(index)
-                        .removeRange(length - cards.length, length);
+                    _getListFromIndex(index).removeAt(
+                        _getListFromIndex(index).indexOf(cards.first));
                     _refreshList(index);
                   });
                 },
@@ -139,9 +137,8 @@ class _GameScreenState extends State<GameScreen> {
             onCardsAdded: (cards, index) {
               setState(() {
                 playersList[3].cards.addAll(cards);
-                int length = _getListFromIndex(index).length;
                 _getListFromIndex(index)
-                    .removeRange(length - cards.length, length);
+                    .removeAt(_getListFromIndex(index).indexOf(cards.first));
                 _refreshList(index);
               });
             },
@@ -205,9 +202,9 @@ class _GameScreenState extends State<GameScreen> {
                   padding: const EdgeInsets.all(4.0),
                   child: TransformedCard(
                     playingCard: cardDeckOpened.last,
-                    attachedCards: [
-                      cardDeckOpened.last,
-                    ],
+//                    attachedCards: [
+//                      cardDeckOpened.last,
+//                    ],
                     columnIndex: CardList.BURNT,
                   ),
                 )

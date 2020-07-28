@@ -59,9 +59,9 @@ class _EmptyCardDeckState extends State<EmptyCardDeck> {
                   child: TransformedCard(
                     playingCard: widget.cardsAdded.last,
                     columnIndex: widget.columnIndex,
-                    attachedCards: [
-                      widget.cardsAdded.last,
-                    ],
+//                    attachedCards: [
+//                      widget.cardsAdded.last,
+//                    ],
                   ),
                 ),
         );

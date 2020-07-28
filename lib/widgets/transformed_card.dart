@@ -9,14 +9,14 @@ class TransformedCard extends StatefulWidget {
   final double transformDistance;
   final int transformIndex;
   final CardList columnIndex;
-  final List<PlayingCard> attachedCards;
+//  final List<PlayingCard> attachedCards;
 
   TransformedCard({
     @required this.playingCard,
     this.transformDistance = 20.0,
     this.transformIndex = 0,
     this.columnIndex,
-    this.attachedCards,
+//    this.attachedCards,
   });
 
   @override
