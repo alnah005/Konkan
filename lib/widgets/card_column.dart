@@ -50,7 +50,6 @@ class _CardColumnState extends State<CardColumn> {
                         onWillAccept: (value) {
                           CardList index = value["fromIndex"];
                           if (index == widget.columnIndex) {
-                            print('Goodjob');
                             return true;
                           }
                           return false;
