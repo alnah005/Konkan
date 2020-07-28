@@ -40,7 +40,6 @@ class _EmptyCardDeckState extends State<EmptyCardDeck> {
               ? Opacity(
                   opacity: 0.7,
                   child: Container(
-                    constraints: BoxConstraints.expand(height: 60, width: 40),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
