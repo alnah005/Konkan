@@ -57,8 +57,8 @@ class _TransformedCardState extends State<TransformedCard> {
               onCardsAdded: (card, position) {},
             ),
             childWhenDragging: Container(
-              width: 0,
-              height: 0,
+              width: 40.0,
+              height: 60.0,
             ),
             data: {
               "cards": [widget.playingCard],
