@@ -101,13 +101,9 @@ class _GameScreenState extends State<GameScreen> {
                   cards: playersList[0].cards,
                   onCardsAdded: (cards, index) {
                     setState(() {
-                      playersList[0].cards.addAll(cards);
-                      int length = _getListFromIndex(index).length;
-                      if (index == CardList.P1) {
-                        print("awesome");
-                      }
-                      _getListFromIndex(index)
-                          .removeRange(length - cards.length, length);
+                      //playersList[0].cards.addAll(cards);
+                      _getListFromIndex(index).removeAt(
+                          _getListFromIndex(index).indexOf(cards.first));
                       _refreshList(index);
                     });
                   },
@@ -265,7 +261,7 @@ class _GameScreenState extends State<GameScreen> {
   // Initialise a new game
   void _initialiseGame() {
     for (int i = 0; i < playersList.length; i++) {
-      playersList[i].initialize("Player " + i.toString());
+      playersList[i].initialize("Player " + (i + 1).toString());
     }
     // Stores the card deck
     cardDeckClosed = [];
