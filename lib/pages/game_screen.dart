@@ -103,7 +103,9 @@ class _GameScreenState extends State<GameScreen> {
                     setState(() {
                       playersList[0].cards.addAll(cards);
                       int length = _getListFromIndex(index).length;
-                      print("awesome");
+                      if (index == CardList.P1) {
+                        print("awesome");
+                      }
                       _getListFromIndex(index)
                           .removeRange(length - cards.length, length);
                       _refreshList(index);

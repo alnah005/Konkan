@@ -28,40 +28,43 @@ class CardColumn extends StatefulWidget {
 class _CardColumnState extends State<CardColumn> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.topCenter,
-      height: 4 * 20.0,
-      width: 70.0,
-      margin: EdgeInsets.all(2.0),
-      child: DragTarget<Map>(
-        builder: (context, listOne, listTwo) {
-          return Stack(
-            children: widget.cards.map((card) {
-              int index = widget.cards.indexOf(card);
-              return TransformedCard(
-                playingCard: card,
-                transformIndex: index,
-                attachedCards: widget.cards.sublist(index, widget.cards.length),
-                columnIndex: widget.columnIndex,
+    return Column(
+      children: <Widget>[
+        Container(
+          alignment: Alignment.topCenter,
+          margin: EdgeInsets.all(2.0),
+          child: DragTarget<Map>(
+            builder: (context, listOne, listTwo) {
+              return Stack(
+                children: widget.cards.map((card) {
+                  int index = widget.cards.indexOf(card);
+                  return TransformedCard(
+                    playingCard: card,
+                    transformIndex: index,
+                    attachedCards:
+                        widget.cards.sublist(index, widget.cards.length),
+                    columnIndex: widget.columnIndex,
+                  );
+                }).toList(),
               );
-            }).toList(),
-          );
-        },
-        onWillAccept: (value) {
-          CardList index = value["fromIndex"];
-          if (index == widget.columnIndex) {
-            print('Goodjob');
-            return true;
-          }
-          return false;
-        },
-        onAccept: (value) {
-          widget.onCardsAdded(
-            value["cards"],
-            value["fromIndex"],
-          );
-        },
-      ),
+            },
+            onWillAccept: (value) {
+              CardList index = value["fromIndex"];
+              if (index == widget.columnIndex) {
+                print('Goodjob');
+                return true;
+              }
+              return false;
+            },
+            onAccept: (value) {
+              widget.onCardsAdded(
+                value["cards"],
+                value["fromIndex"],
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

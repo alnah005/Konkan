@@ -56,7 +56,10 @@ class _TransformedCardState extends State<TransformedCard> {
               columnIndex: widget.columnIndex,
               onCardsAdded: (card, position) {},
             ),
-            childWhenDragging: _buildFaceUpCard(),
+            childWhenDragging: Container(
+              width: 0,
+              height: 0,
+            ),
             data: {
               "cards": [widget.playingCard],
               "fromIndex": widget.columnIndex,
