@@ -295,7 +295,7 @@ class _GameScreenState extends State<GameScreen> {
 
     // add card in the bottom to the "burnt" cards
     cardDeckOpened.add(
-      cardDeckClosed.removeAt(0)
+      cardDeckClosed.removeAt(random.nextInt(allCards.length))
         ..opened = true
         ..faceUp = true,
     );
