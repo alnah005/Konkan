@@ -35,10 +35,10 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   // Stores the cards on the seven columns
   List<Player> playersList = [
-    new Player(PositionOnScreen.bottom),
-    new Player(PositionOnScreen.right),
+    new Player(PositionOnScreen.left),
     new Player(PositionOnScreen.top),
-    new Player(PositionOnScreen.left)
+    new Player(PositionOnScreen.right),
+    new Player(PositionOnScreen.bottom)
   ];
   Player currentTurn;
 
@@ -82,80 +82,70 @@ class _GameScreenState extends State<GameScreen> {
         ],
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
+          CardColumn(
+            cards: playersList[1].cards,
+            onCardsAdded: (cards, index) {
+              setState(() {
+                playersList[1].cards.addAll(cards);
+                int length = _getListFromIndex(index).length;
+                _getListFromIndex(index)
+                    .removeRange(length - cards.length, length);
+                _refreshList(index);
+              });
+            },
+            columnIndex: CardList.P2,
+          ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              _buildCardDeck(),
-              _buildFinalDecks(),
+              CardColumn(
+                cards: playersList[0].cards,
+                onCardsAdded: (cards, index) {
+                  setState(() {
+                    //playersList[0].cards.addAll(cards);
+                    _getListFromIndex(index).removeAt(
+                        _getListFromIndex(index).indexOf(cards.first));
+                    _refreshList(index);
+                  });
+                },
+                columnIndex: CardList.P1,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  _buildFinalDecks(),
+                ],
+              ),
+              CardColumn(
+                cards: playersList[2].cards,
+                onCardsAdded: (cards, index) {
+                  setState(() {
+                    playersList[2].cards.addAll(cards);
+                    int length = _getListFromIndex(index).length;
+                    _getListFromIndex(index)
+                        .removeRange(length - cards.length, length);
+                    _refreshList(index);
+                  });
+                },
+                columnIndex: CardList.P3,
+              ),
             ],
           ),
-          SizedBox(
-            height: 16.0,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Expanded(
-                child: CardColumn(
-                  cards: playersList[0].cards,
-                  onCardsAdded: (cards, index) {
-                    setState(() {
-                      //playersList[0].cards.addAll(cards);
-                      _getListFromIndex(index).removeAt(
-                          _getListFromIndex(index).indexOf(cards.first));
-                      _refreshList(index);
-                    });
-                  },
-                  columnIndex: CardList.P1,
-                ),
-              ),
-              Expanded(
-                child: CardColumn(
-                  cards: playersList[1].cards,
-                  onCardsAdded: (cards, index) {
-                    setState(() {
-                      playersList[1].cards.addAll(cards);
-                      int length = _getListFromIndex(index).length;
-                      _getListFromIndex(index)
-                          .removeRange(length - cards.length, length);
-                      _refreshList(index);
-                    });
-                  },
-                  columnIndex: CardList.P2,
-                ),
-              ),
-              Expanded(
-                child: CardColumn(
-                  cards: playersList[2].cards,
-                  onCardsAdded: (cards, index) {
-                    setState(() {
-                      playersList[2].cards.addAll(cards);
-                      int length = _getListFromIndex(index).length;
-                      _getListFromIndex(index)
-                          .removeRange(length - cards.length, length);
-                      _refreshList(index);
-                    });
-                  },
-                  columnIndex: CardList.P3,
-                ),
-              ),
-              Expanded(
-                child: CardColumn(
-                  cards: playersList[3].cards,
-                  onCardsAdded: (cards, index) {
-                    setState(() {
-                      playersList[3].cards.addAll(cards);
-                      int length = _getListFromIndex(index).length;
-                      _getListFromIndex(index)
-                          .removeRange(length - cards.length, length);
-                      _refreshList(index);
-                    });
-                  },
-                  columnIndex: CardList.P4,
-                ),
-              ),
-            ],
+          _buildCardDeck(),
+          CardColumn(
+            cards: playersList[3].cards,
+            onCardsAdded: (cards, index) {
+              setState(() {
+                playersList[3].cards.addAll(cards);
+                int length = _getListFromIndex(index).length;
+                _getListFromIndex(index)
+                    .removeRange(length - cards.length, length);
+                _refreshList(index);
+              });
+            },
+            columnIndex: CardList.P4,
           ),
         ],
       ),

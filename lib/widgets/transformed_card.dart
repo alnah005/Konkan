@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/pages/game_screen.dart';
-import 'package:solitaire/widgets/card_column.dart';
 
 // TransformedCard makes the card draggable and translates it according to
 // position in the stack.
@@ -31,8 +30,8 @@ class _TransformedCardState extends State<TransformedCard> {
     return Transform(
       transform: Matrix4.identity()
         ..translate(
-          0.0,
-          widget.transformIndex * widget.transformDistance,
+          _horizontalShift(),
+          _verticalShift(),
           0.0,
         ),
       child: _buildCard(),
@@ -52,11 +51,7 @@ class _TransformedCardState extends State<TransformedCard> {
           )
         : Draggable<Map>(
             child: _buildFaceUpCard(),
-            feedback: CardColumn(
-              cards: [widget.playingCard],
-              columnIndex: widget.columnIndex,
-              onCardsAdded: (card, position) {},
-            ),
+            feedback: _buildFaceUpCard(),
             childWhenDragging: Container(
               width: 40.0,
               height: 60.0,
@@ -173,6 +168,36 @@ class _TransformedCardState extends State<TransformedCard> {
         return Image.asset('assets/images/spades.png');
       default:
         return null;
+    }
+  }
+
+  double _verticalShift() {
+    switch (widget.columnIndex) {
+      case CardList.P1:
+        return widget.transformIndex * widget.transformDistance;
+      case CardList.P2:
+        return 0.0;
+      case CardList.P3:
+        return widget.transformIndex * widget.transformDistance;
+      case CardList.P4:
+        return 0.0;
+      default:
+        return 0;
+    }
+  }
+
+  double _horizontalShift() {
+    switch (widget.columnIndex) {
+      case CardList.P2:
+        return widget.transformIndex * widget.transformDistance;
+      case CardList.P1:
+        return 0.0;
+      case CardList.P4:
+        return widget.transformIndex * widget.transformDistance;
+      case CardList.P3:
+        return 0.0;
+      default:
+        return 0.0;
     }
   }
 }
