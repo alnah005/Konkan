@@ -22,7 +22,7 @@ For help getting started with Flutter, view [flutter documentation](https://flut
     * [Score of your cards](#how-to-count-the-score-of-your-cards)
     * [Conditions to set your cards](#conditions-to-set-your-cards)
     * [Grouping your cards](#how-to-group-your-cards)
-* [Matching to other players](#how-to-match-your-cards-to-other-players)
+* [combining with other players](#how-to-combine-your-cards-with-other-players)
 * [After you win](#what-happens-after-you-win)
     * [Penalizing each player](#how-to-calculate-penalty)
 
@@ -55,7 +55,7 @@ For help getting started with Flutter, view [flutter documentation](https://flut
 
 ## Objective of the game
 
- Main objective is to [SET](#how-to-set-your-cards) or [MATCH](#how-to-match-your-cards-to-other-players) 14 of your cards and discarding one card on your turn.   
+ Main objective is to [SET](#how-to-set-your-cards) or [COMBINE](#how-to-combine-your-cards-with-other-players) 14 of your cards and discarding one card on your turn.   
 
 ## How to set your cards
 
@@ -99,7 +99,7 @@ Your score when you set your cards is simply the sum of your cards' values.
     > In other words, you must utilize the card that was most recently discarded by your opponent towards the cards you're setting.
 
     If you instead drew a card from the `Bank cards` and that card happened to be the one that was missing in your cards (the card that would make you win), you are allowed to set your cards (without having to draw from the discarded cards).  
-    If you aren't able to [SET](#how-to-set-your-cards) and [MATCH](#how-to-match-your-cards) 14 cards and discard one card (which would make you win the game), you are penalized 50 on your [total game score](#how-total-game-score-is-calculated).
+    If you aren't able to [SET](#how-to-set-your-cards) or [COMBINE](#how-to-combine-your-cards-with-other-players) 14 cards and discard one card (which would make you win the game), you are penalized 50 on your [total game score](#how-to-calculate-penalty).
 3) If you have set your cards for the first time, during your turn, you are allowed to set any group you have collected since setting your cards for the first time.
 
 ### How to group your cards
@@ -118,7 +118,7 @@ Here's a list of all possible groups:
 |DA &rarr; D2 &rarr; D3 &rarr; D4 &rarr; D5 &rarr; D6 &rarr; D7 &rarr; D8 &rarr; D9 &rarr; D10 &rarr; DJ &rarr; DQ &rarr; DK &rarr; DA| You can't have a DK &rarr; DA &rarr; D2 group|
 |SA &rarr; S2 &rarr; S3 &rarr; S4 &rarr; S5 &rarr; S6 &rarr; S7 &rarr; S8 &rarr; S9 &rarr; S10 &rarr; SJ &rarr; SQ &rarr; SK &rarr; SA| You can't have a SK &rarr; SA &rarr; S2 group|
 |CA &rarr; C2 &rarr; C3 &rarr; C4 &rarr; C5 &rarr; C6 &rarr; C7 &rarr; C8 &rarr; C9 &rarr; C10 &rarr; CJ &rarr; CQ &rarr; CK &rarr; CA| You can't have a CK &rarr; CA &rarr; C2 group|
-|3-4 of the same card (e.g. A, 3, Q...etc) but different suit (e.g. C,D,H,S)| You must have at least 3|
+|3-4 of the same card (e.g. A, 3, Q...etc) but different suit (e.g. C,D,H,S)||
 
 ***The Joker can replace any card***
 
@@ -140,11 +140,11 @@ If a player had a score of 79 when they set their cards, this grouping won't be 
 ```
 
 
-## How to match your cards to other players
+## How to combine your cards with other players
 
 1) It must be your turn
 2) You must have your cards set or you're in your winning turn that was mentioned in [2.](#conditions-to-set-your-cards)
-3) The Card/s that you are matching must complete one of your opponents groups
+3) The Card/s that you are combineing must complete one of your opponents groups
 ```
 Example:
 
@@ -155,24 +155,24 @@ Let's say one of your oppenents has:
 and you have these cards in your hand:
     HA, H4, H7, HQ, HK...etc
 
-Then if you satisfy conditions 1. and 2. and you wanted to match all your available cards, here's how your opponent's groups will look like in the game:
+Then if you satisfy conditions 1. and 2. and you wanted to combine all your available cards, here's how your opponent's groups will look like in the game:
          1                  2                       3
     DA SA CA HA        HA H2 H3 H4       H7 H8 H9 Joker HJ HQ HK
 
-Matching only benefits you because you lose some cards that could penalize you after the game is done if you didn't win the game, and it closes the opportunity for other players to match their cards.  
-Matching does not increase the score for setting cards.
+combining only benefits you because you lose some cards that could penalize you after the game is done if you didn't win the game, and it removes the opportunity for other players to combine their cards.  
+combining does not increase the score for setting cards.
 
 In the case where you had a H10, you can replace the Joker, and obtain the Joker to use it for other purposes.
 ```
 
 ## What happens after you win
 
-After you've [SET](#how-to-set-your-cards) or [MATCHED](#how-to-match-your-cards-to-other-players) 14 of your cards and discarded one card on your turn (You won), here's what happens:
+After you've [SET](#how-to-set-your-cards) or [COMBINED](#how-to-combine-your-cards-to-other-players) 14 of your cards and discarded one card on your turn (You won), here's what happens:
 * If the discarded card is a Joker, all your opponents recieve 200 penalty on their overall score.
 * If not:
     * players that have not set their cards recieve 100 penalty on their overall score.
     * players that have set their cards are [penalized over the remaining cards in their hand](#how-to-calculate-penalty)
-* If a player has a penalty of over 301 accross games, that player is disqualified to play again.
+* If a player has a penalty of over 301 across games, that player is disqualified to play again.
 
 ### How to calculate penalty
 |Card|Penalty|
