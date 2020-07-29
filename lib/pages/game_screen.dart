@@ -273,13 +273,21 @@ class _GameScreenState extends State<GameScreen> {
 
     // Add all cards to deck
     for (var i = 0; i < 2; i++) {
+      /// This adds one joker per loop (per deck.)
+      allCards.add(PlayingCard(
+        cardType: CardType.joker,
+        faceUp: false,
+      ));
       CardSuit.values.forEach((suit) {
         CardType.values.forEach((type) {
-          allCards.add(PlayingCard(
-            cardType: type,
-            cardSuit: suit,
-            faceUp: false,
-          ));
+          /// if the card is a joker then it is discarded.
+          if (type != CardType.joker) {
+            allCards.add(PlayingCard(
+              cardType: type,
+              cardSuit: suit,
+              faceUp: false,
+            ));
+          }
         });
       });
     }

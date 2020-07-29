@@ -20,7 +20,8 @@ enum CardType {
   ten,
   jack,
   queen,
-  king
+  king,
+  joker,
 }
 
 enum CardColor {
