@@ -43,39 +43,51 @@ class _CardColumnState extends State<CardColumn> {
     return Container(
         height: _horizontal() ? 60 : (14 * 20.0) + 60,
         width: _horizontal() ? (14 * 20.0) + 40 : 40,
-        alignment: Alignment.topLeft,
+        alignment: Alignment.topCenter,
         margin: EdgeInsets.all(2.0),
         child: widget.cards.length > 0
             ? Stack(
                 children: widget.cards.map((card) {
                   int index = widget.cards.indexOf(card);
-                  return DragTarget<Map>(
-                    builder: (context, listOne, listTwo) {
-                      return TransformedCard(
-                        playingCard: card,
-                        transformIndex: index,
-//                        attachedCards:
-//                            widget.cards.sublist(index, widget.cards.length),
-                        columnIndex: widget.columnIndex,
-                      );
-                    },
-                    onWillAccept: (value) {
-                      CardList index = value["fromIndex"];
-                      if (index == widget.columnIndex) {
-                        return true;
-                      }
-                      return false;
-                    },
-                    onAccept: (value) {
-                      widget.onCardsAdded(
-                        value["cards"],
-                        value["fromIndex"],
-                      );
-                    },
-                  );
+                  return dragTarget(card, index);
                 }).toList(),
               )
             : Container());
+  }
+
+  Positioned dragTarget(PlayingCard card, int index) {
+    return Positioned(
+      left: _horizontal() ? -index.roundToDouble() * -20 : 0,
+      top: _horizontal() ? 0 : index.roundToDouble() * 20,
+      child: DragTarget<Map>(
+        builder: (context, listOne, listTwo) {
+          return transformedCard(card, index);
+        },
+        onWillAccept: (value) {
+          CardList index = value["fromIndex"];
+          if (index == widget.columnIndex) {
+            return true;
+          }
+          return false;
+        },
+        onAccept: (value) {
+          widget.onCardsAdded(
+            value["cards"],
+            value["fromIndex"],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget transformedCard(PlayingCard card, int index) {
+    return TransformedCard(
+      playingCard: card,
+//      transformIndex: index,
+//                        attachedCards:
+//                            widget.cards.sublist(index, widget.cards.length),
+      columnIndex: widget.columnIndex,
+    );
   }
 
   bool _horizontal() {

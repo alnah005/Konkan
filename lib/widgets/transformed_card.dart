@@ -7,14 +7,12 @@ import 'package:solitaire/pages/game_screen.dart';
 class TransformedCard extends StatefulWidget {
   final PlayingCard playingCard;
   final double transformDistance;
-  final int transformIndex;
   final CardList columnIndex;
 //  final List<PlayingCard> attachedCards;
 
   TransformedCard({
     @required this.playingCard,
     this.transformDistance = 20.0,
-    this.transformIndex = 0,
     this.columnIndex,
 //    this.attachedCards,
   });
@@ -26,15 +24,7 @@ class TransformedCard extends StatefulWidget {
 class _TransformedCardState extends State<TransformedCard> {
   @override
   Widget build(BuildContext context) {
-    return Transform(
-      transform: Matrix4.identity()
-        ..translate(
-          _horizontalShift(),
-          _verticalShift(),
-          0.0,
-        ),
-      child: _buildCard(),
-    );
+    return _buildCard();
   }
 
   Widget _buildCard() {
@@ -167,36 +157,6 @@ class _TransformedCardState extends State<TransformedCard> {
         return Image.asset('assets/images/spades.png');
       default:
         return null;
-    }
-  }
-
-  double _verticalShift() {
-    switch (widget.columnIndex) {
-      case CardList.P1:
-        return widget.transformIndex * widget.transformDistance;
-      case CardList.P2:
-        return 0.0;
-      case CardList.P3:
-        return widget.transformIndex * widget.transformDistance;
-      case CardList.P4:
-        return 0.0;
-      default:
-        return 0;
-    }
-  }
-
-  double _horizontalShift() {
-    switch (widget.columnIndex) {
-      case CardList.P2:
-        return widget.transformIndex * widget.transformDistance;
-      case CardList.P1:
-        return 0.0;
-      case CardList.P4:
-        return widget.transformIndex * widget.transformDistance;
-      case CardList.P3:
-        return 0.0;
-      default:
-        return 0.0;
     }
   }
 }
