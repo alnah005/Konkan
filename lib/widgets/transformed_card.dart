@@ -78,26 +78,24 @@ class _TransformedCardState extends State<TransformedCard> {
         child: Stack(
           children: <Widget>[
             Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Center(
-                      child: Text(
-                        _cardTypeToStringBody(),
-                        style: TextStyle(
-                          fontSize: 16.0,
-                        ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Center(
+                    child: Text(
+                      _cardTypeToStringBody(),
+                      style: TextStyle(
+                        fontSize: 16.0,
                       ),
                     ),
-                    Container(
-                      height: 20.0,
-                        child: _suitToImage(),
-
-                    ),
-                  ],
-                ),
+                  ),
+                  Container(
+                    height: 20.0,
+                    child: _suitToImage(),
+                  ),
+                ],
               ),
-
+            ),
             Padding(
               padding: const EdgeInsets.all(4.0),
               child: Align(
@@ -112,10 +110,7 @@ class _TransformedCardState extends State<TransformedCard> {
                         fontSize: 10.0,
                       ),
                     ),
-                    Container(
-                      height: 10.0,
-                        child: _suitToImage()
-                    )
+                    Container(height: 10.0, child: _suitToImage())
                   ],
                 ),
               ),
@@ -125,8 +120,6 @@ class _TransformedCardState extends State<TransformedCard> {
       ),
     );
   }
-
-
 
   String _cardTypeToString() {
     switch (widget.playingCard.cardType) {
@@ -162,6 +155,7 @@ class _TransformedCardState extends State<TransformedCard> {
         return "";
     }
   }
+
   String _cardTypeToStringBody() {
     switch (widget.playingCard.cardType) {
       case CardType.one:
@@ -207,14 +201,10 @@ class _TransformedCardState extends State<TransformedCard> {
         return Image.asset('assets/images/clubs.png');
       case CardSuit.spades:
         return Image.asset('assets/images/spades.png');
+      case CardSuit.joker:
+        return Image.asset('assets/images/joker.png');
       default:
-        if (widget.playingCard.cardType == CardType.joker) {
-          return Image.asset('assets/images/joker.png');
-        }
-        else{
-          return null;
-
-        }
+        return null;
     }
   }
 }

@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum CardSuit {
-  spades,
-  hearts,
-  diamonds,
-  clubs,
-}
+enum CardSuit { spades, hearts, diamonds, clubs, joker }
 
 enum CardType {
   one,
