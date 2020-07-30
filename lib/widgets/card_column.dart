@@ -25,66 +25,50 @@ class CardColumn extends StatefulWidget {
   _CardColumnState createState() => _CardColumnState();
 }
 
-// todo fix cross column card exchange here
 class _CardColumnState extends State<CardColumn> {
   @override
   Widget build(BuildContext context) {
+    return _horizontal()
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[_getCardColumn()],
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[_getCardColumn()],
+          );
+  }
+
+  Widget _getCardColumn() {
     return Container(
-      alignment: Alignment.topCenter,
-      height: 4 * 20.0,
-      width: 70.0,
-      margin: EdgeInsets.all(2.0),
+        height: _horizontal() ? 60 : (14 * 20.0) + 60,
+        width: _horizontal() ? (14 * 20.0) + 40 : 40,
+        alignment: Alignment.topCenter,
+        margin: EdgeInsets.all(2.0),
+        child: widget.cards.length > 0
+            ? Stack(
+                children: widget.cards.map((card) {
+                  int index = widget.cards.indexOf(card);
+                  return dragTarget(card, index);
+                }).toList(),
+              )
+            : Container());
+  }
+
+  Positioned dragTarget(PlayingCard card, int index) {
+    return Positioned(
+      left: _horizontal() ? -index.roundToDouble() * -20 : 0,
+      top: _horizontal() ? 0 : index.roundToDouble() * 20,
       child: DragTarget<Map>(
         builder: (context, listOne, listTwo) {
-          return Stack(
-            children: widget.cards.map((card) {
-              int index = widget.cards.indexOf(card);
-              return TransformedCard(
-                playingCard: card,
-                transformIndex: index,
-                attachedCards: widget.cards.sublist(index, widget.cards.length),
-                columnIndex: widget.columnIndex,
-              );
-            }).toList(),
-          );
+          return transformedCard(card, index);
         },
         onWillAccept: (value) {
-          // If empty, accept
-          if (widget.cards.length == 0) {
+          CardList index = value["fromIndex"];
+          if (index == widget.columnIndex) {
             return true;
           }
-
-          // Get dragged cards list
-          List<PlayingCard> draggedCards = value["cards"];
-          PlayingCard firstCard = draggedCards.first;
-          if (firstCard.cardColor == CardColor.red) {
-            if (widget.cards.last.cardColor == CardColor.red) {
-              return false;
-            }
-
-            int lastColumnCardIndex =
-                CardType.values.indexOf(widget.cards.last.cardType);
-            int firstDraggedCardIndex =
-                CardType.values.indexOf(firstCard.cardType);
-
-            if (lastColumnCardIndex != firstDraggedCardIndex + 1) {
-              return false;
-            }
-          } else {
-            if (widget.cards.last.cardColor == CardColor.black) {
-              return false;
-            }
-
-            int lastColumnCardIndex =
-                CardType.values.indexOf(widget.cards.last.cardType);
-            int firstDraggedCardIndex =
-                CardType.values.indexOf(firstCard.cardType);
-
-            if (lastColumnCardIndex != firstDraggedCardIndex + 1) {
-              return false;
-            }
-          }
-          return true;
+          return false;
         },
         onAccept: (value) {
           widget.onCardsAdded(
@@ -94,5 +78,30 @@ class _CardColumnState extends State<CardColumn> {
         },
       ),
     );
+  }
+
+  Widget transformedCard(PlayingCard card, int index) {
+    return TransformedCard(
+      playingCard: card,
+//      transformIndex: index,
+//                        attachedCards:
+//                            widget.cards.sublist(index, widget.cards.length),
+      columnIndex: widget.columnIndex,
+    );
+  }
+
+  bool _horizontal() {
+    switch (widget.columnIndex) {
+      case CardList.P1:
+        return false;
+      case CardList.P2:
+        return true;
+      case CardList.P3:
+        return false;
+      case CardList.P4:
+        return true;
+      default:
+        return false;
+    }
   }
 }
