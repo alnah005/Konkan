@@ -96,7 +96,7 @@ class PlayingCard {
   String typeToString;
   String typeToStringBody;
   Image suitImage;
-  int penaltyVal;
+  double penaltyVal;
   CardColor cardColor;
 
   PlayingCard({

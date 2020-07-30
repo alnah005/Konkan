@@ -99,7 +99,7 @@ class _TransformedCardState extends State<TransformedCard> {
                         fontSize: 10.0,
                       ),
                     ),
-                    Container(height: 10.0, child: _suitToImage())
+                    Container(height: 10.0, child: widget.playingCard.suitImage)
                   ],
                 ),
               ),
@@ -108,22 +108,5 @@ class _TransformedCardState extends State<TransformedCard> {
         ),
       ),
     );
-  }
-
-  Image _suitToImage() {
-    switch (widget.playingCard.cardSuit) {
-      case CardSuit.hearts:
-        return Image.asset('assets/images/hearts.png');
-      case CardSuit.diamonds:
-        return Image.asset('assets/images/diamonds.png');
-      case CardSuit.clubs:
-        return Image.asset('assets/images/clubs.png');
-      case CardSuit.spades:
-        return Image.asset('assets/images/spades.png');
-      case CardSuit.joker:
-        return Image.asset('assets/images/joker.png');
-      default:
-        return null;
-    }
   }
 }
