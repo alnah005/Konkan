@@ -32,34 +32,41 @@ class _EmptyCardDeckState extends State<EmptyCardDeck> {
   Widget build(BuildContext context) {
     return DragTarget<Map>(
       builder: (context, listOne, listTwo) {
-        return widget.cardsAdded.length == 0
-            ? Opacity(
-                opacity: 0.7,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                    color: Colors.white,
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        "https://spectramagazine.org/wp-content/uploads/2018/09/bb.jpg",
+        return Container(
+          height: 80,
+          width: 60,
+          padding: const EdgeInsets.all(10.0),
+          child: widget.cardsAdded.length == 0
+              ? Opacity(
+                  opacity: 0.7,
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: Colors.white,
+                      image: DecorationImage(
+                        image: NetworkImage(
+                          "https://spectramagazine.org/wp-content/uploads/2018/09/bb.jpg",
+                        ),
+                        fit: BoxFit.fill,
                       ),
-                      fit: BoxFit.fill,
                     ),
                   ),
-                  height: 60.0,
-                  width: 40.0,
+                )
+              : Container(
+                  height: 60,
+                  width: 40,
+                  child: TransformedCard(
+                    playingCard: widget.cardsAdded.last,
+                    columnIndex: widget.columnIndex,
+//                    attachedCards: [
+//                      widget.cardsAdded.last,
+//                    ],
+                  ),
                 ),
-              )
-            : TransformedCard(
-                playingCard: widget.cardsAdded.last,
-                columnIndex: widget.columnIndex,
-                attachedCards: [
-                  widget.cardsAdded.last,
-                ],
-              );
+        );
       },
       onWillAccept: (value) {
-        PlayingCard cardAdded = value["cards"].last;
         CardList cardIndex = value["fromIndex"];
         for (int players = 0; players < playerCardLists.length; players++) {
           if (cardIndex == playerCardLists[players]) {

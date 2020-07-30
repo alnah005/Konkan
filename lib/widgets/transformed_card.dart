@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/pages/game_screen.dart';
-import 'package:solitaire/widgets/card_column.dart';
 
 // TransformedCard makes the card draggable and translates it according to
 // position in the stack.
 class TransformedCard extends StatefulWidget {
   final PlayingCard playingCard;
   final double transformDistance;
-  final int transformIndex;
   final CardList columnIndex;
-  final List<PlayingCard> attachedCards;
+//  final List<PlayingCard> attachedCards;
 
   TransformedCard({
     @required this.playingCard,
     this.transformDistance = 20.0,
-    this.transformIndex = 0,
     this.columnIndex,
-    this.attachedCards,
+//    this.attachedCards,
   });
 
   @override
@@ -27,15 +24,7 @@ class TransformedCard extends StatefulWidget {
 class _TransformedCardState extends State<TransformedCard> {
   @override
   Widget build(BuildContext context) {
-    return Transform(
-      transform: Matrix4.identity()
-        ..translate(
-          0.0,
-          widget.transformIndex * widget.transformDistance,
-          0.0,
-        ),
-      child: _buildCard(),
-    );
+    return _buildCard();
   }
 
   Widget _buildCard() {
@@ -51,14 +40,13 @@ class _TransformedCardState extends State<TransformedCard> {
           )
         : Draggable<Map>(
             child: _buildFaceUpCard(),
-            feedback: CardColumn(
-              cards: widget.attachedCards,
-              columnIndex: CardList.REMAINING,
-              onCardsAdded: (card, position) {},
+            feedback: _buildFaceUpCard(),
+            childWhenDragging: Container(
+              width: 40.0,
+              height: 60.0,
             ),
-            childWhenDragging: _buildFaceUpCard(),
             data: {
-              "cards": widget.attachedCards,
+              "cards": [widget.playingCard],
               "fromIndex": widget.columnIndex,
             },
           );
@@ -103,7 +91,7 @@ class _TransformedCardState extends State<TransformedCard> {
               child: Align(
                 alignment: Alignment.topRight,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
