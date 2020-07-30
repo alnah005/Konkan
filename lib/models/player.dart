@@ -85,6 +85,8 @@ class Player {
         return 10;
       case CardType.king:
         return 10;
+      case CardType.joker:
+        return 10;
       default:
         return 0;
     }

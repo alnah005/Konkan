@@ -71,7 +71,7 @@ class _TransformedCardState extends State<TransformedCard> {
                 children: <Widget>[
                   Center(
                     child: Text(
-                      _cardTypeToString(),
+                      _cardTypeToStringBody(),
                       style: TextStyle(
                         fontSize: 16.0,
                       ),
@@ -80,7 +80,7 @@ class _TransformedCardState extends State<TransformedCard> {
                   Container(
                     height: 20.0,
                     child: _suitToImage(),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -98,10 +98,7 @@ class _TransformedCardState extends State<TransformedCard> {
                         fontSize: 10.0,
                       ),
                     ),
-                    Container(
-                      height: 10.0,
-                      child: _suitToImage(),
-                    )
+                    Container(height: 10.0, child: _suitToImage())
                   ],
                 ),
               ),
@@ -140,6 +137,43 @@ class _TransformedCardState extends State<TransformedCard> {
         return "Q";
       case CardType.king:
         return "K";
+      case CardType.joker:
+        return "JKR";
+      default:
+        return "";
+    }
+  }
+
+  String _cardTypeToStringBody() {
+    switch (widget.playingCard.cardType) {
+      case CardType.one:
+        return "1";
+      case CardType.two:
+        return "2";
+      case CardType.three:
+        return "3";
+      case CardType.four:
+        return "4";
+      case CardType.five:
+        return "5";
+      case CardType.six:
+        return "6";
+      case CardType.seven:
+        return "7";
+      case CardType.eight:
+        return "8";
+      case CardType.nine:
+        return "9";
+      case CardType.ten:
+        return "10";
+      case CardType.jack:
+        return "J";
+      case CardType.queen:
+        return "Q";
+      case CardType.king:
+        return "K";
+      case CardType.joker:
+        return "";
       default:
         return "";
     }
@@ -155,6 +189,8 @@ class _TransformedCardState extends State<TransformedCard> {
         return Image.asset('assets/images/clubs.png');
       case CardSuit.spades:
         return Image.asset('assets/images/spades.png');
+      case CardSuit.joker:
+        return Image.asset('assets/images/joker.png');
       default:
         return null;
     }
