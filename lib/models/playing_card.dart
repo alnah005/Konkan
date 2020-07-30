@@ -19,6 +19,33 @@ enum CardType {
   joker,
 }
 
+extension CardSuitExt on CardSuit {
+  Image get image {
+    switch (this) {
+      case CardSuit.hearts:
+        return Image.asset('assets/images/hearts.png');
+      case CardSuit.diamonds:
+        return Image.asset('assets/images/diamonds.png');
+      case CardSuit.clubs:
+        return Image.asset('assets/images/clubs.png');
+      case CardSuit.spades:
+        return Image.asset('assets/images/spades.png');
+      case CardSuit.joker:
+        return Image.asset('assets/images/joker.png');
+      default:
+        return null;
+    }
+  }
+
+  CardColor get color {
+    if (this == CardSuit.hearts || this == CardSuit.diamonds) {
+      return CardColor.red;
+    } else {
+      return CardColor.black;
+    }
+  }
+}
+
 extension CardExt on CardType {
   Map get data {
     switch (this) {
@@ -70,6 +97,7 @@ class PlayingCard {
   String typeToStringBody;
   Image suitImage;
   int penaltyVal;
+  CardColor cardColor;
 
   PlayingCard({
     @required this.cardSuit,
@@ -81,13 +109,7 @@ class PlayingCard {
     this.typeToString = data['HeadString'];
     this.typeToStringBody = data['BodyString'];
     this.penaltyVal = data['Penalty'];
-  }
-
-  CardColor get cardColor {
-    if (cardSuit == CardSuit.hearts || cardSuit == CardSuit.diamonds) {
-      return CardColor.red;
-    } else {
-      return CardColor.black;
-    }
+    this.suitImage = cardSuit.image;
+    this.cardColor = cardSuit.color;
   }
 }

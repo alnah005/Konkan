@@ -80,7 +80,7 @@ class _TransformedCardState extends State<TransformedCard> {
                   ),
                   Container(
                     height: 20.0,
-                    child: _suitToImage(),
+                    child: widget.playingCard.suitImage,
                   ),
                 ],
               ),
