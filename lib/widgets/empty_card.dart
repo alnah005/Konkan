@@ -10,6 +10,7 @@ class EmptyCardDeck extends StatefulWidget {
   final List<PlayingCard> cardsAdded;
   final CardAcceptCallback onCardAdded;
   final CardList columnIndex;
+
   EmptyCardDeck({
     @required this.cardSuit,
     @required this.cardsAdded,
@@ -28,6 +29,7 @@ class _EmptyCardDeckState extends State<EmptyCardDeck> {
     CardList.P3,
     CardList.P4
   ];
+
   @override
   Widget build(BuildContext context) {
     return DragTarget<Map>(
