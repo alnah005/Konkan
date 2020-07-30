@@ -64,7 +64,9 @@ For help getting started with Flutter, view [flutter documentation](https://flut
     ```
     Example:
     
-    Let's say player one was able to collect a score of 60 and satisfied all the conditions to set their cards and no other player has set their cards. Since player one had a score > 52, he's able to set his cards.  
+    Let's say player one was able to collect a score of 60 and satisfied all the conditions
+    to set their cards and no other player has set their cards. Since player one had
+    a score > 52, he's able to set his cards.  
     Now, let's say player two wants to set their cards. His cards must score at least 60.  
     ```
 3) The cards you set must be [correctly grouped](#how-to-group-your-cards)
@@ -144,7 +146,7 @@ If a player had a score of 79 when they set their cards, this grouping won't be 
 
 1) It must be your turn
 2) You must have your cards set or you're in your winning turn that was mentioned in [2.](#conditions-to-set-your-cards)
-3) The Card/s that you are combineing must complete one of your opponents groups
+3) The Card/s that you are combining must complete one of your opponents groups
 ```
 Example:
 
@@ -155,14 +157,18 @@ Let's say one of your oppenents has:
 and you have these cards in your hand:
     HA, H4, H7, HQ, HK...etc
 
-Then if you satisfy conditions 1. and 2. and you wanted to combine all your available cards, here's how your opponent's groups will look like in the game:
+Then if you satisfy conditions 1. and 2. and you wanted to combine all your available cards,
+here's how your opponent's groups will look like in the game:
          1                  2                       3
     DA SA CA HA        HA H2 H3 H4       H7 H8 H9 Joker HJ HQ HK
 
-combining only benefits you because you lose some cards that could penalize you after the game is done if you didn't win the game, and it removes the opportunity for other players to combine their cards.  
+combining only benefits you because you lose some cards that could penalize you after
+the game is done if you didn't win the game, and it removes the opportunity for other
+players to combine their cards.  
 combining does not increase the score for setting cards.
 
-In the case where you had a H10, you can replace the Joker, and obtain the Joker to use it for other purposes.
+In the case where you had a H10, you can replace the Joker, and obtain the Joker to use it
+for other purposes.
 ```
 
 ## What happens after you win
