@@ -45,7 +45,7 @@ class _GameScreenState extends State<GameScreen> {
   // Stores the card deck
   List<PlayingCard> cardDeckClosed = [];
   List<PlayingCard> cardDeckOpened = [];
-  double settingScore = 52;
+  double settingScore = 10;
   // Stores the card in the upper boxes
   List<PlayingCard> droppedCards = [];
 
@@ -440,14 +440,14 @@ class _GameScreenState extends State<GameScreen> {
         return playersList[2].cards;
       case CardList.P4:
         return playersList[3].cards;
-      case CardList.P1SET:
-        return playersList[0].openCards;
-      case CardList.P2SET:
-        return playersList[1].openCards;
-      case CardList.P3SET:
-        return playersList[2].openCards;
-      case CardList.P4SET:
-        return playersList[3].openCards;
+//      case CardList.P1SET:
+//        return playersList[0].openCards;
+//      case CardList.P2SET:
+//        return playersList[1].openCards;
+//      case CardList.P3SET:
+//        return playersList[2].openCards;
+//      case CardList.P4SET:
+//        return playersList[3].openCards;
       case CardList.DROPPED:
         return droppedCards;
       default:
@@ -475,7 +475,7 @@ class _GameScreenState extends State<GameScreen> {
       print("Its not your turn");
       return;
     }
-    settingPlayer.setCards(settingScore);
+    settingScore = settingPlayer.setCards(settingScore);
     _refreshList(_cardListFromPlayer(settingPlayer.position));
   }
 }

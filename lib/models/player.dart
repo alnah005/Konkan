@@ -30,7 +30,7 @@ class PlayerInfo {
 
 class Player {
   List<PlayingCard> cards = [];
-  List<PlayingCard> openCards = [];
+  List<List<PlayingCard>> openCards = [[]];
   PlayingCard extraCard;
   PositionOnScreen position;
   PlayerInfo personalInfo = new PlayerInfo();
@@ -45,14 +45,14 @@ class Player {
     } else {
       personalInfo.wins += 1;
     }
-    personalInfo.avgScore = (personalInfo.avgScore + _getScore()) /
+    personalInfo.avgScore = (personalInfo.avgScore + _getScore(cards)) /
         (personalInfo.wins + personalInfo.losses);
   }
 
-  double _getScore() {
+  double _getScore(List<PlayingCard> cardsList) {
     double result = 0.0;
-    for (int i = 0; i < cards.length; i++) {
-      result = cards[i].penaltyVal;
+    for (int i = 0; i < cardsList.length; i++) {
+      result += cardsList[i].penaltyVal;
     }
     return result;
   }
@@ -71,14 +71,26 @@ class Player {
     return this.personalInfo.playerName;
   }
 
-  void setCards(double settingScore) {
+  double setCards(double settingScore) {
     List<List<PlayingCard>> groups = _getGroups();
+    double settingRes = 0;
     for (int i = 0; i < groups.length; i++) {
-      for (int j = 0; j < groups[i].length; j++) {
-        openCards.add(groups[i][j]);
-        cards.removeWhere((element) => element == groups[i][j]);
-      }
+      settingRes += _getScore(groups[i]);
+      print(settingRes.toString());
     }
+    if (settingRes >= settingScore) {
+      openCards = groups;
+      for (int i = 0; i < groups.length; i++) {
+        for (int j = 0; j < groups[i].length; j++) {
+          cards.removeWhere((element) => element == groups[i][j]);
+        }
+      }
+      print("new set score is " + settingRes.toString());
+    } else {
+      settingRes = settingScore;
+      print("your set score is not enough");
+    }
+    return settingRes;
   }
 
   List<List<PlayingCard>> _getGroups() {
