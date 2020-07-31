@@ -7,6 +7,8 @@ import 'package:solitaire/widgets/card_column.dart';
 import 'package:solitaire/widgets/empty_card.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
 
+
+
 enum CardList {
   P1,
   P2,
