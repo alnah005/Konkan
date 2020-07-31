@@ -7,8 +7,6 @@ import 'package:solitaire/widgets/card_column.dart';
 import 'package:solitaire/widgets/empty_card.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
 
-
-
 enum CardList {
   P1,
   P2,
@@ -98,6 +96,11 @@ class _GameScreenState extends State<GameScreen> {
             },
             columnIndex: CardList.P2,
           ),
+          IconButton(
+            icon: Icon(Icons.add_circle),
+            tooltip: 'Set cards',
+            onPressed: () {},
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -113,11 +116,21 @@ class _GameScreenState extends State<GameScreen> {
                 },
                 columnIndex: CardList.P1,
               ),
+              IconButton(
+                icon: Icon(Icons.add_circle),
+                tooltip: 'Set cards',
+                onPressed: () {},
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   _buildFinalDecks(),
                 ],
+              ),
+              IconButton(
+                icon: Icon(Icons.add_circle),
+                tooltip: 'Set cards',
+                onPressed: () {},
               ),
               CardColumn(
                 cards: playersList[2].cards,
@@ -134,6 +147,11 @@ class _GameScreenState extends State<GameScreen> {
             ],
           ),
           _buildCardDeck(),
+          IconButton(
+            icon: Icon(Icons.add_circle),
+            tooltip: 'Set cards',
+            onPressed: () {},
+          ),
           CardColumn(
             cards: playersList[3].cards,
             onCardsAdded: (cards, index) {
