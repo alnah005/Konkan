@@ -71,8 +71,13 @@ class Player {
     return this.personalInfo.playerName;
   }
 
-  double setCards(double settingScore) {
-    List<List<PlayingCard>> groups = _getGroups();
+  double setCards(double settingScore, [PlayingCard extraCard]) {
+    List<List<PlayingCard>> groups;
+    if (extraCard != null) {
+      groups = _getGroups(cards + [extraCard]);
+    } else {
+      groups = _getGroups(cards);
+    }
     double settingRes = 0;
     for (int i = 0; i < groups.length; i++) {
       settingRes += _getScore(groups[i]);
@@ -93,12 +98,12 @@ class Player {
     return settingRes;
   }
 
-  List<List<PlayingCard>> _getGroups() {
-    if (cards.length < 2) {
+  List<List<PlayingCard>> _getGroups(List<PlayingCard> settingCards) {
+    if (settingCards.length < 2) {
       return [[]];
     }
     return [
-      [cards.first, cards.last]
+      [settingCards.first, settingCards.last]
     ];
   }
 }

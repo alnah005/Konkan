@@ -475,7 +475,11 @@ class _GameScreenState extends State<GameScreen> {
       print("Its not your turn");
       return;
     }
-    settingScore = settingPlayer.setCards(settingScore);
+    if (settingPlayer.discarded) {
+      settingScore = settingPlayer.setCards(settingScore, droppedCards.last);
+    } else {
+      settingScore = settingPlayer.setCards(settingScore);
+    }
     _refreshList(_cardListFromPlayer(settingPlayer.position));
   }
 }
