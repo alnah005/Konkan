@@ -108,7 +108,7 @@ class PlayingCard {
     var data = this.cardType.data;
     this.typeToString = data['HeadString'];
     this.typeToStringBody = data['BodyString'];
-    this.penaltyVal = data['Penalty'];
+    this.penaltyVal = data['Penalty'].toDouble();
     this.suitImage = cardSuit.image;
     this.cardColor = cardSuit.color;
   }
