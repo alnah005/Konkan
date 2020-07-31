@@ -77,6 +77,10 @@ class Player {
       groups = _getGroups(cards + [extraCard]);
     } else {
       groups = _getGroups(cards);
+      if (groups.expand((i) => i).toList().length < 15) {
+        print("You have not won");
+        return settingScore;
+      }
     }
     double settingRes = 0;
     for (int i = 0; i < groups.length; i++) {
