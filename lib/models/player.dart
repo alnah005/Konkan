@@ -70,4 +70,23 @@ class Player {
   String get name {
     return this.personalInfo.playerName;
   }
+
+  void setCards(double settingScore) {
+    List<List<PlayingCard>> groups = _getGroups();
+    for (int i = 0; i < groups.length; i++) {
+      for (int j = 0; j < groups[i].length; j++) {
+        openCards.add(groups[i][j]);
+        cards.removeWhere((element) => element == groups[i][j]);
+      }
+    }
+  }
+
+  List<List<PlayingCard>> _getGroups() {
+    if (cards.length < 2) {
+      return [[]];
+    }
+    return [
+      [cards.first, cards.last]
+    ];
+  }
 }

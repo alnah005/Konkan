@@ -45,7 +45,7 @@ class _GameScreenState extends State<GameScreen> {
   // Stores the card deck
   List<PlayingCard> cardDeckClosed = [];
   List<PlayingCard> cardDeckOpened = [];
-
+  double settingScore = 52;
   // Stores the card in the upper boxes
   List<PlayingCard> droppedCards = [];
 
@@ -99,7 +99,9 @@ class _GameScreenState extends State<GameScreen> {
           IconButton(
             icon: Icon(Icons.add_circle),
             tooltip: 'Set cards',
-            onPressed: () {},
+            onPressed: () {
+              _handleSetCards(playersList[1]);
+            },
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,7 +121,9 @@ class _GameScreenState extends State<GameScreen> {
               IconButton(
                 icon: Icon(Icons.add_circle),
                 tooltip: 'Set cards',
-                onPressed: () {},
+                onPressed: () {
+                  _handleSetCards(playersList[0]);
+                },
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -130,7 +134,9 @@ class _GameScreenState extends State<GameScreen> {
               IconButton(
                 icon: Icon(Icons.add_circle),
                 tooltip: 'Set cards',
-                onPressed: () {},
+                onPressed: () {
+                  _handleSetCards(playersList[2]);
+                },
               ),
               CardColumn(
                 cards: playersList[2].cards,
@@ -150,7 +156,9 @@ class _GameScreenState extends State<GameScreen> {
           IconButton(
             icon: Icon(Icons.add_circle),
             tooltip: 'Set cards',
-            onPressed: () {},
+            onPressed: () {
+              _handleSetCards(playersList[3]);
+            },
           ),
           CardColumn(
             cards: playersList[3].cards,
@@ -325,7 +333,7 @@ class _GameScreenState extends State<GameScreen> {
         ..opened = true
         ..faceUp = true,
     );
-
+    // todo know the purpose of this set state
     setState(() {});
   }
 
@@ -445,5 +453,29 @@ class _GameScreenState extends State<GameScreen> {
       default:
         return null;
     }
+  }
+
+  CardList _cardListFromPlayer(PositionOnScreen pos) {
+    switch (pos) {
+      case PositionOnScreen.left:
+        return CardList.P1;
+      case PositionOnScreen.top:
+        return CardList.P2;
+      case PositionOnScreen.right:
+        return CardList.P3;
+      case PositionOnScreen.bottom:
+        return CardList.P4;
+      default:
+        return null;
+    }
+  }
+
+  void _handleSetCards(Player settingPlayer) {
+    if (settingPlayer != currentTurn) {
+      print("Its not your turn");
+      return;
+    }
+    settingPlayer.setCards(settingScore);
+    _refreshList(_cardListFromPlayer(settingPlayer.position));
   }
 }
