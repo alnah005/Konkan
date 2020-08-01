@@ -101,7 +101,7 @@ Your score when you set your cards is simply the sum of your cards' values.
     > In other words, you must utilize the card that was most recently discarded by your opponent towards the cards you're setting.
 
     If you instead drew a card from the `Bank cards` and that card happened to be the one that was missing in your cards (the card that would make you win), you are allowed to set your cards (without having to draw from the discarded cards).  
-    If you aren't able to [SET](#how-to-set-your-cards) or [COMBINE](#how-to-combine-your-cards-with-other-players) 14 cards and discard one card (which would make you win the game), you are penalized 50 on your [total game score](#how-to-calculate-penalty).
+    ~~If you aren't able to [SET](#how-to-set-your-cards) or [COMBINE](#how-to-combine-your-cards-with-other-players) 14 cards and discard one card (which would make you win the game), you are penalized 50 on your [total game score](#how-to-calculate-penalty).~~
 3) If you have set your cards for the first time, during your turn, you are allowed to set any group you have collected since setting your cards for the first time.
 
 ### How to group your cards
@@ -174,7 +174,7 @@ for other purposes.
 ## What happens after you win
 
 After you've [SET](#how-to-set-your-cards) or [COMBINED](#how-to-combine-your-cards-to-other-players) 14 of your cards and discarded one card on your turn (You won), here's what happens:
-* If the discarded card is a Joker, all your opponents recieve 200 penalty on their overall score.
+* ~~If the discarded card is a Joker, all your opponents recieve 200 penalty on their overall score.~~
 * If not:
     * players that have not set their cards recieve 100 penalty on their overall score.
     * players that have set their cards are [penalized over the remaining cards in their hand](#how-to-calculate-penalty)
