@@ -213,13 +213,16 @@ class _GameScreenState extends State<GameScreen> {
                   }));
                   droppedCards.clear();
                 } else {
-                  if (currentTurn.discarded) {
+                  if (currentTurn.eligibleToDraw) {
                     currentTurn.cards.add(
                       cardDeckClosed.removeLast()
                         ..faceUp = true
                         ..opened = true,
                     );
                     currentTurn.discarded = false;
+                    currentTurn.eligibleToDraw = false;
+                  } else {
+                    print("you need to throw a card");
                   }
                 }
               });
@@ -262,7 +265,7 @@ class _GameScreenState extends State<GameScreen> {
                       .removeAt(_getListFromIndex(index).indexOf(cards.first));
                   _refreshList(index);
                   currentTurn = _getNextPlayer(currentTurn);
-                  currentTurn.discarded = true;
+                  currentTurn.initializeForNextTurn();
                 }
               },
               columnIndex: CardList.DROPPED,
@@ -477,6 +480,9 @@ class _GameScreenState extends State<GameScreen> {
     }
     if (settingPlayer.discarded) {
       settingScore = settingPlayer.setCards(settingScore, droppedCards.last);
+      if (!settingPlayer.eligibleToDraw) {
+        settingPlayer.discarded = false;
+      }
     } else {
       settingScore = settingPlayer.setCards(settingScore);
     }

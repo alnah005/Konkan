@@ -36,6 +36,7 @@ class Player {
   PlayerInfo personalInfo = new PlayerInfo();
   Player(this.position);
   bool discarded = true;
+  bool eligibleToDraw = true;
 
   void recordGame(PositionOnScreen winnerPosition) {
     personalInfo.avgScore =
@@ -72,6 +73,33 @@ class Player {
   }
 
   double setCards(double settingScore, [PlayingCard extraCard]) {
+    if (openCards.expand((i) => i).toList().length == 0) {
+      return _firstTime(settingScore, extraCard);
+    }
+    return _afterFirstTime(settingScore, extraCard);
+  }
+
+  double _afterFirstTime(double settingScore, PlayingCard extraCard) {
+    List<List<PlayingCard>> groups;
+    if (extraCard != null) {
+      groups = _getGroups(cards + [extraCard]);
+      if (groups.expand((i) => i).toList().length < 1) {
+        print("You have nothing to awt");
+        return settingScore;
+      }
+    } else {
+      groups = _getGroups(cards);
+    }
+    this.eligibleToDraw = false;
+    for (int i = 0; i < groups.length; i++) {
+      openCards.add(groups[i]);
+    }
+
+    this._delCardsFromMain(groups.expand((element) => element).toList());
+    return settingScore;
+  }
+
+  double _firstTime(double settingScore, PlayingCard extraCard) {
     List<List<PlayingCard>> groups;
     if (extraCard != null) {
       groups = _getGroups(cards + [extraCard]);
@@ -82,22 +110,25 @@ class Player {
         return settingScore;
       }
     }
+    double settingRes = _getGroupScore(groups);
+    if (settingRes >= settingScore) {
+      openCards = groups;
+      this._delCardsFromMain(groups.expand((element) => element).toList());
+      print("new set score is " + settingRes.toString());
+      this.eligibleToDraw = false;
+    } else {
+      settingRes = settingScore;
+      print("your set score is not enough");
+      this.eligibleToDraw = true;
+    }
+    return settingRes;
+  }
+
+  double _getGroupScore(List<List<PlayingCard>> groups) {
     double settingRes = 0;
     for (int i = 0; i < groups.length; i++) {
       settingRes += _getScore(groups[i]);
       print(settingRes.toString());
-    }
-    if (settingRes >= settingScore) {
-      openCards = groups;
-      for (int i = 0; i < groups.length; i++) {
-        for (int j = 0; j < groups[i].length; j++) {
-          cards.removeWhere((element) => element == groups[i][j]);
-        }
-      }
-      print("new set score is " + settingRes.toString());
-    } else {
-      settingRes = settingScore;
-      print("your set score is not enough");
     }
     return settingRes;
   }
@@ -109,5 +140,18 @@ class Player {
     return [
       [settingCards.first, settingCards.last]
     ];
+  }
+
+  void _delCardsFromMain(List<PlayingCard> movedCards) {
+    for (int i = 0; i < movedCards.length; i++) {
+      if (cards.contains(movedCards[i])) {
+        cards.removeAt(cards.indexOf(movedCards[i]));
+      }
+    }
+  }
+
+  void initializeForNextTurn() {
+    this.discarded = true;
+    this.eligibleToDraw = true;
   }
 }
