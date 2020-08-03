@@ -96,12 +96,14 @@ class _GameScreenState extends State<GameScreen> {
             },
             columnIndex: CardList.P2,
           ),
-          IconButton(
-            icon: Icon(Icons.add_circle),
-            tooltip: 'Set cards',
-            onPressed: () {
-              _handleSetCards(playersList[1]);
-            },
+          Flexible(
+            child: IconButton(
+              icon: Icon(Icons.add_circle),
+              tooltip: 'Set cards',
+              onPressed: () {
+                _handleSetCards(playersList[1]);
+              },
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
