@@ -58,13 +58,13 @@ class _EmptyCardDeckState extends State<EmptyCardDeck> {
               : Container(
                   height: 60,
                   width: 40,
-                  child: TransformedCard(
-                    playingCard: widget.cardsAdded.last,
-                    columnIndex: widget.columnIndex,
-//                    attachedCards: [
-//                      widget.cardsAdded.last,
-//                    ],
-                  ),
+                  child: Stack(
+                      children: widget.cardsAdded.map((card) {
+                    return TransformedCard(
+                      playingCard: card,
+                      columnIndex: widget.columnIndex,
+                    );
+                  }).toList()),
                 ),
         );
       },
