@@ -98,12 +98,13 @@ class PlayingCard {
   Image suitImage;
   double penaltyVal;
   CardColor cardColor;
-
+  bool isDraggable;
   PlayingCard({
     @required this.cardSuit,
     @required this.cardType,
     this.faceUp = false,
     this.opened = false,
+    this.isDraggable = false,
   }) {
     var data = this.cardType.data;
     this.typeToString = data['HeadString'];

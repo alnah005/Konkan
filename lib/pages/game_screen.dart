@@ -249,7 +249,8 @@ class _GameScreenState extends State<GameScreen> {
                     currentTurn.cards.add(
                       cardDeckClosed.removeLast()
                         ..faceUp = true
-                        ..opened = true,
+                        ..opened = true
+                        ..isDraggable = true,
                     );
                     currentTurn.discarded = false;
                     currentTurn.eligibleToDraw = false;
@@ -308,7 +309,7 @@ class _GameScreenState extends State<GameScreen> {
               onCardAdded: (cards, index, card) {
                 if (_getPositionFromIndex(index) == currentTurn.position &&
                     !currentTurn.discarded) {
-                  droppedCards.add(cards.first);
+                  droppedCards.add(cards.first..isDraggable = true);
                   _getListFromIndex(index)
                       .removeAt(_getListFromIndex(index).indexOf(cards.first));
                   _refreshList(index);
@@ -326,11 +327,15 @@ class _GameScreenState extends State<GameScreen> {
                     /// set period of time, making the screen seem laggy or glitched.
                     //sleep(const Duration(seconds:1));
 
-                    currentTurn.cards.add(cardDeckClosed.removeLast()
-                      ..faceUp = false
-                      ..opened = true);
+                    currentTurn.cards.add(
+                      cardDeckClosed.removeLast()
+                        ..faceUp = false
+                        ..opened = true
+                        ..isDraggable = true,
+                    );
                     var throwCard = currentTurn.cards[1];
                     throwCard.faceUp = true;
+                    throwCard.isDraggable = true;
                     droppedCards.add(throwCard);
                     currentTurn.cards.removeAt(1);
                     currentTurn = _getNextPlayer(currentTurn);
@@ -401,7 +406,8 @@ class _GameScreenState extends State<GameScreen> {
             : cardList.add(
                 card
                   ..opened = true
-                  ..faceUp = true,
+                  ..faceUp = true
+                  ..isDraggable = true,
               );
 
         allCards.removeAt(randomNumber);
@@ -508,6 +514,21 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
+  List<List<PlayingCard>> _getSetListFromIndex(CardList index) {
+    switch (index) {
+      case CardList.P1SET:
+        return playersList[0].openCards;
+      case CardList.P2SET:
+        return playersList[1].openCards;
+      case CardList.P3SET:
+        return playersList[2].openCards;
+      case CardList.P4SET:
+        return playersList[3].openCards;
+      default:
+        return null;
+    }
+  }
+
   List<PlayingCard> _getListFromIndex(CardList index) {
     switch (index) {
       case CardList.BURNT:
@@ -522,14 +543,6 @@ class _GameScreenState extends State<GameScreen> {
         return playersList[2].cards;
       case CardList.P4:
         return playersList[3].cards;
-//      case CardList.P1SET:
-//        return playersList[0].openCards;
-//      case CardList.P2SET:
-//        return playersList[1].openCards;
-//      case CardList.P3SET:
-//        return playersList[2].openCards;
-//      case CardList.P4SET:
-//        return playersList[3].openCards;
       case CardList.DROPPED:
         return droppedCards;
       default:

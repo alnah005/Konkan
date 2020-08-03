@@ -39,18 +39,20 @@ class _TransformedCardState extends State<TransformedCard> {
               borderRadius: BorderRadius.circular(8.0),
             ),
           )
-        : Draggable<Map>(
-            child: _buildFaceUpCard(),
-            feedback: _buildFaceUpCard(),
-            childWhenDragging: Container(
-              width: 40.0,
-              height: 60.0,
-            ),
-            data: {
-              "cards": [widget.playingCard],
-              "fromIndex": widget.columnIndex,
-            },
-          );
+        : widget.playingCard.isDraggable
+            ? Draggable<Map>(
+                child: _buildFaceUpCard(),
+                feedback: _buildFaceUpCard(),
+                childWhenDragging: Container(
+                  width: 40.0,
+                  height: 60.0,
+                ),
+                data: {
+                  "cards": [widget.playingCard],
+                  "fromIndex": widget.columnIndex,
+                },
+              )
+            : _buildFaceUpCard();
   }
 
   Widget _buildFaceUpCard() {
