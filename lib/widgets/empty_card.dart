@@ -78,10 +78,8 @@ class _EmptyCardDeckState extends State<EmptyCardDeck> {
         return false;
       },
       onAccept: (value) {
-        widget.onCardAdded(
-          value["cards"],
-          value["fromIndex"],
-        );
+        widget.onCardAdded(value["cards"], value["fromIndex"],
+            value["cards"].length > 0 ? value["cards"][0] : null);
       },
     );
   }

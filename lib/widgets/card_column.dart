@@ -3,7 +3,8 @@ import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/pages/game_screen.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
 
-typedef Null CardAcceptCallback(List<PlayingCard> card, CardList fromIndex);
+typedef Null CardAcceptCallback(
+    List<PlayingCard> card, CardList fromIndex, PlayingCard cardAfter);
 
 // This is a stack of overlayed cards (implemented using a stack)
 class CardColumn extends StatefulWidget {
@@ -41,8 +42,8 @@ class _CardColumnState extends State<CardColumn> {
 
   Widget _getCardColumn() {
     return Container(
-        height: _horizontal() ? 60 : (14 * 20.0) + 60,
-        width: _horizontal() ? (14 * 20.0) + 40 : 40,
+        height: _horizontal() ? 60 : (14 * 22.0) + 60,
+        width: _horizontal() ? (14 * 22.0) + 40 : 40,
         alignment: Alignment.topCenter,
         margin: EdgeInsets.all(2.0),
         child: widget.cards.length > 0
@@ -57,8 +58,8 @@ class _CardColumnState extends State<CardColumn> {
 
   Positioned dragTarget(PlayingCard card, int index) {
     return Positioned(
-      left: _horizontal() ? -index.roundToDouble() * -20 : 0,
-      top: _horizontal() ? 0 : index.roundToDouble() * 20,
+      left: _horizontal() ? -index.roundToDouble() * -22 : 0,
+      top: _horizontal() ? 0 : index.roundToDouble() * 22,
       child: DragTarget<Map>(
         builder: (context, listOne, listTwo) {
           return transformedCard(card, index);
@@ -71,10 +72,7 @@ class _CardColumnState extends State<CardColumn> {
           return false;
         },
         onAccept: (value) {
-          widget.onCardsAdded(
-            value["cards"],
-            value["fromIndex"],
-          );
+          widget.onCardsAdded(value["cards"], value["fromIndex"], card);
         },
       ),
     );

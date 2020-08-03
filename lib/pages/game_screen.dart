@@ -86,13 +86,20 @@ class _GameScreenState extends State<GameScreen> {
         children: <Widget>[
           CardColumn(
             cards: playersList[1].cards,
-            onCardsAdded: (cards, index) {
-              setState(() {
-                playersList[1].cards.addAll(cards);
-                _getListFromIndex(index)
-                    .removeAt(_getListFromIndex(index).indexOf(cards.first));
-                _refreshList(index);
-              });
+            onCardsAdded: (cards, index, card) {
+              if (cards.first != card) {
+                setState(() {
+                  List<PlayingCard> currentCards = _getListFromIndex(index);
+                  int cardIndex = currentCards.indexOf(cards.first);
+                  int newIndex = currentCards.indexOf(card);
+                  currentCards.insert(
+                      cardIndex >= newIndex ? newIndex : newIndex + 1,
+                      cards.first);
+                  currentCards.removeAt(
+                      cardIndex >= (newIndex + 1) ? cardIndex + 1 : cardIndex);
+                  _refreshList(index);
+                });
+              }
             },
             columnIndex: CardList.P2,
           ),
@@ -110,13 +117,21 @@ class _GameScreenState extends State<GameScreen> {
             children: <Widget>[
               CardColumn(
                 cards: playersList[0].cards,
-                onCardsAdded: (cards, index) {
-                  setState(() {
-                    playersList[0].cards.addAll(cards);
-                    _getListFromIndex(index).removeAt(
-                        _getListFromIndex(index).indexOf(cards.first));
-                    _refreshList(index);
-                  });
+                onCardsAdded: (cards, index, card) {
+                  if (cards.first != card) {
+                    setState(() {
+                      List<PlayingCard> currentCards = _getListFromIndex(index);
+                      int cardIndex = currentCards.indexOf(cards.first);
+                      int newIndex = currentCards.indexOf(card);
+                      currentCards.insert(
+                          cardIndex >= newIndex ? newIndex : newIndex + 1,
+                          cards.first);
+                      currentCards.removeAt(cardIndex >= (newIndex + 1)
+                          ? cardIndex + 1
+                          : cardIndex);
+                      _refreshList(index);
+                    });
+                  }
                 },
                 columnIndex: CardList.P1,
               ),
@@ -142,13 +157,21 @@ class _GameScreenState extends State<GameScreen> {
               ),
               CardColumn(
                 cards: playersList[2].cards,
-                onCardsAdded: (cards, index) {
-                  setState(() {
-                    playersList[2].cards.addAll(cards);
-                    _getListFromIndex(index).removeAt(
-                        _getListFromIndex(index).indexOf(cards.first));
-                    _refreshList(index);
-                  });
+                onCardsAdded: (cards, index, card) {
+                  if (cards.first != card) {
+                    setState(() {
+                      List<PlayingCard> currentCards = _getListFromIndex(index);
+                      int cardIndex = currentCards.indexOf(cards.first);
+                      int newIndex = currentCards.indexOf(card);
+                      currentCards.insert(
+                          cardIndex >= newIndex ? newIndex : newIndex + 1,
+                          cards.first);
+                      currentCards.removeAt(cardIndex >= (newIndex + 1)
+                          ? cardIndex + 1
+                          : cardIndex);
+                      _refreshList(index);
+                    });
+                  }
                 },
                 columnIndex: CardList.P3,
               ),
@@ -164,13 +187,20 @@ class _GameScreenState extends State<GameScreen> {
           ),
           CardColumn(
             cards: playersList[3].cards,
-            onCardsAdded: (cards, index) {
-              setState(() {
-                playersList[3].cards.addAll(cards);
-                _getListFromIndex(index)
-                    .removeAt(_getListFromIndex(index).indexOf(cards.first));
-                _refreshList(index);
-              });
+            onCardsAdded: (cards, index, card) {
+              if (cards.first != card) {
+                setState(() {
+                  List<PlayingCard> currentCards = _getListFromIndex(index);
+                  int cardIndex = currentCards.indexOf(cards.first);
+                  int newIndex = currentCards.indexOf(card);
+                  currentCards.insert(
+                      cardIndex >= newIndex ? newIndex : newIndex + 1,
+                      cards.first);
+                  currentCards.removeAt(
+                      cardIndex >= (newIndex + 1) ? cardIndex + 1 : cardIndex);
+                  _refreshList(index);
+                });
+              }
             },
             columnIndex: CardList.P4,
           ),
@@ -266,6 +296,7 @@ class _GameScreenState extends State<GameScreen> {
                 )
               ],
             ),
+            // todo fix this for all kinds of devices using Build Context
             height: 88,
             width: 68,
           ),
@@ -274,7 +305,7 @@ class _GameScreenState extends State<GameScreen> {
             child: EmptyCardDeck(
               cardSuit: CardSuit.hearts,
               cardsAdded: droppedCards,
-              onCardAdded: (cards, index) {
+              onCardAdded: (cards, index, card) {
                 if (_getPositionFromIndex(index) == currentTurn.position &&
                     !currentTurn.discarded) {
                   droppedCards.add(cards.first);
