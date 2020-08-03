@@ -60,11 +60,11 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green,
+      backgroundColor: Color.fromRGBO(4, 92, 20, 1),
       appBar: AppBar(
         title: Text("Flutter Konkan"),
         elevation: 0.0,
-        backgroundColor: Colors.green,
+        backgroundColor: Color.fromRGBO(4, 92, 20, 1),
         actions: <Widget>[
           InkWell(
             child: Padding(
@@ -252,8 +252,16 @@ class _GameScreenState extends State<GameScreen> {
   // Build the final decks of cards
   Widget _buildFinalDecks() {
     return Container(
-      child: Row(
+      child: Stack(
         children: <Widget>[
+          Container(
+            decoration: ShapeDecoration(
+              shape: StadiumBorder(),
+              color: Color.fromRGBO(135, 0, 0, 1),
+            ),
+            height: 88,
+            width: 68,
+          ),
           Padding(
             padding: const EdgeInsets.all(4.0),
             child: EmptyCardDeck(
