@@ -42,8 +42,8 @@ class _CardColumnState extends State<CardColumn> {
 
   Widget _getCardColumn() {
     return Container(
-        height: _horizontal() ? 60 : (14 * 20.0) + 60,
-        width: _horizontal() ? (14 * 20.0) + 40 : 40,
+        height: _horizontal() ? 60 : (widget.cards.length * 20.0) + 60,
+        width: _horizontal() ? (widget.cards.length * 20.0) + 40 : 40,
         alignment: Alignment.topCenter,
         margin: EdgeInsets.all(2.0),
         child: widget.cards.length > 0

@@ -103,6 +103,17 @@ class _GameScreenState extends State<GameScreen> {
             },
             columnIndex: CardList.P2,
           ),
+          Row(
+            children: _getSetListFromIndex(CardList.P2).length > 0
+                ? _getSetListFromIndex(CardList.P2)
+                    .map((listCards) => CardColumn(
+                          cards: listCards,
+                          onCardsAdded: (cards, index, card) {},
+                          columnIndex: CardList.P2,
+                        ))
+                    .toList()
+                : [Container()],
+          ),
           Flexible(
             child: IconButton(
               icon: Icon(Icons.add_circle),
@@ -184,6 +195,20 @@ class _GameScreenState extends State<GameScreen> {
             onPressed: () {
               _handleSetCards(playersList[3]);
             },
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: _getSetListFromIndex(CardList.P4SET).length > 0
+                ? _getSetListFromIndex(CardList.P4SET)
+                    .map((listCards) => Expanded(
+                          child: CardColumn(
+                            cards: listCards,
+                            onCardsAdded: (cards, index, card) {},
+                            columnIndex: CardList.P2,
+                          ),
+                        ))
+                    .toList()
+                : [Container()],
           ),
           CardColumn(
             cards: playersList[3].cards,
@@ -525,7 +550,7 @@ class _GameScreenState extends State<GameScreen> {
       case CardList.P4SET:
         return playersList[3].openCards;
       default:
-        return null;
+        return [];
     }
   }
 
@@ -546,7 +571,7 @@ class _GameScreenState extends State<GameScreen> {
       case CardList.DROPPED:
         return droppedCards;
       default:
-        return null;
+        return [];
     }
   }
 
@@ -573,6 +598,7 @@ class _GameScreenState extends State<GameScreen> {
     if (settingPlayer.discarded) {
       settingScore = settingPlayer.setCards(settingScore, droppedCards.last);
       if (!settingPlayer.eligibleToDraw) {
+        droppedCards.removeAt(droppedCards.indexOf(droppedCards.last));
         settingPlayer.discarded = false;
       }
     } else {
