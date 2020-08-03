@@ -35,9 +35,9 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   // Stores the cards on the seven columns
   List<Player> playersList = [
-    new Player(PositionOnScreen.left),
-    new Player(PositionOnScreen.top),
-    new Player(PositionOnScreen.right),
+    new Player(PositionOnScreen.left, isAI: true),
+    new Player(PositionOnScreen.top, isAI: true),
+    new Player(PositionOnScreen.right, isAI: true),
     new Player(PositionOnScreen.bottom)
   ];
   Player currentTurn;
@@ -313,6 +313,28 @@ class _GameScreenState extends State<GameScreen> {
                       .removeAt(_getListFromIndex(index).indexOf(cards.first));
                   _refreshList(index);
                   currentTurn = _getNextPlayer(currentTurn);
+
+                  while (currentTurn.isAI) {
+                    currentTurn.cards.shuffle();
+
+                    /// in the commented line below, I tried to add some time before
+                    /// the AI makes a decision but it needs to have an asynchronous
+                    /// environment. This needs a lot of refactoring to the code.
+                    //await new Future.delayed(const Duration(seconds: 5));
+
+                    /// We can use this code however this freezes everything for the
+                    /// set period of time, making the screen seem laggy or glitched.
+                    //sleep(const Duration(seconds:1));
+
+                    currentTurn.cards.add(cardDeckClosed.removeLast()
+                      ..faceUp = true
+                      ..opened = true);
+                    droppedCards.add(currentTurn.cards[1]);
+                    currentTurn.cards.removeAt(1);
+                    currentTurn = _getNextPlayer(currentTurn);
+                    currentTurn.initializeForNextTurn();
+                  }
+
                   currentTurn.initializeForNextTurn();
                 }
               },

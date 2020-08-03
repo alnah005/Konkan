@@ -34,9 +34,10 @@ class Player {
   PlayingCard extraCard;
   PositionOnScreen position;
   PlayerInfo personalInfo = new PlayerInfo();
-  Player(this.position);
+  Player(this.position, {this.isAI = false});
   bool discarded = true;
   bool eligibleToDraw = true;
+  bool isAI = false;
 
   void recordGame(PositionOnScreen winnerPosition) {
     personalInfo.avgScore =
