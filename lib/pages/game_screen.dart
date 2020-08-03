@@ -204,7 +204,7 @@ class _GameScreenState extends State<GameScreen> {
                           child: CardColumn(
                             cards: listCards,
                             onCardsAdded: (cards, index, card) {},
-                            columnIndex: CardList.P2,
+                            columnIndex: CardList.P4,
                           ),
                         ))
                     .toList()

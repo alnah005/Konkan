@@ -95,9 +95,10 @@ class Player {
     }
     this.eligibleToDraw = false;
     for (int i = 0; i < groups.length; i++) {
-      openCards.add(groups[i]);
+      if (groups.expand((i) => i).toList().length > 0) {
+        openCards.add(groups[i]);
+      }
     }
-
     this._delCardsFromMain(groups.expand((element) => element).toList());
     return settingScore;
   }
