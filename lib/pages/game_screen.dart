@@ -258,6 +258,13 @@ class _GameScreenState extends State<GameScreen> {
             decoration: ShapeDecoration(
               shape: StadiumBorder(),
               color: Color.fromRGBO(135, 0, 0, 1),
+              shadows: [
+                BoxShadow(
+                  offset: const Offset(3.0, 3.0),
+                  blurRadius: 5.0,
+                  spreadRadius: 2.0,
+                )
+              ],
             ),
             height: 88,
             width: 68,
