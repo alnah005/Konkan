@@ -49,11 +49,13 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    - images/hearts.png
-    - images/diamonds.png
-    - images/clubs.png
-    - images/spades.png
-    - images/back_side.png
+    - assets/images/hearts.png
+    - assets/images/diamonds.png
+    - assets/images/clubs.png
+    - assets/images/spades.png
+    - assets/images/back_side.png
+    - assets/images/dropped.jpg
+    - assets/images/joker.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

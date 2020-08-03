@@ -199,4 +199,3 @@ After you've [SET](#how-to-set-your-cards) or [COMBINED](#how-to-combine-your-ca
 |Joker|50|
 
 # _Congratulations! Now you are able to play the game!_
-
