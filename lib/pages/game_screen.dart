@@ -104,12 +104,15 @@ class _GameScreenState extends State<GameScreen> {
             columnIndex: CardList.P2,
           ),
           Row(
-            children: _getSetListFromIndex(CardList.P2).length > 0
-                ? _getSetListFromIndex(CardList.P2)
-                    .map((listCards) => CardColumn(
-                          cards: listCards,
-                          onCardsAdded: (cards, index, card) {},
-                          columnIndex: CardList.P2,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: _getSetListFromIndex(CardList.P2SET).length > 0
+                ? _getSetListFromIndex(CardList.P2SET)
+                    .map((listCards) => Expanded(
+                          child: CardColumn(
+                            cards: listCards,
+                            onCardsAdded: (cards, index, card) {},
+                            columnIndex: CardList.P2,
+                          ),
                         ))
                     .toList()
                 : [Container()],
@@ -146,6 +149,20 @@ class _GameScreenState extends State<GameScreen> {
                 },
                 columnIndex: CardList.P1,
               ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: _getSetListFromIndex(CardList.P1SET).length > 0
+                    ? _getSetListFromIndex(CardList.P1SET)
+                        .map((listCards) => Expanded(
+                              child: CardColumn(
+                                cards: listCards,
+                                onCardsAdded: (cards, index, card) {},
+                                columnIndex: CardList.P1,
+                              ),
+                            ))
+                        .toList()
+                    : [Container()],
+              ),
               IconButton(
                 icon: Icon(Icons.add_circle),
                 tooltip: 'Set cards',
@@ -165,6 +182,20 @@ class _GameScreenState extends State<GameScreen> {
                 onPressed: () {
                   _handleSetCards(playersList[2]);
                 },
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: _getSetListFromIndex(CardList.P3SET).length > 0
+                    ? _getSetListFromIndex(CardList.P3SET)
+                        .map((listCards) => Expanded(
+                              child: CardColumn(
+                                cards: listCards,
+                                onCardsAdded: (cards, index, card) {},
+                                columnIndex: CardList.P3,
+                              ),
+                            ))
+                        .toList()
+                    : [Container()],
               ),
               CardColumn(
                 cards: playersList[2].cards,
