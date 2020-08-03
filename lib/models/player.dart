@@ -34,7 +34,9 @@ class Player {
   PlayingCard extraCard;
   PositionOnScreen position;
   PlayerInfo personalInfo = new PlayerInfo();
-  Player(this.position, {this.isAI = false});
+  Player(this.position, {this.isAI = false}) {
+    if (this.isAI) {}
+  }
   bool discarded = true;
   bool eligibleToDraw = true;
   bool isAI = false;

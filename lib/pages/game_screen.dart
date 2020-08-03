@@ -53,7 +53,7 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     _initialiseGame();
-    currentTurn = playersList[0];
+    currentTurn = playersList[3];
   }
 
 // todo card_columns don't do anything when dragged to.
@@ -327,9 +327,11 @@ class _GameScreenState extends State<GameScreen> {
                     //sleep(const Duration(seconds:1));
 
                     currentTurn.cards.add(cardDeckClosed.removeLast()
-                      ..faceUp = true
+                      ..faceUp = false
                       ..opened = true);
-                    droppedCards.add(currentTurn.cards[1]);
+                    var throwCard = currentTurn.cards[1];
+                    throwCard.faceUp = true;
+                    droppedCards.add(throwCard);
                     currentTurn.cards.removeAt(1);
                     currentTurn = _getNextPlayer(currentTurn);
                     currentTurn.initializeForNextTurn();
@@ -390,11 +392,18 @@ class _GameScreenState extends State<GameScreen> {
         int randomNumber = random.nextInt(allCards.length);
         var cardList = _getListFromIndex(GameScreen.playerCardLists[players]);
         PlayingCard card = allCards[randomNumber];
-        cardList.add(
-          card
-            ..opened = true
-            ..faceUp = true,
-        );
+        playersList[players].isAI
+            ? cardList.add(
+                card
+                  ..opened = true
+                  ..faceUp = false,
+              )
+            : cardList.add(
+                card
+                  ..opened = true
+                  ..faceUp = true,
+              );
+
         allCards.removeAt(randomNumber);
       }
     }
