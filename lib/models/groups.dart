@@ -4,18 +4,18 @@ enum GroupType { Invalid, Multiple, Suit, Sequence }
 
 class PossibleGroup {
   List<PlayingCard> cards;
+  GroupType type;
 
   double get penalty {
     return this.cards.fold(
         0, (previousValue, element) => previousValue + element.penaltyVal);
   }
 
-  PossibleGroup(this.cards);
+  PossibleGroup(this.cards, this.type);
 }
 
 class Group {
   List<PlayingCard> cards;
-  GroupType type;
   List<String> messages;
 
   List<PlayingCard> jokers;
@@ -26,6 +26,15 @@ class Group {
 
   List<PossibleGroup> possibleGroups;
   List<int> jokerPenalties;
+
+  GroupType get type {
+    if (this.possibleGroups.length == 1) {
+      return this.possibleGroups[0].type;
+    } else if (this.possibleGroups.length > 1) {
+      return GroupType.Multiple;
+    }
+    return GroupType.Invalid;
+  }
 
   double get penalty {
     double res = 0;
@@ -65,7 +74,9 @@ class Group {
           this.checkJokerSequence(index1, value1, stepSize);
         } else {
           List<PlayingCard> possibleCards = this.cards;
-          this.possibleGroups.add(PossibleGroup(possibleCards));
+          this
+              .possibleGroups
+              .add(PossibleGroup(possibleCards, GroupType.Sequence));
         }
       }
     }
@@ -89,7 +100,7 @@ class Group {
     });
 
     if (valid) {
-      this.possibleGroups.add(PossibleGroup(possibleCards));
+      this.possibleGroups.add(PossibleGroup(possibleCards, GroupType.Sequence));
     }
   }
 
@@ -97,7 +108,7 @@ class Group {
     switch (this.jokers.length) {
       case 0:
         List<PlayingCard> possibleCards = this.cards;
-        this.possibleGroups.add(PossibleGroup(possibleCards));
+        this.possibleGroups.add(PossibleGroup(possibleCards, GroupType.Suit));
         break;
       case 1:
         List<PlayingCard> possibleCards = this.cards;
@@ -106,7 +117,7 @@ class Group {
         possibleCards[possibleCards.indexOf(this.jokers[0])].cardType =
             this.nonJokers[0].cardType;
 
-        this.possibleGroups.add(PossibleGroup(possibleCards));
+        this.possibleGroups.add(PossibleGroup(possibleCards, GroupType.Suit));
         break;
       case 2:
         List<PlayingCard> possibleCards = this.cards;
@@ -119,7 +130,7 @@ class Group {
         possibleCards[possibleCards.indexOf(this.jokers[1])].cardType =
             this.nonJokers[0].cardType;
 
-        this.possibleGroups.add(PossibleGroup(possibleCards));
+        this.possibleGroups.add(PossibleGroup(possibleCards, GroupType.Suit));
         break;
     }
   }
@@ -168,7 +179,6 @@ class Group {
 
   Group(this.cards) {
     if (this.cards.length < 3 || this.cards.length > 13) {
-      this.type = GroupType.Invalid;
       this.messages.add("invalid number of cards");
     } else {
       this.setup();
