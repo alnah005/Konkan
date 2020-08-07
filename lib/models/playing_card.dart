@@ -19,6 +19,39 @@ enum CardType {
   joker,
 }
 
+CardType getType(int position) {
+  switch (position) {
+    case 1:
+      return CardType.one;
+    case 2:
+      return CardType.two;
+    case 3:
+      return CardType.three;
+    case 4:
+      return CardType.four;
+    case 5:
+      return CardType.five;
+    case 6:
+      return CardType.six;
+    case 7:
+      return CardType.seven;
+    case 8:
+      return CardType.eight;
+    case 9:
+      return CardType.nine;
+    case 10:
+      return CardType.ten;
+    case 11:
+      return CardType.jack;
+    case 12:
+      return CardType.queen;
+    case 13:
+      return CardType.king;
+    case 14:
+      return CardType.one;
+  }
+}
+
 extension CardSuitExt on CardSuit {
   Image get image {
     switch (this) {
