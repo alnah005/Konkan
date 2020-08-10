@@ -70,6 +70,23 @@ extension CardSuitExt on CardSuit {
     }
   }
 
+  String get string {
+    switch (this) {
+      case CardSuit.hearts:
+        return "♥";
+      case CardSuit.diamonds:
+        return "♢";
+      case CardSuit.clubs:
+        return "♧";
+      case CardSuit.spades:
+        return "♤";
+      case CardSuit.joker:
+        return "";
+      default:
+        return null;
+    }
+  }
+
   CardColor get color {
     if (this == CardSuit.hearts || this == CardSuit.diamonds) {
       return CardColor.red;
