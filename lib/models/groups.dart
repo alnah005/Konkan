@@ -1,187 +1,241 @@
 import 'package:solitaire/models/playing_card.dart';
 
-enum GroupType { Invalid, Multiple, Suit, Sequence }
+//abstract class CardSet extends CardGroup {
+//  List<PlayingCard> cardList;
+//
+//  bool get hasAce;
+//
+//  bool get hasJokers;
+//
+//  int get length => this.cardList.length;
+//
+//  @override
+//  String toString() {
+//    // TODO: implement toString
+//    return super.toString();
+//  }
+//}
 
-class PossibleGroup {
-  List<PlayingCard> cards;
-  GroupType type;
+Set getSequenceStepAndShift(Map<int, PlayingCard> cards) {
+  cards.removeWhere((key, value) => value.cardType == CardType.joker);
 
-  double get penalty {
-    return this.cards.fold(
-        0, (previousValue, element) => previousValue + element.penaltyVal);
-  }
-
-  PossibleGroup(this.cards, this.type);
+  int index1, value1;
+  Set<int> result = new Set<int>();
+  index1 = cards.keys.toList()[0];
+  value1 = cards[index1].position;
+  cards.remove(index1);
+  cards.forEach((key, value) {
+    result.add(((value1 - value.position) / (index1 - key)).round());
+  });
+  return result;
 }
 
-class Group {
-  List<PlayingCard> cards;
-  List<String> messages;
+class GroupBase {
+  List<PlayingCard> groupCards = new List<PlayingCard>();
+  Map<int, int> nonJokerMap = new Map<int, int>();
+  Map<int, int> jokerMap = new Map<int, int>();
+  List jokerIndexs = new List();
+  Set uniqueTypes = new Set();
+  Set uniqueSuits = new Set();
+  int numberOfJokers = 0;
+  int numberOfNonJokers = 0;
+  int numberCards = 0;
+  bool hasAce = false;
+  int aceIndex;
+  List<List<PlayingCard>> subGroups = new List<List<PlayingCard>>();
 
-  List<PlayingCard> jokers;
-  List<PlayingCard> nonJokers;
-
-  List<CardType> allTypes = new List<CardType>();
-  List<CardSuit> allSuits = new List<CardSuit>();
-
-  List<PossibleGroup> possibleGroups;
-  List<int> jokerPenalties;
-
-  GroupType get type {
-    if (this.possibleGroups.length == 1) {
-      return this.possibleGroups[0].type;
-    } else if (this.possibleGroups.length > 1) {
-      return GroupType.Multiple;
+  GroupBase(this.groupCards) {
+    if (this.groupCards.length < 14 && this.groupCards.length > 2) {
+      this.groupCards.asMap().forEach((key, value) {
+        if (value.cardType == CardType.joker) {
+          this.jokerIndexs.add(key);
+          this.numberOfJokers += 1;
+          jokerMap[key] = value.position;
+        } else {
+          if (value.cardType == CardType.one) {
+            this.hasAce = true;
+            this.aceIndex = key;
+          }
+          nonJokerMap[key] = value.position;
+          this.uniqueSuits.add(value.cardSuit);
+          this.uniqueTypes.add(value.cardType);
+          this.numberOfNonJokers += 1;
+        }
+        this.numberCards = this.numberOfJokers + this.numberOfNonJokers;
+      });
+    } else {
+      throw ("invalid number of cards");
     }
-    return GroupType.Invalid;
+    if (this.numberCards < 5) {
+      this.checkSuits();
+      this.checkSequence();
+      if (this.hasAce) {
+        this.nonJokerMap[this.aceIndex] = 14;
+        this.checkSequence();
+      }
+    }
+    if (this.numberCards == 3 && this.numberOfJokers != 0) {
+      switch (this.jokerIndexs.length) {
+        case 1:
+          break;
+        case 2:
+          if (jokerIndexs.contains(1) == true) {
+          } else {
+            this.checkSequence();
+            if (this.hasAce) {
+              this.nonJokerMap[this.aceIndex] = 14;
+              this.checkSequence();
+            }
+          }
+          break;
+      }
+    } else {
+      this.checkSequence();
+      if (this.hasAce) {
+        this.nonJokerMap[this.aceIndex] = 14;
+        this.checkSequence();
+      }
+      //checkSequence()
+    }
   }
 
-  double get penalty {
-    double res = 0;
-
-    for (PlayingCard card in this.cards) {
-      res += card.penaltyVal;
+  void checkSuits() {
+    if (this.uniqueSuits.length == this.nonJokerMap.length &&
+        this.uniqueTypes.length == 1) {
+      //no repeated cards
+      if (this.numberOfJokers > 0) {
+        List remainingSuits = new List();
+        remainingSuits.add(CardSuit.clubs);
+        remainingSuits.add(CardSuit.diamonds);
+        remainingSuits.add(CardSuit.spades);
+        remainingSuits.add(CardSuit.hearts);
+        this.uniqueSuits.forEach((element) {
+          remainingSuits.remove(element);
+        });
+        if (this.numberOfJokers == remainingSuits.length) {
+          // {joker, joker, card, card} or {joker, card, card, card}
+//          case 1:
+          switch (numberOfJokers) {
+            case 1:
+              PlayingCard newCard = new PlayingCard(
+                  cardSuit: remainingSuits.first,
+                  cardType: this.uniqueTypes.first);
+              List<PlayingCard> map1 = List.from(this.groupCards);
+              map1[this.jokerIndexs.first] = newCard;
+              this.subGroups.add(map1);
+              break;
+            case 2:
+              PlayingCard newCard = new PlayingCard(
+                  cardSuit: remainingSuits.first,
+                  cardType: this.uniqueTypes.first);
+              List<PlayingCard> map1 = List.from(this.groupCards);
+              map1[this.jokerIndexs.first] = newCard;
+              PlayingCard newCard2 = new PlayingCard(
+                  cardSuit: remainingSuits.last,
+                  cardType: this.uniqueTypes.first);
+              map1[this.jokerIndexs.last] = newCard2;
+              this.subGroups.add(map1);
+              break;
+          }
+        } else if (this.numberOfJokers <= remainingSuits.length)
+          switch (numberOfJokers) {
+            case 1:
+              PlayingCard newCard = new PlayingCard(
+                  cardSuit: remainingSuits.first,
+                  cardType: this.uniqueTypes.first);
+              PlayingCard newCard2 = new PlayingCard(
+                  cardSuit: remainingSuits.last,
+                  cardType: this.uniqueTypes.first);
+              List<PlayingCard> map1 = List.from(this.groupCards);
+              List<PlayingCard> map2 = List.from(this.groupCards);
+              map1[this.jokerIndexs.first] = newCard;
+              map2[this.jokerIndexs.first] = newCard2;
+              this.subGroups.add(map1);
+              this.subGroups.add(map2);
+              break;
+            case 2:
+              PlayingCard newCard = new PlayingCard(
+                  cardSuit: remainingSuits.first,
+                  cardType: this.uniqueTypes.first);
+              PlayingCard newCard2 = new PlayingCard(
+                  cardSuit: remainingSuits.last,
+                  cardType: this.uniqueTypes.first);
+              PlayingCard newCard3 = new PlayingCard(
+                  cardSuit: remainingSuits.toList()[1],
+                  cardType: this.uniqueTypes.first);
+              List<PlayingCard> map1 = List.from(this.groupCards);
+              List<PlayingCard> map2 = List.from(this.groupCards);
+              List<PlayingCard> map3 = List.from(this.groupCards);
+              map1[this.jokerIndexs.first] = newCard;
+              map2[this.jokerIndexs.first] = newCard2;
+              map3[this.jokerIndexs.first] = newCard3;
+              map1[this.jokerIndexs.last] = newCard2;
+              map2[this.jokerIndexs.last] = newCard3;
+              map3[this.jokerIndexs.last] = newCard;
+              this.subGroups.add(map1);
+              this.subGroups.add(map2);
+              this.subGroups.add(map3);
+              break;
+          }
+      } else {
+        this.subGroups.add(new List<PlayingCard>.from(this.groupCards));
+      }
     }
-    res += this.jokerPenalties.reduce((value, element) => value += element);
-    return res;
   }
 
   void checkSequence() {
-    int index1, index2, value1, value2;
-    double stepSize;
+    int index1, d, value1;
 
-    index1 = this.cards.indexOf(this.nonJokers[0]);
-    value1 = this.nonJokers[0].position; // todo add position
+    index1 = this.nonJokerMap.keys.first;
+    value1 = this.nonJokerMap[index1];
 
-    if (this.nonJokers.length == 1) {
-      this.checkJokerSequence(index1, value1, 1.0);
-      this.checkJokerSequence(index1, value1, -1.0);
+    Set<double> steps = new Set<double>();
+
+    /// we take the values of the first card
+    if (this.numberOfNonJokers == 1) {
+      this.getSeqJokers(-1, value1, index1);
+      this.getSeqJokers(1, value1, index1);
     } else {
-      Set<double> steps = new Set<double>();
-
-      /// we take the values of the first card
-      this.nonJokers.skip(1).forEach((element) {
-        index2 = this.cards.indexOf(element);
-        value2 = element.position;
-        steps.add(((index1 - index2) / (value1 - value2)));
+      this.nonJokerMap.remove(index1);
+      this.nonJokerMap.forEach((key, value) {
+        steps.add(((index1 - key) / (value1 - value)));
       });
-
-      /// a positive step size means an ascending group {ace two three four}
-      /// a negative step size means an descending group {four three two ace}
-      if (steps.length == 1 && steps.first == 1.0 || steps.first == -1.0) {
-        stepSize = steps.first;
-        if (this.jokers.length > 0) {
-          this.checkJokerSequence(index1, value1, stepSize);
-        } else {
-          List<PlayingCard> possibleCards = this.cards;
-          this
-              .possibleGroups
-              .add(PossibleGroup(possibleCards, GroupType.Sequence));
+//      print('steps');
+//      print(steps);
+      if (steps.length == 1) {
+        if (steps.first == 1.0 || steps.first == -1.0) {
+          d = steps.first.round();
+          this.getSeqJokers(d, value1, index1);
+//          print(d);
         }
       }
     }
   }
 
-  void checkJokerSequence(int index1, int value1, double stepSize) {
-    List<PlayingCard> possibleCards = this.cards;
-    bool valid = true;
-
-    this.jokers.forEach((element) {
-      int value, index;
-      index = possibleCards.indexOf(element);
-      value = value - ((index1 - index) / stepSize).round();
-      if (value > 14 || value < 1) {
-        valid = false;
+  void getSeqJokers(int d, value1, index1) {
+    if (d == 1 || d == -1) {
+      if (this.numberOfJokers > 0) {
+        List<PlayingCard> map1 = List.from(this.groupCards);
+        bool val = true;
+        this.jokerMap.forEach((index, value) {
+          int pos = value1 - (index1 - index) * d;
+          if (pos > 0 && pos < 14) {
+            PlayingCard newCard = new PlayingCard(
+                cardSuit: this.uniqueSuits.first, cardType: getType(pos));
+            map1[index] = newCard;
+          } else {
+            val = false;
+          }
+//              print(value1 - (index1 - index) * d);
+//              print(newCard.string);
+        });
+        if (val) {
+          this.subGroups.add(map1);
+        }
       } else {
-        possibleCards[index].cardSuit = nonJokers[0].cardSuit;
-        possibleCards[index].cardType = getType(value);
-        possibleCards[index].penaltyVal = getType(value).data["Penalty"];
+        List<PlayingCard> map1 = List.from(this.groupCards);
+        this.subGroups.add(map1);
       }
-    });
-
-    if (valid) {
-      this.possibleGroups.add(PossibleGroup(possibleCards, GroupType.Sequence));
-    }
-  }
-
-  void checkSuit() {
-    switch (this.jokers.length) {
-      case 0:
-        List<PlayingCard> possibleCards = this.cards;
-        this.possibleGroups.add(PossibleGroup(possibleCards, GroupType.Suit));
-        break;
-      case 1:
-        List<PlayingCard> possibleCards = this.cards;
-        possibleCards[possibleCards.indexOf(this.jokers[0])].cardSuit =
-            this.nonJokers[0].cardSuit;
-        possibleCards[possibleCards.indexOf(this.jokers[0])].cardType =
-            this.nonJokers[0].cardType;
-
-        this.possibleGroups.add(PossibleGroup(possibleCards, GroupType.Suit));
-        break;
-      case 2:
-        List<PlayingCard> possibleCards = this.cards;
-        possibleCards[possibleCards.indexOf(this.jokers[0])].cardSuit =
-            this.nonJokers[0].cardSuit;
-        possibleCards[possibleCards.indexOf(this.jokers[0])].cardType =
-            this.nonJokers[0].cardType;
-        possibleCards[possibleCards.indexOf(this.jokers[1])].cardSuit =
-            this.nonJokers[0].cardSuit;
-        possibleCards[possibleCards.indexOf(this.jokers[1])].cardType =
-            this.nonJokers[0].cardType;
-
-        this.possibleGroups.add(PossibleGroup(possibleCards, GroupType.Suit));
-        break;
-    }
-  }
-
-  void setup() {
-    this.jokers =
-        this.cards.where((element) => element.cardType == CardType.joker);
-    this.nonJokers =
-        this.cards.where((element) => element.cardType != CardType.joker);
-
-    this.nonJokers.forEach((element) {
-      this.allTypes.add(element.cardType);
-      this.allSuits.add(element.cardSuit);
-    });
-    this.validate();
-  }
-
-  void checkAceSequence() {
-    PlayingCard ace = this
-        .nonJokers
-        .where((element) => element.cardType == CardType.one)
-        .first;
-    switch (this.cards[this.cards.indexOf(ace)].position) {
-      case 1:
-        this.cards[this.cards.indexOf(ace)].position = 14;
-        break;
-      case 14:
-        this.cards[this.cards.indexOf(ace)].position = 1;
-        break;
-    }
-    this.checkSequence();
-  }
-
-  void validate() {
-    int uniqueSuits, uniqueTypes, numberOfNonJokers;
-    numberOfNonJokers = this.nonJokers.length;
-    uniqueSuits = this.allSuits.toSet().length;
-    uniqueTypes = this.allTypes.toSet().length;
-
-    if (uniqueSuits == numberOfNonJokers &&
-        uniqueTypes == 1 &&
-        this.cards.length < 5) {
-      this.checkSuit();
-    }
-  }
-
-  Group(this.cards) {
-    if (this.cards.length < 3 || this.cards.length > 13) {
-      this.messages.add("invalid number of cards");
-    } else {
-      this.setup();
     }
   }
 }

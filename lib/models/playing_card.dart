@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 enum CardSuit { spades, hearts, diamonds, clubs, joker }
 
 enum CardType {
+  joker,
   one,
   two,
   three,
@@ -16,7 +17,6 @@ enum CardType {
   jack,
   queen,
   king,
-  joker,
 }
 
 CardType getType(int position) {
@@ -86,6 +86,7 @@ extension CardExt on CardType {
 
         /// ace is both in position 1 and 14
         return {
+          "String": "Ace",
           "BodyString": "1",
           "HeadString": "1",
           "Position": 1,
@@ -93,6 +94,7 @@ extension CardExt on CardType {
         };
       case CardType.two:
         return {
+          "String": "Two",
           "BodyString": "2",
           "HeadString": "2",
           "Position": 2,
@@ -100,6 +102,7 @@ extension CardExt on CardType {
         };
       case CardType.three:
         return {
+          "String": "Three",
           "BodyString": "3",
           "HeadString": "3",
           "Position": 3,
@@ -107,6 +110,7 @@ extension CardExt on CardType {
         };
       case CardType.four:
         return {
+          "String": "Four",
           "BodyString": "4",
           "HeadString": "4",
           "Position": 4,
@@ -114,6 +118,7 @@ extension CardExt on CardType {
         };
       case CardType.five:
         return {
+          "String": "Five",
           "BodyString": "5",
           "HeadString": "5",
           "Position": 5,
@@ -121,6 +126,7 @@ extension CardExt on CardType {
         };
       case CardType.six:
         return {
+          "String": "Six",
           "BodyString": "6",
           "HeadString": "6",
           "Position": 6,
@@ -128,6 +134,7 @@ extension CardExt on CardType {
         };
       case CardType.seven:
         return {
+          "String": "Seven",
           "BodyString": "7",
           "HeadString": "7",
           "Position": 7,
@@ -135,6 +142,7 @@ extension CardExt on CardType {
         };
       case CardType.eight:
         return {
+          "String": "Eight",
           "BodyString": "8",
           "HeadString": "8",
           "Position": 8,
@@ -142,6 +150,7 @@ extension CardExt on CardType {
         };
       case CardType.nine:
         return {
+          "String": "Nine",
           "BodyString": "9",
           "HeadString": "9",
           "Position": 9,
@@ -149,6 +158,7 @@ extension CardExt on CardType {
         };
       case CardType.ten:
         return {
+          "String": "Ten",
           "BodyString": "10",
           "HeadString": "10",
           "Position": 10,
@@ -156,6 +166,7 @@ extension CardExt on CardType {
         };
       case CardType.jack:
         return {
+          "String": "Jack",
           "BodyString": "J",
           "HeadString": "J",
           "Position": 11,
@@ -163,6 +174,7 @@ extension CardExt on CardType {
         };
       case CardType.queen:
         return {
+          "String": "Queen",
           "BodyString": "Q",
           "HeadString": "Q",
           "Position": 12,
@@ -170,6 +182,7 @@ extension CardExt on CardType {
         };
       case CardType.king:
         return {
+          "String": "King",
           "BodyString": "K",
           "HeadString": "K",
           "Position": 13,
@@ -177,6 +190,7 @@ extension CardExt on CardType {
         };
       case CardType.joker:
         return {
+          "String": "Joker",
           "BodyString": "",
           "HeadString": "JKR",
           "Position": 15,
@@ -222,5 +236,13 @@ class PlayingCard {
     this.suitImage = cardSuit.image;
     this.cardColor = cardSuit.color;
     this.position = data["Position"];
+  }
+  String get string {
+    var result = "";
+    result += this.typeToString;
+//    result += " ";
+    result += this.cardSuit.string;
+//    result += ']';
+    return result;
   }
 }
