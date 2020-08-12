@@ -7,8 +7,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-//    LogicTest t = LogicTest();
-//    t.printTests();
     return MaterialApp(
       title: 'Konkan on Flutter',
       theme: ThemeData(

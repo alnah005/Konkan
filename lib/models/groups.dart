@@ -1,241 +1,259 @@
 import 'package:solitaire/models/playing_card.dart';
 
-//abstract class CardSet extends CardGroup {
-//  List<PlayingCard> cardList;
-//
-//  bool get hasAce;
-//
-//  bool get hasJokers;
-//
-//  int get length => this.cardList.length;
-//
-//  @override
-//  String toString() {
-//    // TODO: implement toString
-//    return super.toString();
-//  }
-//}
+List<Map<int, List<PlayingCard>>> validate(List<PlayingCard> cards) {
+  Map<int, PlayingCard> cardsMap = cards.asMap();
+  Map<int, PlayingCard> jokersMap = new Map<int, PlayingCard>();
+  Map<int, PlayingCard> nonJokersMap = new Map<int, PlayingCard>();
 
-Set getSequenceStepAndShift(Map<int, PlayingCard> cards) {
-  cards.removeWhere((key, value) => value.cardType == CardType.joker);
+  bool hasJoker = false;
+  bool hasAce = false;
+  int aceIndex;
 
-  int index1, value1;
-  Set<int> result = new Set<int>();
-  index1 = cards.keys.toList()[0];
-  value1 = cards[index1].position;
-  cards.remove(index1);
-  cards.forEach((key, value) {
-    result.add(((value1 - value.position) / (index1 - key)).round());
+  final List<Map<int, List<PlayingCard>>> result =
+      new List<Map<int, List<PlayingCard>>>();
+
+  cardsMap.forEach((key, value) {
+    if (value.cardType != CardType.joker) {
+      nonJokersMap[key] = value;
+      if (value.cardType == CardType.one) {
+        hasAce = true;
+        aceIndex = key;
+      }
+    } else {
+      jokersMap[key] = value;
+      hasJoker = true;
+    }
+  });
+
+  Set uniqueSuits = nonJokersMap.values.map((e) => e.cardSuit).toSet();
+  Set uniqueTypes = nonJokersMap.values.map((e) => e.cardType).toSet();
+
+  int numberOfUniqueSuits = uniqueSuits.length;
+  int numberOfUniqueTypes = uniqueTypes.length;
+
+  int numberOfNonJokers = nonJokersMap.length;
+  int numberOfJokers = jokersMap.length;
+  int numberOfCards = cardsMap.length;
+
+  if (numberOfCards > 13 || numberOfCards < 3) {
+    return null;
+  }
+
+  if (numberOfCards < 5) {
+    if (numberOfUniqueTypes == 1 && numberOfUniqueSuits == numberOfNonJokers) {
+      if (hasJoker) {
+        var res = getJokerSuitGroups(cards, jokersMap.keys.toList(),
+            nonJokersMap.values.first.cardType, uniqueSuits);
+        res.forEach((element) {
+          result.add(buildMap(element));
+        });
+      } else {
+        result.add(buildMap(cards));
+      }
+    }
+  }
+  if (numberOfUniqueSuits == 1 && numberOfUniqueTypes == numberOfNonJokers) {
+    var r = checkSequence(nonJokersMap, jokersMap.keys.toList(), cards);
+
+    if (r != null) {
+      r.forEach((element) {
+        result.add(buildMap(element));
+      });
+    }
+    nonJokersMap.entries.first;
+
+    if (hasAce) {
+      PlayingCard ace2 = new PlayingCard(
+          cardType: CardType.one, cardSuit: nonJokersMap[aceIndex].cardSuit);
+      ace2.position = 14;
+      ace2.penaltyVal = 11.0;
+      Map<int, PlayingCard> njm = Map<int, PlayingCard>.from(nonJokersMap);
+      njm[aceIndex] = ace2;
+      var r2 = checkSequence(njm, jokersMap.keys.toList(), cards);
+      if (r2 != null) {
+        r2.forEach((element) {
+          result.add(buildMap(element));
+        });
+      }
+    }
+  }
+  return result;
+}
+
+Map<int, List<PlayingCard>> buildMap(List<PlayingCard> cardsList) {
+  var map = Map<int, List<PlayingCard>>();
+  double i = cardsList.fold(
+      0, (previousValue, element) => previousValue + element.penaltyVal);
+  map[i.round()] = cardsList;
+  return map;
+}
+
+List<PlayingCard> copy(List<PlayingCard> cards) {
+  List<PlayingCard> result = new List<PlayingCard>();
+  cards.forEach((element) {
+    result.add(new PlayingCard(
+        cardSuit: element.cardSuit, cardType: element.cardType));
   });
   return result;
 }
 
-class GroupBase {
-  List<PlayingCard> groupCards = new List<PlayingCard>();
-  Map<int, int> nonJokerMap = new Map<int, int>();
-  Map<int, int> jokerMap = new Map<int, int>();
-  List jokerIndexs = new List();
-  Set uniqueTypes = new Set();
-  Set uniqueSuits = new Set();
-  int numberOfJokers = 0;
-  int numberOfNonJokers = 0;
-  int numberCards = 0;
-  bool hasAce = false;
-  int aceIndex;
-  List<List<PlayingCard>> subGroups = new List<List<PlayingCard>>();
+int checkDistances(Map<int, PlayingCard> nonJokersMap) {
+  int index = nonJokersMap.keys.first;
+  Set steps = new Set();
+  PlayingCard value = nonJokersMap.values.first;
+  Map<int, PlayingCard> njm = new Map<int, PlayingCard>.from(nonJokersMap);
+  njm.remove(index);
+  njm.forEach((index2, value2) {
+    steps.add((index2 - index) / (value2.position - value.position).round());
+  });
+  if (steps.length != 1) {
+    return 0;
+  } else if (steps.first == 1.0) {
+    return 1;
+  } else if (steps.first == -1.0) {
+    return -1;
+  }
+  return 0;
+}
 
-  GroupBase(this.groupCards) {
-    if (this.groupCards.length < 14 && this.groupCards.length > 2) {
-      this.groupCards.asMap().forEach((key, value) {
-        if (value.cardType == CardType.joker) {
-          this.jokerIndexs.add(key);
-          this.numberOfJokers += 1;
-          jokerMap[key] = value.position;
-        } else {
-          if (value.cardType == CardType.one) {
-            this.hasAce = true;
-            this.aceIndex = key;
-          }
-          nonJokerMap[key] = value.position;
-          this.uniqueSuits.add(value.cardSuit);
-          this.uniqueTypes.add(value.cardType);
-          this.numberOfNonJokers += 1;
-        }
-        this.numberCards = this.numberOfJokers + this.numberOfNonJokers;
-      });
+int getJokerPosition(MapEntry randomCard, int jokerIndex, int d) {
+  int result = randomCard.value.position - (randomCard.key - jokerIndex) * d;
+  if (result < 15 && result > 0) {
+    return result;
+  }
+  return null;
+}
+
+List<PlayingCard> getJokerSequenceGroup(List<PlayingCard> cards, int d,
+    List<int> jokerPositions, MapEntry randomCard) {
+  bool invalid = false;
+  var result = copy(cards);
+  jokerPositions.forEach((element) {
+    int r = getJokerPosition(randomCard, element, d);
+    if (r != null) {
+      PlayingCard c = new PlayingCard(
+          cardType: getType(r), cardSuit: randomCard.value.cardSuit);
+      result[element] = c;
     } else {
-      throw ("invalid number of cards");
+      invalid = true;
     }
-    if (this.numberCards < 5) {
-      this.checkSuits();
-      this.checkSequence();
-      if (this.hasAce) {
-        this.nonJokerMap[this.aceIndex] = 14;
-        this.checkSequence();
-      }
-    }
-    if (this.numberCards == 3 && this.numberOfJokers != 0) {
-      switch (this.jokerIndexs.length) {
-        case 1:
-          break;
-        case 2:
-          if (jokerIndexs.contains(1) == true) {
-          } else {
-            this.checkSequence();
-            if (this.hasAce) {
-              this.nonJokerMap[this.aceIndex] = 14;
-              this.checkSequence();
-            }
-          }
-          break;
-      }
+  });
+  if (!invalid) {
+    return result;
+  }
+  return null;
+}
+
+List<List<PlayingCard>> checkSequence(Map<int, PlayingCard> nonJokersMap,
+    List<int> jokerPositions, List<PlayingCard> cards) {
+  List<List<PlayingCard>> result = new List<List<PlayingCard>>();
+  int d;
+  MapEntry safeCard = nonJokersMap.entries.first;
+  if (nonJokersMap.length > 1) {
+    d = checkDistances(nonJokersMap);
+    if (d == 0) {
+      return null;
     } else {
-      this.checkSequence();
-      if (this.hasAce) {
-        this.nonJokerMap[this.aceIndex] = 14;
-        this.checkSequence();
-      }
-      //checkSequence()
-    }
-  }
-
-  void checkSuits() {
-    if (this.uniqueSuits.length == this.nonJokerMap.length &&
-        this.uniqueTypes.length == 1) {
-      //no repeated cards
-      if (this.numberOfJokers > 0) {
-        List remainingSuits = new List();
-        remainingSuits.add(CardSuit.clubs);
-        remainingSuits.add(CardSuit.diamonds);
-        remainingSuits.add(CardSuit.spades);
-        remainingSuits.add(CardSuit.hearts);
-        this.uniqueSuits.forEach((element) {
-          remainingSuits.remove(element);
-        });
-        if (this.numberOfJokers == remainingSuits.length) {
-          // {joker, joker, card, card} or {joker, card, card, card}
-//          case 1:
-          switch (numberOfJokers) {
-            case 1:
-              PlayingCard newCard = new PlayingCard(
-                  cardSuit: remainingSuits.first,
-                  cardType: this.uniqueTypes.first);
-              List<PlayingCard> map1 = List.from(this.groupCards);
-              map1[this.jokerIndexs.first] = newCard;
-              this.subGroups.add(map1);
-              break;
-            case 2:
-              PlayingCard newCard = new PlayingCard(
-                  cardSuit: remainingSuits.first,
-                  cardType: this.uniqueTypes.first);
-              List<PlayingCard> map1 = List.from(this.groupCards);
-              map1[this.jokerIndexs.first] = newCard;
-              PlayingCard newCard2 = new PlayingCard(
-                  cardSuit: remainingSuits.last,
-                  cardType: this.uniqueTypes.first);
-              map1[this.jokerIndexs.last] = newCard2;
-              this.subGroups.add(map1);
-              break;
-          }
-        } else if (this.numberOfJokers <= remainingSuits.length)
-          switch (numberOfJokers) {
-            case 1:
-              PlayingCard newCard = new PlayingCard(
-                  cardSuit: remainingSuits.first,
-                  cardType: this.uniqueTypes.first);
-              PlayingCard newCard2 = new PlayingCard(
-                  cardSuit: remainingSuits.last,
-                  cardType: this.uniqueTypes.first);
-              List<PlayingCard> map1 = List.from(this.groupCards);
-              List<PlayingCard> map2 = List.from(this.groupCards);
-              map1[this.jokerIndexs.first] = newCard;
-              map2[this.jokerIndexs.first] = newCard2;
-              this.subGroups.add(map1);
-              this.subGroups.add(map2);
-              break;
-            case 2:
-              PlayingCard newCard = new PlayingCard(
-                  cardSuit: remainingSuits.first,
-                  cardType: this.uniqueTypes.first);
-              PlayingCard newCard2 = new PlayingCard(
-                  cardSuit: remainingSuits.last,
-                  cardType: this.uniqueTypes.first);
-              PlayingCard newCard3 = new PlayingCard(
-                  cardSuit: remainingSuits.toList()[1],
-                  cardType: this.uniqueTypes.first);
-              List<PlayingCard> map1 = List.from(this.groupCards);
-              List<PlayingCard> map2 = List.from(this.groupCards);
-              List<PlayingCard> map3 = List.from(this.groupCards);
-              map1[this.jokerIndexs.first] = newCard;
-              map2[this.jokerIndexs.first] = newCard2;
-              map3[this.jokerIndexs.first] = newCard3;
-              map1[this.jokerIndexs.last] = newCard2;
-              map2[this.jokerIndexs.last] = newCard3;
-              map3[this.jokerIndexs.last] = newCard;
-              this.subGroups.add(map1);
-              this.subGroups.add(map2);
-              this.subGroups.add(map3);
-              break;
-          }
-      } else {
-        this.subGroups.add(new List<PlayingCard>.from(this.groupCards));
+      var r = getJokerSequenceGroup(cards, d, jokerPositions, safeCard);
+      if (r != null) {
+        result.add(r);
       }
     }
-  }
-
-  void checkSequence() {
-    int index1, d, value1;
-
-    index1 = this.nonJokerMap.keys.first;
-    value1 = this.nonJokerMap[index1];
-
-    Set<double> steps = new Set<double>();
-
-    /// we take the values of the first card
-    if (this.numberOfNonJokers == 1) {
-      this.getSeqJokers(-1, value1, index1);
-      this.getSeqJokers(1, value1, index1);
-    } else {
-      this.nonJokerMap.remove(index1);
-      this.nonJokerMap.forEach((key, value) {
-        steps.add(((index1 - key) / (value1 - value)));
-      });
-//      print('steps');
-//      print(steps);
-      if (steps.length == 1) {
-        if (steps.first == 1.0 || steps.first == -1.0) {
-          d = steps.first.round();
-          this.getSeqJokers(d, value1, index1);
-//          print(d);
-        }
+  } else {
+    var r2 = getJokerSequenceGroup(cards, 1, jokerPositions, safeCard);
+    if (r2 != null) {
+      result.add(r2);
+    }
+    if (jokerPositions.contains(1)) {
+      var r2 = getJokerSequenceGroup(cards, -1, jokerPositions, safeCard);
+      if (r2 != null) {
+        result.add(r2);
       }
     }
+
+    // return result;
   }
 
-  void getSeqJokers(int d, value1, index1) {
-    if (d == 1 || d == -1) {
-      if (this.numberOfJokers > 0) {
-        List<PlayingCard> map1 = List.from(this.groupCards);
-        bool val = true;
-        this.jokerMap.forEach((index, value) {
-          int pos = value1 - (index1 - index) * d;
-          if (pos > 0 && pos < 14) {
-            PlayingCard newCard = new PlayingCard(
-                cardSuit: this.uniqueSuits.first, cardType: getType(pos));
-            map1[index] = newCard;
-          } else {
-            val = false;
-          }
-//              print(value1 - (index1 - index) * d);
-//              print(newCard.string);
-        });
-        if (val) {
-          this.subGroups.add(map1);
-        }
-      } else {
-        List<PlayingCard> map1 = List.from(this.groupCards);
-        this.subGroups.add(map1);
-      }
+  return result;
+}
+
+List<List<PlayingCard>> getJokerSuitGroups(List<PlayingCard> cards,
+    List<int> jokerPositions, CardType groupType, Set uniqueCardSuits) {
+  List<List<PlayingCard>> result = new List<List<PlayingCard>>();
+  // print('getJokerSuitGroups');
+
+  var remainingSuits = CardSuit.values
+      .where((element) => element != CardSuit.joker)
+      .toList()
+      .where((element) => !uniqueCardSuits.toList().contains(element));
+
+  if (remainingSuits.length > jokerPositions.length) {
+    // print('remainingSuits.length > jokerPositions.length');
+    // print(remainingSuits);
+    // print(uniqueCardSuits);
+    switch (remainingSuits.length) {
+      case 3:
+        // print('case3');
+        var card1 = PlayingCard(
+            cardSuit: remainingSuits.toList()[0], cardType: groupType);
+        var card2 = PlayingCard(
+            cardSuit: remainingSuits.toList()[1], cardType: groupType);
+        var card3 = PlayingCard(
+            cardSuit: remainingSuits.toList()[2], cardType: groupType);
+        var group1 = copy(cards);
+        group1[jokerPositions[0]] = card1;
+        group1[jokerPositions[1]] = card2;
+        result.add(group1);
+        var group2 = copy(cards);
+        group2[jokerPositions[0]] = card1;
+        group2[jokerPositions[1]] = card3;
+        result.add(group2);
+        var group3 = copy(cards);
+        group3[jokerPositions[0]] = card2;
+        group3[jokerPositions[1]] = card3;
+        result.add(group3);
+        return result;
+      case 2:
+        // print('case2');
+        var card1 = PlayingCard(
+            cardSuit: remainingSuits.toList()[0], cardType: groupType);
+        var card2 = PlayingCard(
+            cardSuit: remainingSuits.toList()[1], cardType: groupType);
+        var group1 = copy(cards);
+        group1[jokerPositions[0]] = card1;
+        result.add(group1);
+        var group2 = copy(cards);
+        group2[jokerPositions[0]] = card2;
+        result.add(group2);
+        return result;
+    }
+  } else if (remainingSuits.length == jokerPositions.length) {
+    switch (remainingSuits.length) {
+      case 2:
+        var card1 = PlayingCard(
+            cardSuit: remainingSuits.toList()[0], cardType: groupType);
+        var card2 = PlayingCard(
+            cardSuit: remainingSuits.toList()[1], cardType: groupType);
+        var group1 = copy(cards);
+        group1[jokerPositions[0]] = card1;
+        group1[jokerPositions[1]] = card2;
+        result.add(group1);
+        break;
+      case 1:
+        var card = PlayingCard(
+            cardSuit: remainingSuits.toList()[0], cardType: groupType);
+        var group1 = copy(cards);
+        group1[jokerPositions[0]] = card;
+        result.add(group1);
+        break;
     }
   }
+  return result;
+}
+
+List<List<PlayingCard>> checkSuits(Map<int, PlayingCard> nonJokersMap,
+    Set uniqueCardSuits, List<int> jokerPositions, List<PlayingCard> cards) {
+  List<List<PlayingCard>> l = new List<List<PlayingCard>>();
+  l.add(cards);
+  return l;
 }
