@@ -31,8 +31,8 @@ class _TransformedCardState extends State<TransformedCard> {
   Widget _buildCard() {
     return !widget.playingCard.faceUp
         ? Container(
-            height: 60.0,
-            width: 40.0,
+            height: 30.0,
+            width: 20.0,
             decoration: BoxDecoration(
               color: Colors.blue,
               border: Border.all(color: Colors.black),

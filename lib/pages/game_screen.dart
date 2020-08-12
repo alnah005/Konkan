@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
@@ -66,199 +67,287 @@ class _GameScreenState extends State<GameScreen> {
         elevation: 0.0,
         backgroundColor: Color.fromRGBO(4, 92, 20, 1),
         actions: <Widget>[
-          InkWell(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(
-                Icons.refresh,
-                color: Colors.white,
+          Flexible(
+            flex: 3,
+            fit: FlexFit.loose,
+            child: InkWell(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.refresh,
+                  color: Colors.white,
+                ),
               ),
+              splashColor: Colors.white,
+              onTap: () {
+                _initialiseGame();
+              },
             ),
-            splashColor: Colors.white,
-            onTap: () {
-              _initialiseGame();
-            },
-          )
+          ),
         ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          CardColumn(
-            cards: playersList[1].cards,
-            onCardsAdded: (cards, index, card) {
-              if (cards.first != card) {
-                setState(() {
-                  List<PlayingCard> currentCards = _getListFromIndex(index);
-                  int cardIndex = currentCards.indexOf(cards.first);
-                  int newIndex = currentCards.indexOf(card);
-                  currentCards.insert(
-                      cardIndex >= newIndex ? newIndex : newIndex + 1,
-                      cards.first);
-                  currentCards.removeAt(
-                      cardIndex >= (newIndex + 1) ? cardIndex + 1 : cardIndex);
-                  _refreshList(index);
-                });
-              }
-            },
-            columnIndex: CardList.P2,
+          Flexible(
+            flex: 3,
+            fit: FlexFit.loose,
+            child: CardColumn(
+              cards: playersList[1].cards,
+              onCardsAdded: (cards, index, card) {
+                if (cards.first != card) {
+                  setState(() {
+                    List<PlayingCard> currentCards = _getListFromIndex(index);
+                    int cardIndex = currentCards.indexOf(cards.first);
+                    int newIndex = currentCards.indexOf(card);
+                    currentCards.insert(
+                        cardIndex >= newIndex ? newIndex : newIndex + 1,
+                        cards.first);
+                    currentCards.removeAt(cardIndex >= (newIndex + 1)
+                        ? cardIndex + 1
+                        : cardIndex);
+                    _refreshList(index);
+                  });
+                }
+              },
+              columnIndex: CardList.P2,
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: _getSetListFromIndex(CardList.P2SET).length > 0
-                ? _getSetListFromIndex(CardList.P2SET)
-                    .map((listCards) => Expanded(
-                          child: CardColumn(
+          Flexible(
+            flex: 7,
+            fit: FlexFit.loose,
+            child: Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: _getSetListFromIndex(CardList.P2SET).length > 0
+                    ? _getSetListFromIndex(CardList.P2SET)
+                        .map(
+                          (listCards) => CardColumn(
                             cards: listCards,
                             onCardsAdded: (cards, index, card) {},
                             columnIndex: CardList.P2,
                           ),
-                        ))
-                    .toList()
-                : [Container()],
+                        )
+                        .toList()
+                    : [
+                        Container(
+                          height: 0,
+                          width: 0,
+                        )
+                      ],
+              ),
+            ),
           ),
+//          Flexible(
+//            fit: FlexFit.loose,
+//            child: IconButton(
+//              icon: Icon(Icons.add_circle),
+//              tooltip: 'Set cards',
+//              onPressed: () {
+//                _handleSetCards(playersList[1]);
+//              },
+//            ),
+//          ),
           Flexible(
+            flex: 10,
+            fit: FlexFit.loose,
+            child: Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Flexible(
+                    flex: 3,
+                    fit: FlexFit.loose,
+                    child: CardColumn(
+                      cards: playersList[0].cards,
+                      onCardsAdded: (cards, index, card) {
+                        if (cards.first != card) {
+                          setState(() {
+                            List<PlayingCard> currentCards =
+                                _getListFromIndex(index);
+                            int cardIndex = currentCards.indexOf(cards.first);
+                            int newIndex = currentCards.indexOf(card);
+                            currentCards.insert(
+                                cardIndex >= newIndex ? newIndex : newIndex + 1,
+                                cards.first);
+                            currentCards.removeAt(cardIndex >= (newIndex + 1)
+                                ? cardIndex + 1
+                                : cardIndex);
+                            _refreshList(index);
+                          });
+                        }
+                      },
+                      columnIndex: CardList.P1,
+                    ),
+                  ),
+                  Flexible(
+                    flex: 7,
+                    fit: FlexFit.loose,
+                    child: Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children:
+                            _getSetListFromIndex(CardList.P1SET).length > 0
+                                ? _getSetListFromIndex(CardList.P1SET)
+                                    .map(
+                                      (listCards) => CardColumn(
+                                        cards: listCards,
+                                        onCardsAdded: (cards, index, card) {},
+                                        columnIndex: CardList.P1,
+                                      ),
+                                    )
+                                    .toList()
+                                : [
+                                    Container(
+                                      height: 0,
+                                      width: 0,
+                                    )
+                                  ],
+                      ),
+                    ),
+                  ),
+//                  Flexible(
+//                    flex: 1,
+//                    fit: FlexFit.loose,
+//                    child: IconButton(
+//                      icon: Icon(Icons.add_circle),
+//                      tooltip: 'Set cards',
+//                      onPressed: () {
+//                        _handleSetCards(playersList[0]);
+//                      },
+//                    ),
+//                  ),
+                  Flexible(
+                      flex: 7, fit: FlexFit.loose, child: _buildFinalDecks()),
+//                  Flexible(
+//                    flex: 1,
+//                    fit: FlexFit.loose,
+//                    child: IconButton(
+//                      icon: Icon(Icons.add_circle),
+//                      tooltip: 'Set cards',
+//                      onPressed: () {
+//                        _handleSetCards(playersList[2]);
+//                      },
+//                    ),
+//                  ),
+                  Flexible(
+                    flex: 7,
+                    fit: FlexFit.loose,
+                    child: Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children:
+                            _getSetListFromIndex(CardList.P3SET).length > 0
+                                ? _getSetListFromIndex(CardList.P3SET)
+                                    .map(
+                                      (listCards) => CardColumn(
+                                        cards: listCards,
+                                        onCardsAdded: (cards, index, card) {},
+                                        columnIndex: CardList.P3,
+                                      ),
+                                    )
+                                    .toList()
+                                : [
+                                    Container(
+                                      height: 0,
+                                      width: 0,
+                                    )
+                                  ],
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 3,
+                    fit: FlexFit.loose,
+                    child: CardColumn(
+                      cards: playersList[2].cards,
+                      onCardsAdded: (cards, index, card) {
+                        if (cards.first != card) {
+                          setState(() {
+                            List<PlayingCard> currentCards =
+                                _getListFromIndex(index);
+                            int cardIndex = currentCards.indexOf(cards.first);
+                            int newIndex = currentCards.indexOf(card);
+                            currentCards.insert(
+                                cardIndex >= newIndex ? newIndex : newIndex + 1,
+                                cards.first);
+                            currentCards.removeAt(cardIndex >= (newIndex + 1)
+                                ? cardIndex + 1
+                                : cardIndex);
+                            _refreshList(index);
+                          });
+                        }
+                      },
+                      columnIndex: CardList.P3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Flexible(flex: 5, fit: FlexFit.loose, child: _buildCardDeck()),
+          Flexible(
+            flex: 5,
+            fit: FlexFit.loose,
             child: IconButton(
               icon: Icon(Icons.add_circle),
               tooltip: 'Set cards',
               onPressed: () {
-                _handleSetCards(playersList[1]);
+                _handleSetCards(playersList[3]);
               },
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              CardColumn(
-                cards: playersList[0].cards,
-                onCardsAdded: (cards, index, card) {
-                  if (cards.first != card) {
-                    setState(() {
-                      List<PlayingCard> currentCards = _getListFromIndex(index);
-                      int cardIndex = currentCards.indexOf(cards.first);
-                      int newIndex = currentCards.indexOf(card);
-                      currentCards.insert(
-                          cardIndex >= newIndex ? newIndex : newIndex + 1,
-                          cards.first);
-                      currentCards.removeAt(cardIndex >= (newIndex + 1)
-                          ? cardIndex + 1
-                          : cardIndex);
-                      _refreshList(index);
-                    });
-                  }
-                },
-                columnIndex: CardList.P1,
-              ),
-              Column(
+          Flexible(
+            flex: 7,
+            fit: FlexFit.loose,
+            child: Container(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _getSetListFromIndex(CardList.P1SET).length > 0
-                    ? _getSetListFromIndex(CardList.P1SET)
-                        .map((listCards) => Expanded(
-                              child: CardColumn(
-                                cards: listCards,
-                                onCardsAdded: (cards, index, card) {},
-                                columnIndex: CardList.P1,
-                              ),
-                            ))
-                        .toList()
-                    : [Container()],
-              ),
-              IconButton(
-                icon: Icon(Icons.add_circle),
-                tooltip: 'Set cards',
-                onPressed: () {
-                  _handleSetCards(playersList[0]);
-                },
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  _buildFinalDecks(),
-                ],
-              ),
-              IconButton(
-                icon: Icon(Icons.add_circle),
-                tooltip: 'Set cards',
-                onPressed: () {
-                  _handleSetCards(playersList[2]);
-                },
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _getSetListFromIndex(CardList.P3SET).length > 0
-                    ? _getSetListFromIndex(CardList.P3SET)
-                        .map((listCards) => Expanded(
-                              child: CardColumn(
-                                cards: listCards,
-                                onCardsAdded: (cards, index, card) {},
-                                columnIndex: CardList.P3,
-                              ),
-                            ))
-                        .toList()
-                    : [Container()],
-              ),
-              CardColumn(
-                cards: playersList[2].cards,
-                onCardsAdded: (cards, index, card) {
-                  if (cards.first != card) {
-                    setState(() {
-                      List<PlayingCard> currentCards = _getListFromIndex(index);
-                      int cardIndex = currentCards.indexOf(cards.first);
-                      int newIndex = currentCards.indexOf(card);
-                      currentCards.insert(
-                          cardIndex >= newIndex ? newIndex : newIndex + 1,
-                          cards.first);
-                      currentCards.removeAt(cardIndex >= (newIndex + 1)
-                          ? cardIndex + 1
-                          : cardIndex);
-                      _refreshList(index);
-                    });
-                  }
-                },
-                columnIndex: CardList.P3,
-              ),
-            ],
-          ),
-          _buildCardDeck(),
-          IconButton(
-            icon: Icon(Icons.add_circle),
-            tooltip: 'Set cards',
-            onPressed: () {
-              _handleSetCards(playersList[3]);
-            },
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: _getSetListFromIndex(CardList.P4SET).length > 0
-                ? _getSetListFromIndex(CardList.P4SET)
-                    .map((listCards) => Expanded(
-                          child: CardColumn(
-                            cards: listCards,
-                            onCardsAdded: (cards, index, card) {},
-                            columnIndex: CardList.P4,
+                children: _getSetListFromIndex(CardList.P4SET).length > 0
+                    ? _getSetListFromIndex(CardList.P4SET)
+                        .map(
+                          (listCards) => Flexible(
+                            fit: FlexFit.loose,
+                            child: CardColumn(
+                              cards: listCards,
+                              onCardsAdded: (cards, index, card) {},
+                              columnIndex: CardList.P4,
+                            ),
                           ),
-                        ))
-                    .toList()
-                : [Container()],
+                        )
+                        .toList()
+                    : [
+                        Container(
+                          height: 0,
+                          width: 0,
+                        )
+                      ],
+              ),
+            ),
           ),
-          CardColumn(
-            cards: playersList[3].cards,
-            onCardsAdded: (cards, index, card) {
-              if (cards.first != card) {
-                setState(() {
-                  List<PlayingCard> currentCards = _getListFromIndex(index);
-                  int cardIndex = currentCards.indexOf(cards.first);
-                  int newIndex = currentCards.indexOf(card);
-                  currentCards.insert(
-                      cardIndex >= newIndex ? newIndex : newIndex + 1,
-                      cards.first);
-                  currentCards.removeAt(
-                      cardIndex >= (newIndex + 1) ? cardIndex + 1 : cardIndex);
-                  _refreshList(index);
-                });
-              }
-            },
-            columnIndex: CardList.P4,
+          Flexible(
+            flex: 7,
+            fit: FlexFit.loose,
+            child: CardColumn(
+              cards: playersList[3].cards,
+              onCardsAdded: (cards, index, card) {
+                if (cards.first != card) {
+                  setState(() {
+                    List<PlayingCard> currentCards = _getListFromIndex(index);
+                    int cardIndex = currentCards.indexOf(cards.first);
+                    int newIndex = currentCards.indexOf(card);
+                    currentCards.insert(
+                        cardIndex >= newIndex ? newIndex : newIndex + 1,
+                        cards.first);
+                    currentCards.removeAt(cardIndex >= (newIndex + 1)
+                        ? cardIndex + 1
+                        : cardIndex);
+                    _refreshList(index);
+                  });
+                }
+              },
+              columnIndex: CardList.P4,
+            ),
           ),
         ],
       ),
@@ -317,20 +406,20 @@ class _GameScreenState extends State<GameScreen> {
               });
             },
           ),
-          cardDeckOpened.isNotEmpty
-              ? Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: TransformedCard(
-                    playingCard: cardDeckOpened.last,
-//                    attachedCards: [
-//                      cardDeckOpened.last,
-//                    ],
-                    columnIndex: CardList.BURNT,
-                  ),
-                )
-              : Container(
-                  width: 40.0,
-                ),
+//          cardDeckOpened.isNotEmpty
+//              ? Padding(
+//                  padding: const EdgeInsets.all(4.0),
+//                  child: TransformedCard(
+//                    playingCard: cardDeckOpened.last,
+////                    attachedCards: [
+////                      cardDeckOpened.last,
+////                    ],
+//                    columnIndex: CardList.BURNT,
+//                  ),
+//                )
+//              : Container(
+//                  width: 40.0,
+//                ),
         ],
       ),
     );
