@@ -1,6 +1,8 @@
 import 'package:solitaire/models/playing_card.dart';
 
-List<Map<int, List<PlayingCard>>> validate(List<PlayingCard> cards) {
+import 'meld.dart';
+
+List<Meld> validate(List<PlayingCard> cards) {
   Map<int, PlayingCard> cardsMap = cards.asMap();
   Map<int, PlayingCard> jokersMap = new Map<int, PlayingCard>();
   Map<int, PlayingCard> nonJokersMap = new Map<int, PlayingCard>();
@@ -9,8 +11,7 @@ List<Map<int, List<PlayingCard>>> validate(List<PlayingCard> cards) {
   bool hasAce = false;
   int aceIndex;
 
-  final List<Map<int, List<PlayingCard>>> result =
-      new List<Map<int, List<PlayingCard>>>();
+  final List<Meld> result = new List<Meld>();
 
   cardsMap.forEach((key, value) {
     if (value.cardType != CardType.joker) {
@@ -36,19 +37,17 @@ List<Map<int, List<PlayingCard>>> validate(List<PlayingCard> cards) {
   int numberOfCards = cardsMap.length;
 
   if (numberOfCards > 13 || numberOfCards < 3) {
-    return null;
+    return result;
   }
 
   if (numberOfCards < 5) {
     if (numberOfUniqueTypes == 1 && numberOfUniqueSuits == numberOfNonJokers) {
       if (hasJoker) {
-        var res = getJokerSuitGroups(cards, jokersMap.keys.toList(),
+        var results = getJokerSuitGroups(cards, jokersMap.keys.toList(),
             nonJokersMap.values.first.cardType, uniqueSuits);
-        res.forEach((element) {
-          result.add(buildMap(element));
-        });
+        result.addAll(results);
       } else {
-        result.add(buildMap(cards));
+        result.add(MeldSuit(cards, []));
       }
     }
   }
@@ -56,11 +55,8 @@ List<Map<int, List<PlayingCard>>> validate(List<PlayingCard> cards) {
     var r = checkSequence(nonJokersMap, jokersMap.keys.toList(), cards);
 
     if (r != null) {
-      r.forEach((element) {
-        result.add(buildMap(element));
-      });
+      result.addAll(r);
     }
-    nonJokersMap.entries.first;
 
     if (hasAce) {
       PlayingCard ace2 = new PlayingCard(
@@ -71,29 +67,11 @@ List<Map<int, List<PlayingCard>>> validate(List<PlayingCard> cards) {
       njm[aceIndex] = ace2;
       var r2 = checkSequence(njm, jokersMap.keys.toList(), cards);
       if (r2 != null) {
-        r2.forEach((element) {
-          result.add(buildMap(element));
-        });
+        result.addAll(r2);
       }
     }
   }
-  return result;
-}
-
-Map<int, List<PlayingCard>> buildMap(List<PlayingCard> cardsList) {
-  var map = Map<int, List<PlayingCard>>();
-  double i = cardsList.fold(
-      0, (previousValue, element) => previousValue + element.penaltyVal);
-  map[i.round()] = cardsList;
-  return map;
-}
-
-List<PlayingCard> copy(List<PlayingCard> cards) {
-  List<PlayingCard> result = new List<PlayingCard>();
-  cards.forEach((element) {
-    result.add(new PlayingCard(
-        cardSuit: element.cardSuit, cardType: element.cardType));
-  });
+  result.sort((e, r) => r.penalty.compareTo(e.penalty));
   return result;
 }
 
@@ -124,29 +102,28 @@ int getJokerPosition(MapEntry randomCard, int jokerIndex, int d) {
   return null;
 }
 
-List<PlayingCard> getJokerSequenceGroup(List<PlayingCard> cards, int d,
+Meld getJokerSequenceGroup(List<PlayingCard> cards, int d,
     List<int> jokerPositions, MapEntry randomCard) {
   bool invalid = false;
-  var result = copy(cards);
+  var result = List<JokerPlaceHolder>();
   jokerPositions.forEach((element) {
     int r = getJokerPosition(randomCard, element, d);
     if (r != null) {
-      PlayingCard c = new PlayingCard(
-          cardType: getType(r), cardSuit: randomCard.value.cardSuit);
-      result[element] = c;
+      result.add(
+          new JokerPlaceHolder(getType(r), randomCard.value.cardSuit, element));
     } else {
       invalid = true;
     }
   });
   if (!invalid) {
-    return result;
+    return new MeldSeq(cards, result, d);
   }
   return null;
 }
 
-List<List<PlayingCard>> checkSequence(Map<int, PlayingCard> nonJokersMap,
+List<Meld> checkSequence(Map<int, PlayingCard> nonJokersMap,
     List<int> jokerPositions, List<PlayingCard> cards) {
-  List<List<PlayingCard>> result = new List<List<PlayingCard>>();
+  List<Meld> result = new List<Meld>();
   int d;
   MapEntry safeCard = nonJokersMap.entries.first;
   if (nonJokersMap.length > 1) {
@@ -170,17 +147,15 @@ List<List<PlayingCard>> checkSequence(Map<int, PlayingCard> nonJokersMap,
         result.add(r2);
       }
     }
-
-    // return result;
   }
 
   return result;
 }
 
-List<List<PlayingCard>> getJokerSuitGroups(List<PlayingCard> cards,
-    List<int> jokerPositions, CardType groupType, Set uniqueCardSuits) {
-  List<List<PlayingCard>> result = new List<List<PlayingCard>>();
-  // print('getJokerSuitGroups');
+List<Meld> getJokerSuitGroups(List<PlayingCard> cards, List<int> jokerPositions,
+    CardType groupType, Set uniqueCardSuits) {
+  List<Meld> result = new List<Meld>();
+  // printMe('getJokerSuitGroups');
 
   var remainingSuits = CardSuit.values
       .where((element) => element != CardSuit.joker)
@@ -188,63 +163,60 @@ List<List<PlayingCard>> getJokerSuitGroups(List<PlayingCard> cards,
       .where((element) => !uniqueCardSuits.toList().contains(element));
 
   if (remainingSuits.length > jokerPositions.length) {
-    // print('remainingSuits.length > jokerPositions.length');
-    // print(remainingSuits);
-    // print(uniqueCardSuits);
     switch (remainingSuits.length) {
       case 3:
-        // print('case3');
-        var card1 = PlayingCard(
-            cardSuit: remainingSuits.toList()[0], cardType: groupType);
-        var card2 = PlayingCard(
-            cardSuit: remainingSuits.toList()[1], cardType: groupType);
-        var card3 = PlayingCard(
-            cardSuit: remainingSuits.toList()[2], cardType: groupType);
-        var group1 = copy(cards);
-        group1[jokerPositions[0]] = card1;
-        group1[jokerPositions[1]] = card2;
-        result.add(group1);
-        var group2 = copy(cards);
-        group2[jokerPositions[0]] = card1;
-        group2[jokerPositions[1]] = card3;
-        result.add(group2);
-        var group3 = copy(cards);
-        group3[jokerPositions[0]] = card2;
-        group3[jokerPositions[1]] = card3;
-        result.add(group3);
+        var joker1 = new JokerPlaceHolder(
+            groupType, remainingSuits.toList()[0], jokerPositions[0]);
+        var joker2 = new JokerPlaceHolder(
+            groupType, remainingSuits.toList()[1], jokerPositions[1]);
+        var joker3 = new JokerPlaceHolder(
+            groupType, remainingSuits.toList()[2], jokerPositions[1]);
+        var joker3rep = new JokerPlaceHolder(
+            groupType, remainingSuits.toList()[2], jokerPositions[0]);
+        List<JokerPlaceHolder> group1 = new List<JokerPlaceHolder>();
+        group1.add(joker1);
+        group1.add(joker2);
+        result.add(new MeldSuit(cards, group1));
+        List<JokerPlaceHolder> group2 = new List<JokerPlaceHolder>();
+        group2.add(joker1);
+        group2.add(joker3);
+        result.add(new MeldSuit(cards, group2));
+
+        List<JokerPlaceHolder> group3 = new List<JokerPlaceHolder>();
+        group3.add(joker3rep);
+        group3.add(joker2);
+        result.add(new MeldSuit(cards, group3));
+
         return result;
       case 2:
-        // print('case2');
-        var card1 = PlayingCard(
-            cardSuit: remainingSuits.toList()[0], cardType: groupType);
-        var card2 = PlayingCard(
-            cardSuit: remainingSuits.toList()[1], cardType: groupType);
-        var group1 = copy(cards);
-        group1[jokerPositions[0]] = card1;
-        result.add(group1);
-        var group2 = copy(cards);
-        group2[jokerPositions[0]] = card2;
-        result.add(group2);
+        var joker1 = new JokerPlaceHolder(
+            groupType, remainingSuits.toList()[0], jokerPositions[0]);
+        var joker2 = new JokerPlaceHolder(
+            groupType, remainingSuits.toList()[1], jokerPositions[0]);
+        List<JokerPlaceHolder> group1 = new List<JokerPlaceHolder>();
+        group1.add(joker1);
+        result.add(new MeldSuit(cards, group1));
+        List<JokerPlaceHolder> group2 = new List<JokerPlaceHolder>();
+        group2.add(joker2);
+        result.add(new MeldSuit(cards, group2));
+
         return result;
     }
   } else if (remainingSuits.length == jokerPositions.length) {
     switch (remainingSuits.length) {
       case 2:
-        var card1 = PlayingCard(
-            cardSuit: remainingSuits.toList()[0], cardType: groupType);
-        var card2 = PlayingCard(
-            cardSuit: remainingSuits.toList()[1], cardType: groupType);
-        var group1 = copy(cards);
-        group1[jokerPositions[0]] = card1;
-        group1[jokerPositions[1]] = card2;
-        result.add(group1);
+        var joker1 = new JokerPlaceHolder(
+            groupType, remainingSuits.toList()[0], jokerPositions[0]);
+        var joker2 = new JokerPlaceHolder(
+            groupType, remainingSuits.toList()[1], jokerPositions[0]);
+
+        result.add(MeldSuit(cards, [joker1, joker2]));
         break;
       case 1:
-        var card = PlayingCard(
-            cardSuit: remainingSuits.toList()[0], cardType: groupType);
-        var group1 = copy(cards);
-        group1[jokerPositions[0]] = card;
-        result.add(group1);
+        var joker = new JokerPlaceHolder(
+            groupType, remainingSuits.toList()[0], jokerPositions[0]);
+
+        result.add(MeldSuit(cards, [joker]));
         break;
     }
   }

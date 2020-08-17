@@ -107,7 +107,7 @@ extension CardExt on CardType {
           "BodyString": "1",
           "HeadString": "1",
           "Position": 1,
-          "Penalty": 1
+          "Penalty": 11
         };
       case CardType.two:
         return {
@@ -211,7 +211,7 @@ extension CardExt on CardType {
           "BodyString": "",
           "HeadString": "JKR",
           "Position": 15,
-          "Penalty": 10
+          "Penalty": 0
         };
     }
     return {};
@@ -224,7 +224,12 @@ enum CardColor {
 }
 
 // Simple playing card model
-class PlayingCard {
+abstract class Card {
+  CardSuit cardSuit;
+  CardType cardType;
+}
+
+class PlayingCard extends Card {
   CardSuit cardSuit;
   CardType cardType;
   bool faceUp;
@@ -254,6 +259,7 @@ class PlayingCard {
     this.cardColor = cardSuit.color;
     this.position = data["Position"];
   }
+
   String get string {
     var result = "";
     result += this.typeToString;
