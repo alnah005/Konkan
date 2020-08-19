@@ -47,7 +47,7 @@ class Player {
     if (winnerPosition == this.position) {
       personalInfo.wins += 1;
     } else {
-      personalInfo.wins += 1;
+      personalInfo.losses += 1;
     }
     personalInfo.avgScore = (personalInfo.avgScore + _getScore(cards)) /
         (personalInfo.wins + personalInfo.losses);
