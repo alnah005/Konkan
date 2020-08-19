@@ -45,34 +45,74 @@ void main() {
   });
 
   group("Setting cards", () {
-    final player = Player(PositionOnScreen.bottom);
-    List<PlayingCard> cards = [
+    Player player = Player(PositionOnScreen.bottom);
+    final cards = [
       PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
       PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.jack),
       PlayingCard(cardSuit: CardSuit.hearts, cardType: CardType.jack),
     ];
-    player.cards = cards;
+    PlayingCard extraCard =
+        PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five);
     test("set cards for first time", () {
-      double setScore = player.setCards(
-          0, PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five));
-      //expect(setScore, 30.0);
-//      expect(player.openCards, [
-//        cards,
-//      ]);
+      player.cards = List.from(cards);
+      double setScore = player.setCards(0, extraCard);
+      expect(setScore, 30.0);
+      expect(player.openCards, [
+        cards,
+      ]);
     });
-    player.initialize("");
-    cards = [
+
+    test("setting for second time", () {
+      player.initialize("");
+      player.cards = List.from(cards);
+      player.openCards = [List.from(cards)];
+      double setScore = player.setCards(0, extraCard);
+      expect(player.openCards, [cards, cards]);
+    });
+
+    final cards2 = [
       PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
       PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.jack),
       PlayingCard(cardSuit: CardSuit.hearts, cardType: CardType.jack),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.nine),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.ten),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.queen),
     ];
-    player.cards = cards;
-    test("setting for second time", () {
-      player.openCards = [cards];
-      double setScore = player.setCards(
-          0, PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five));
-//      expect(setScore, 30.0);
-//      expect(player.openCards, [cards, cards]);
+
+    test("setting multiple groups", () {
+      player.initialize("");
+      expect(player.cards, []);
+      player.cards = List.from(cards2);
+      expect(player.cards, cards2);
+      double setScore = player.setCards(0, extraCard);
+      expect(setScore, 69.0);
+      expect(
+          player.openCards, [cards2.take(3).toList(), cards2.skip(3).toList()]);
+    });
+    test("setting multiple groups after setting", () {
+      player.initialize("");
+      player.cards = List.from(cards2);
+      player.openCards = [List.from(cards2)];
+      double setScore = player.setCards(0, extraCard);
+      expect(player.openCards, [
+        cards2.take(3).toList(),
+        cards2.skip(3).toList(),
+        cards2.take(3).toList(),
+        cards2.skip(3).toList()
+      ]);
+    });
+    extraCard =
+        PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.king);
+    test("setting multiple groups", () {
+      player.initialize("");
+      player.cards = List.from(cards2);
+      double setScore = player.setCards(0, extraCard);
+      expect(setScore, 79.0);
+      expect(player.openCards, [
+        cards2.take(3).toList(),
+        cards2.skip(3).toList() + [extraCard]
+      ]);
     });
   });
 }
