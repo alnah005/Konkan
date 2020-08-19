@@ -43,4 +43,36 @@ void main() {
       expect(player.personalInfo.avgScore, 40.0);
     });
   });
+
+  group("Setting cards", () {
+    final player = Player(PositionOnScreen.bottom);
+    List<PlayingCard> cards = [
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
+      PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.jack),
+      PlayingCard(cardSuit: CardSuit.hearts, cardType: CardType.jack),
+    ];
+    player.cards = cards;
+    test("set cards for first time", () {
+      double setScore = player.setCards(
+          0, PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five));
+      //expect(setScore, 30.0);
+//      expect(player.openCards, [
+//        cards,
+//      ]);
+    });
+    player.initialize("");
+    cards = [
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
+      PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.jack),
+      PlayingCard(cardSuit: CardSuit.hearts, cardType: CardType.jack),
+    ];
+    player.cards = cards;
+    test("setting for second time", () {
+      player.openCards = [cards];
+      double setScore = player.setCards(
+          0, PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five));
+//      expect(setScore, 30.0);
+//      expect(player.openCards, [cards, cards]);
+    });
+  });
 }
