@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 enum CardSuit { spades, hearts, diamonds, clubs, joker }
 
 enum CardType {
+  joker,
   one,
   two,
   three,
@@ -16,7 +17,41 @@ enum CardType {
   jack,
   queen,
   king,
-  joker,
+}
+
+CardType getType(int position) {
+  switch (position) {
+    case 1:
+      return CardType.one;
+    case 2:
+      return CardType.two;
+    case 3:
+      return CardType.three;
+    case 4:
+      return CardType.four;
+    case 5:
+      return CardType.five;
+    case 6:
+      return CardType.six;
+    case 7:
+      return CardType.seven;
+    case 8:
+      return CardType.eight;
+    case 9:
+      return CardType.nine;
+    case 10:
+      return CardType.ten;
+    case 11:
+      return CardType.jack;
+    case 12:
+      return CardType.queen;
+    case 13:
+      return CardType.king;
+    case 14:
+      return CardType.one;
+    default:
+      return null;
+  }
 }
 
 extension CardSuitExt on CardSuit {
@@ -37,6 +72,23 @@ extension CardSuitExt on CardSuit {
     }
   }
 
+  String get string {
+    switch (this) {
+      case CardSuit.hearts:
+        return "♥";
+      case CardSuit.diamonds:
+        return "♢";
+      case CardSuit.clubs:
+        return "♧";
+      case CardSuit.spades:
+        return "♤";
+      case CardSuit.joker:
+        return "";
+      default:
+        return null;
+    }
+  }
+
   CardColor get color {
     if (this == CardSuit.hearts || this == CardSuit.diamonds) {
       return CardColor.red;
@@ -50,33 +102,119 @@ extension CardExt on CardType {
   Map get data {
     switch (this) {
       case CardType.one:
-        return {"BodyString": "1", "HeadString": "1", "Penalty": 1};
+
+        /// ace is both in position 1 and 14
+        return {
+          "String": "Ace",
+          "BodyString": "",
+          "HeadString": "A",
+          "Position": 1,
+          "Penalty": 11
+        };
       case CardType.two:
-        return {"BodyString": "2", "HeadString": "2", "Penalty": 2};
+        return {
+          "String": "Two",
+          "BodyString": "2",
+          "HeadString": "2",
+          "Position": 2,
+          "Penalty": 2
+        };
       case CardType.three:
-        return {"BodyString": "3", "HeadString": "3", "Penalty": 3};
+        return {
+          "String": "Three",
+          "BodyString": "3",
+          "HeadString": "3",
+          "Position": 3,
+          "Penalty": 3
+        };
       case CardType.four:
-        return {"BodyString": "4", "HeadString": "4", "Penalty": 4};
+        return {
+          "String": "Four",
+          "BodyString": "4",
+          "HeadString": "4",
+          "Position": 4,
+          "Penalty": 4
+        };
       case CardType.five:
-        return {"BodyString": "5", "HeadString": "5", "Penalty": 5};
+        return {
+          "String": "Five",
+          "BodyString": "5",
+          "HeadString": "5",
+          "Position": 5,
+          "Penalty": 5
+        };
       case CardType.six:
-        return {"BodyString": "6", "HeadString": "6", "Penalty": 6};
+        return {
+          "String": "Six",
+          "BodyString": "6",
+          "HeadString": "6",
+          "Position": 6,
+          "Penalty": 6
+        };
       case CardType.seven:
-        return {"BodyString": "7", "HeadString": "7", "Penalty": 7};
+        return {
+          "String": "Seven",
+          "BodyString": "7",
+          "HeadString": "7",
+          "Position": 7,
+          "Penalty": 7
+        };
       case CardType.eight:
-        return {"BodyString": "8", "HeadString": "8", "Penalty": 8};
+        return {
+          "String": "Eight",
+          "BodyString": "8",
+          "HeadString": "8",
+          "Position": 8,
+          "Penalty": 8
+        };
       case CardType.nine:
-        return {"BodyString": "9", "HeadString": "9", "Penalty": 9};
+        return {
+          "String": "Nine",
+          "BodyString": "9",
+          "HeadString": "9",
+          "Position": 9,
+          "Penalty": 9
+        };
       case CardType.ten:
-        return {"BodyString": "10", "HeadString": "10", "Penalty": 10};
+        return {
+          "String": "Ten",
+          "BodyString": "10",
+          "HeadString": "10",
+          "Position": 10,
+          "Penalty": 10
+        };
       case CardType.jack:
-        return {"BodyString": "J", "HeadString": "J", "Penalty": 10};
+        return {
+          "String": "Jack",
+          "BodyString": "J",
+          "HeadString": "J",
+          "Position": 11,
+          "Penalty": 10
+        };
       case CardType.queen:
-        return {"BodyString": "Q", "HeadString": "Q", "Penalty": 10};
+        return {
+          "String": "Queen",
+          "BodyString": "Q",
+          "HeadString": "Q",
+          "Position": 12,
+          "Penalty": 10
+        };
       case CardType.king:
-        return {"BodyString": "K", "HeadString": "K", "Penalty": 10};
+        return {
+          "String": "King",
+          "BodyString": "K",
+          "HeadString": "K",
+          "Position": 13,
+          "Penalty": 10
+        };
       case CardType.joker:
-        return {"BodyString": "", "HeadString": "JKR", "Penalty": 10};
+        return {
+          "String": "Joker",
+          "BodyString": "",
+          "HeadString": "JKR",
+          "Position": 15,
+          "Penalty": 0
+        };
     }
     return {};
   }
@@ -88,7 +226,12 @@ enum CardColor {
 }
 
 // Simple playing card model
-class PlayingCard {
+abstract class Card {
+  CardSuit cardSuit;
+  CardType cardType;
+}
+
+class PlayingCard extends Card {
   CardSuit cardSuit;
   CardType cardType;
   bool faceUp;
@@ -98,12 +241,17 @@ class PlayingCard {
   Image suitImage;
   double penaltyVal;
   CardColor cardColor;
+  bool isDraggable;
+
+  /// the position on the sequence
+  int position;
 
   PlayingCard({
     @required this.cardSuit,
     @required this.cardType,
     this.faceUp = false,
     this.opened = false,
+    this.isDraggable = false,
   }) {
     var data = this.cardType.data;
     this.typeToString = data['HeadString'];
@@ -111,5 +259,15 @@ class PlayingCard {
     this.penaltyVal = data['Penalty'].toDouble();
     this.suitImage = cardSuit.image;
     this.cardColor = cardSuit.color;
+    this.position = data["Position"];
+  }
+
+  String get string {
+    var result = "";
+    result += this.typeToString;
+//    result += " ";
+    result += this.cardSuit.string;
+//    result += ']';
+    return result;
   }
 }

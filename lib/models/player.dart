@@ -1,3 +1,5 @@
+import 'package:solitaire/models/groups.dart';
+import 'package:solitaire/models/meld.dart';
 import 'package:solitaire/models/playing_card.dart';
 
 enum PositionOnScreen { bottom, right, left, top }
@@ -34,9 +36,12 @@ class Player {
   PlayingCard extraCard;
   PositionOnScreen position;
   PlayerInfo personalInfo = new PlayerInfo();
-  Player(this.position);
+  Player(this.position, {this.isAI = false}) {
+    if (this.isAI) {}
+  }
   bool discarded = true;
   bool eligibleToDraw = true;
+  bool isAI = false;
 
   void recordGame(PositionOnScreen winnerPosition) {
     personalInfo.avgScore =
@@ -44,7 +49,7 @@ class Player {
     if (winnerPosition == this.position) {
       personalInfo.wins += 1;
     } else {
-      personalInfo.wins += 1;
+      personalInfo.losses += 1;
     }
     personalInfo.avgScore = (personalInfo.avgScore + _getScore(cards)) /
         (personalInfo.wins + personalInfo.losses);
@@ -59,8 +64,8 @@ class Player {
   }
 
   void initialize(String name) {
-    cards = [];
-    openCards = [];
+    this.cards = [];
+    this.openCards = [[]];
     this.name = name;
   }
 
@@ -92,9 +97,10 @@ class Player {
     }
     this.eligibleToDraw = false;
     for (int i = 0; i < groups.length; i++) {
-      openCards.add(groups[i]);
+      if (groups.expand((i) => i).toList().length > 0) {
+        openCards.add(groups[i]);
+      }
     }
-
     this._delCardsFromMain(groups.expand((element) => element).toList());
     return settingScore;
   }
@@ -134,12 +140,41 @@ class Player {
   }
 
   List<List<PlayingCard>> _getGroups(List<PlayingCard> settingCards) {
+    List<List<PlayingCard>> result = [];
     if (settingCards.length < 2) {
+      result.add([]);
+      return result;
+    }
+    int beginIndex = 0;
+    int lastElement = settingCards.length;
+    while (beginIndex + 2 < lastElement) {
+      int groupIndex = beginIndex + 3;
+      bool groupIsValid =
+          _checkIfValid(settingCards.getRange(beginIndex, groupIndex).toList());
+      while (groupIsValid && groupIndex < lastElement) {
+        groupIndex += 1;
+        groupIsValid = _checkIfValid(
+            settingCards.getRange(beginIndex, groupIndex).toList());
+      }
+      if (groupIsValid) {
+        result.add(settingCards.sublist(beginIndex, groupIndex));
+      } else {
+        groupIsValid = _checkIfValid(
+            settingCards.getRange(beginIndex, groupIndex - 1).toList());
+        if (groupIsValid) {
+          result.add(settingCards.sublist(beginIndex, groupIndex - 1));
+        }
+      }
+      if (groupIsValid) {
+        beginIndex = groupIndex - 1;
+      } else {
+        beginIndex += 1;
+      }
+    }
+    if (result.length == 0) {
       return [[]];
     }
-    return [
-      [settingCards.first, settingCards.last]
-    ];
+    return result;
   }
 
   void _delCardsFromMain(List<PlayingCard> movedCards) {
@@ -153,5 +188,20 @@ class Player {
   void initializeForNextTurn() {
     this.discarded = true;
     this.eligibleToDraw = true;
+  }
+
+  bool _checkIfValid(List<PlayingCard> list) {
+    List<MeldClass> melds = validate(list);
+//    var cardz = list.map((e) => e.string);
+//    print("\nGroup = ${cardz} has ${melds.length} possible melds:");
+//    int i = 1;
+//    melds.forEach((element) {
+//      print("\t" + i.toString() + ")  " + element.shortInfo);
+//      i++;
+//    });
+    if (melds.length == 0) {
+      return false;
+    }
+    return true;
   }
 }

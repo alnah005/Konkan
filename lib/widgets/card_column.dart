@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/pages/game_screen.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
 
-typedef Null CardAcceptCallback(List<PlayingCard> card, CardList fromIndex);
+typedef Null CardAcceptCallback(
+    List<PlayingCard> card, CardList fromIndex, PlayingCard cardAfter);
 
 // This is a stack of overlayed cards (implemented using a stack)
 class CardColumn extends StatefulWidget {
@@ -15,7 +17,6 @@ class CardColumn extends StatefulWidget {
 
   // The index of the list in the game
   final CardList columnIndex;
-
   CardColumn(
       {@required this.cards,
       @required this.onCardsAdded,
@@ -26,39 +27,52 @@ class CardColumn extends StatefulWidget {
 }
 
 class _CardColumnState extends State<CardColumn> {
+  double translation;
+
   @override
   Widget build(BuildContext context) {
-    return _horizontal()
-        ? Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[_getCardColumn()],
-          )
-        : Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[_getCardColumn()],
-          );
+    double width = MediaQuery.of(context).size.width;
+    double optimalTranslation = (width - 40) / 14;
+    translation = widget.columnIndex == CardList.P4
+        ? optimalTranslation
+        : optimalTranslation / 17;
+    return Container(
+      width: _horizontal()
+          ? double.infinity
+          : widget.columnIndex == CardList.P4 ? 40 : 20,
+      height: _horizontal()
+          ? widget.columnIndex == CardList.P4 ? 60 : 30
+          : double.infinity,
+      child: _horizontal()
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[_getCardColumn()],
+            )
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[_getCardColumn()],
+            ),
+    );
   }
 
   Widget _getCardColumn() {
-    return Container(
-        height: _horizontal() ? 60 : (14 * 20.0) + 60,
-        width: _horizontal() ? (14 * 20.0) + 40 : 40,
-        alignment: Alignment.topCenter,
-        margin: EdgeInsets.all(2.0),
-        child: widget.cards.length > 0
-            ? Stack(
-                children: widget.cards.map((card) {
-                  int index = widget.cards.indexOf(card);
-                  return dragTarget(card, index);
-                }).toList(),
-              )
-            : Container());
+    return widget.cards.length > 0
+        ? Flexible(
+            fit: FlexFit.loose,
+            child: Stack(
+              children: widget.cards.map((card) {
+                int index = widget.cards.indexOf(card);
+                return dragTarget(card, index);
+              }).toList(),
+            ),
+          )
+        : Container();
   }
 
   Positioned dragTarget(PlayingCard card, int index) {
     return Positioned(
-      left: _horizontal() ? -index.roundToDouble() * -20 : 0,
-      top: _horizontal() ? 0 : index.roundToDouble() * 20,
+      left: _horizontal() ? -index.roundToDouble() * -translation : 0,
+      top: _horizontal() ? 0 : index.roundToDouble() * translation,
       child: DragTarget<Map>(
         builder: (context, listOne, listTwo) {
           return transformedCard(card, index);
@@ -71,10 +85,7 @@ class _CardColumnState extends State<CardColumn> {
           return false;
         },
         onAccept: (value) {
-          widget.onCardsAdded(
-            value["cards"],
-            value["fromIndex"],
-          );
+          widget.onCardsAdded(value["cards"], value["fromIndex"], card);
         },
       ),
     );

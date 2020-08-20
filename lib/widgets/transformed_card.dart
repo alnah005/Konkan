@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/pages/game_screen.dart';
@@ -31,26 +33,28 @@ class _TransformedCardState extends State<TransformedCard> {
   Widget _buildCard() {
     return !widget.playingCard.faceUp
         ? Container(
-            height: 60.0,
-            width: 40.0,
+            height: 30.0,
+            width: 20.0,
             decoration: BoxDecoration(
               color: Colors.blue,
               border: Border.all(color: Colors.black),
               borderRadius: BorderRadius.circular(8.0),
             ),
           )
-        : Draggable<Map>(
-            child: _buildFaceUpCard(),
-            feedback: _buildFaceUpCard(),
-            childWhenDragging: Container(
-              width: 40.0,
-              height: 60.0,
-            ),
-            data: {
-              "cards": [widget.playingCard],
-              "fromIndex": widget.columnIndex,
-            },
-          );
+        : widget.playingCard.isDraggable
+            ? Draggable<Map>(
+                child: _buildFaceUpCard(),
+                feedback: _buildFaceUpCard(),
+                childWhenDragging: Container(
+                  width: 40.0,
+                  height: 60.0,
+                ),
+                data: {
+                  "cards": [widget.playingCard],
+                  "fromIndex": widget.columnIndex,
+                },
+              )
+            : _buildFaceUpCard();
   }
 
   Widget _buildFaceUpCard() {
@@ -71,25 +75,18 @@ class _TransformedCardState extends State<TransformedCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Center(
-                    child: Text(
-                      widget.playingCard.typeToStringBody,
-                      style: TextStyle(
-                        fontSize: 16.0,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 20.0,
+                      child: Container(
+                    height: 17.0,
                     child: widget.playingCard.suitImage,
-                  ),
+                  )),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(4.0),
+              padding: const EdgeInsets.all(2.0),
               child: Align(
-                alignment: Alignment.topRight,
-                child: Row(
+                alignment: Alignment.topLeft,
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -99,7 +96,42 @@ class _TransformedCardState extends State<TransformedCard> {
                         fontSize: 10.0,
                       ),
                     ),
-                    Container(height: 10.0, child: widget.playingCard.suitImage)
+                    Container(
+                        height: 10.0, child: widget.playingCard.suitImage),
+                    Expanded(
+                        child: Container(
+                      width: 3,
+                    )),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                        child: Container(
+                      width: 3,
+                    )),
+                    Transform.rotate(
+                      angle: pi,
+                      child: Container(
+                          height: 10.0, child: widget.playingCard.suitImage),
+                    ),
+                    Transform.rotate(
+                      angle: pi,
+                      child: Text(
+                        widget.playingCard.typeToString,
+                        style: TextStyle(
+                          fontSize: 10.0,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

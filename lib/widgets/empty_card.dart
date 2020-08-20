@@ -58,13 +58,13 @@ class _EmptyCardDeckState extends State<EmptyCardDeck> {
               : Container(
                   height: 60,
                   width: 40,
-                  child: TransformedCard(
-                    playingCard: widget.cardsAdded.last,
-                    columnIndex: widget.columnIndex,
-//                    attachedCards: [
-//                      widget.cardsAdded.last,
-//                    ],
-                  ),
+                  child: Stack(
+                      children: widget.cardsAdded.map((card) {
+                    return TransformedCard(
+                      playingCard: card,
+                      columnIndex: widget.columnIndex,
+                    );
+                  }).toList()),
                 ),
         );
       },
@@ -78,10 +78,8 @@ class _EmptyCardDeckState extends State<EmptyCardDeck> {
         return false;
       },
       onAccept: (value) {
-        widget.onCardAdded(
-          value["cards"],
-          value["fromIndex"],
-        );
+        widget.onCardAdded(value["cards"], value["fromIndex"],
+            value["cards"].length > 0 ? value["cards"][0] : null);
       },
     );
   }
