@@ -57,22 +57,25 @@ class _GameScreenState extends State<GameScreen> {
       this.recycleDeck();
     }
 
-    var res = cardDeckClosed.removeLast();
-    res.faceUp = false;
-    res.opened = true;
-    res.isDraggable = true;
-    return res;
+    return this.cardDeckClosed.removeLast()
+      ..faceUp = false
+      ..isDraggable = true
+      ..opened = true;
   }
 
   void recycleDeck() {
-    this.cardDeckOpened.shuffle();
-    this.cardDeckOpened.forEach((element) {
-      element.faceUp = true;
-      element.opened = false;
-      element.isDraggable = false;
-      cardDeckClosed.add(element);
-    });
-    this.cardDeckOpened.clear();
+    /// pulling out the last card so that it stays on the dropped cards stack
+    print("recycling the deck..");
+    var lastCard = this.droppedCards.removeLast();
+    this.cardDeckClosed.addAll(this.droppedCards.map((e) => e
+      ..opened = false
+      ..isDraggable = false
+      ..faceUp = false));
+    this.droppedCards.clear();
+
+    /// adding back the last card to the dropped cards stack
+    this.droppedCards.add(lastCard);
+    this.cardDeckClosed.shuffle();
   }
 
   @override
@@ -416,7 +419,9 @@ class _GameScreenState extends State<GameScreen> {
                   droppedCards.clear();
                 } else {
                   if (currentTurn.eligibleToDraw) {
-                    currentTurn.cards.add(this.drawFromDeck());
+                    var newCard = this.drawFromDeck();
+                    newCard.faceUp = true;
+                    currentTurn.cards.add(newCard);
                     currentTurn.discarded = false;
                     currentTurn.eligibleToDraw = false;
                   } else {
