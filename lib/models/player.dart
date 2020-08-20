@@ -65,7 +65,7 @@ class Player {
 
   void initialize(String name) {
     this.cards = [];
-    this.openCards = [];
+    this.openCards = [[]];
     this.name = name;
   }
 
@@ -159,9 +159,20 @@ class Player {
       if (groupIsValid) {
         result.add(settingCards.sublist(beginIndex, groupIndex));
       } else {
-        result.add(settingCards.sublist(beginIndex, groupIndex - 1));
+        groupIsValid = _checkIfValid(
+            settingCards.getRange(beginIndex, groupIndex - 1).toList());
+        if (groupIsValid) {
+          result.add(settingCards.sublist(beginIndex, groupIndex - 1));
+        }
       }
-      beginIndex = groupIndex - 1;
+      if (groupIsValid) {
+        beginIndex = groupIndex - 1;
+      } else {
+        beginIndex += 1;
+      }
+    }
+    if (result.length == 0) {
+      return [[]];
     }
     return result;
   }
@@ -181,13 +192,13 @@ class Player {
 
   bool _checkIfValid(List<PlayingCard> list) {
     List<MeldClass> melds = validate(list);
-    var cardz = list.map((e) => e.string);
-    print("\nGroup = ${cardz} has ${melds.length} possible melds:");
-    int i = 1;
-    melds.forEach((element) {
-      print("\t" + i.toString() + ")  " + element.shortInfo);
-      i++;
-    });
+//    var cardz = list.map((e) => e.string);
+//    print("\nGroup = ${cardz} has ${melds.length} possible melds:");
+//    int i = 1;
+//    melds.forEach((element) {
+//      print("\t" + i.toString() + ")  " + element.shortInfo);
+//      i++;
+//    });
     if (melds.length == 0) {
       return false;
     }

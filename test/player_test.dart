@@ -110,5 +110,22 @@ void main() {
         cards2.skip(3).toList() + [extraCard2]
       ]);
     });
+
+    final cards3 = [
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
+      PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.jack),
+      PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.nine),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.ten),
+      PlayingCard(cardSuit: CardSuit.spades, cardType: CardType.jack),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.queen),
+    ];
+    test("No groups are valid", () {
+      player.initialize("");
+      player.cards = List.from(cards3);
+      double setScore = player.setCards(0, extraCard2);
+      expect(setScore, 0);
+      expect(player.openCards, [[]]);
+    });
   });
 }
