@@ -51,7 +51,7 @@ void main() {
       PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.jack),
       PlayingCard(cardSuit: CardSuit.hearts, cardType: CardType.jack),
     ];
-    PlayingCard extraCard =
+    final extraCard =
         PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five);
     test("set cards for first time", () {
       player.cards = List.from(cards);
@@ -95,23 +95,19 @@ void main() {
       player.cards = List.from(cards2);
       player.openCards = [List.from(cards2)];
       double setScore = player.setCards(0, extraCard);
-      expect(player.openCards, [
-        cards2.take(3).toList(),
-        cards2.skip(3).toList(),
-        cards2.take(3).toList(),
-        cards2.skip(3).toList()
-      ]);
+      expect(player.openCards,
+          [cards2, cards2.take(3).toList(), cards2.skip(3).toList()]);
     });
-    extraCard =
+    final extraCard2 =
         PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.king);
     test("setting multiple groups", () {
       player.initialize("");
       player.cards = List.from(cards2);
-      double setScore = player.setCards(0, extraCard);
+      double setScore = player.setCards(0, extraCard2);
       expect(setScore, 79.0);
       expect(player.openCards, [
         cards2.take(3).toList(),
-        cards2.skip(3).toList() + [extraCard]
+        cards2.skip(3).toList() + [extraCard2]
       ]);
     });
   });

@@ -1,3 +1,5 @@
+import 'package:solitaire/models/groups.dart';
+import 'package:solitaire/models/meld.dart';
 import 'package:solitaire/models/playing_card.dart';
 
 enum PositionOnScreen { bottom, right, left, top }
@@ -138,12 +140,30 @@ class Player {
   }
 
   List<List<PlayingCard>> _getGroups(List<PlayingCard> settingCards) {
+    List<List<PlayingCard>> result = [];
     if (settingCards.length < 2) {
-      return [[]];
+      result.add([]);
+      return result;
     }
-    return [
-      [settingCards.first, settingCards.last]
-    ];
+    int beginIndex = 0;
+    int lastElement = settingCards.length;
+    while (beginIndex + 2 < lastElement) {
+      int groupIndex = beginIndex + 3;
+      bool groupIsValid =
+          _checkIfValid(settingCards.getRange(beginIndex, groupIndex).toList());
+      while (groupIsValid && groupIndex < lastElement) {
+        groupIndex += 1;
+        groupIsValid = _checkIfValid(
+            settingCards.getRange(beginIndex, groupIndex).toList());
+      }
+      if (groupIsValid) {
+        result.add(settingCards.sublist(beginIndex, groupIndex));
+      } else {
+        result.add(settingCards.sublist(beginIndex, groupIndex - 1));
+      }
+      beginIndex = groupIndex - 1;
+    }
+    return result;
   }
 
   void _delCardsFromMain(List<PlayingCard> movedCards) {
@@ -157,5 +177,20 @@ class Player {
   void initializeForNextTurn() {
     this.discarded = true;
     this.eligibleToDraw = true;
+  }
+
+  bool _checkIfValid(List<PlayingCard> list) {
+    List<MeldClass> melds = validate(list);
+    var cardz = list.map((e) => e.string);
+    print("\nGroup = ${cardz} has ${melds.length} possible melds:");
+    int i = 1;
+    melds.forEach((element) {
+      print("\t" + i.toString() + ")  " + element.shortInfo);
+      i++;
+    });
+    if (melds.length == 0) {
+      return false;
+    }
+    return true;
   }
 }
