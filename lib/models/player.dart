@@ -64,8 +64,9 @@ class Player {
   }
 
   void initialize(String name) {
-    this.cards = [];
-    this.openCards = [[]];
+    cards = [];
+    openCards = [];
+    ;
     this.name = name;
   }
 

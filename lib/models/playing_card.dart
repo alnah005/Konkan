@@ -49,6 +49,8 @@ CardType getType(int position) {
       return CardType.king;
     case 14:
       return CardType.one;
+    default:
+      return null;
   }
 }
 
