@@ -29,6 +29,7 @@ class GameScreen extends StatefulWidget {
     CardList.P3,
     CardList.P4
   ];
+
   @override
   _GameScreenState createState() => _GameScreenState();
 }
@@ -47,8 +48,32 @@ class _GameScreenState extends State<GameScreen> {
   List<PlayingCard> cardDeckClosed = [];
   List<PlayingCard> cardDeckOpened = [];
   double settingScore = 10;
+
   // Stores the card in the upper boxes
   List<PlayingCard> droppedCards = [];
+
+  PlayingCard drawFromDeck() {
+    if (this.cardDeckClosed.length == 0) {
+      this.recycleDeck();
+    }
+
+    var res = cardDeckClosed.removeLast();
+    res.faceUp = false;
+    res.opened = true;
+    res.isDraggable = true;
+    return res;
+  }
+
+  void recycleDeck() {
+    this.cardDeckOpened.shuffle();
+    this.cardDeckOpened.forEach((element) {
+      element.faceUp = true;
+      element.opened = false;
+      element.isDraggable = false;
+      cardDeckClosed.add(element);
+    });
+    this.cardDeckOpened.clear();
+  }
 
   @override
   void initState() {
@@ -391,12 +416,7 @@ class _GameScreenState extends State<GameScreen> {
                   droppedCards.clear();
                 } else {
                   if (currentTurn.eligibleToDraw) {
-                    currentTurn.cards.add(
-                      cardDeckClosed.removeLast()
-                        ..faceUp = true
-                        ..opened = true
-                        ..isDraggable = true,
-                    );
+                    currentTurn.cards.add(this.drawFromDeck());
                     currentTurn.discarded = false;
                     currentTurn.eligibleToDraw = false;
                   } else {
@@ -472,12 +492,7 @@ class _GameScreenState extends State<GameScreen> {
                     /// set period of time, making the screen seem laggy or glitched.
                     //sleep(const Duration(seconds:1));
 
-                    currentTurn.cards.add(
-                      cardDeckClosed.removeLast()
-                        ..faceUp = false
-                        ..opened = true
-                        ..isDraggable = true,
-                    );
+                    currentTurn.cards.add(this.drawFromDeck());
                     var throwCard = currentTurn.cards[1];
                     throwCard.faceUp = true;
                     throwCard.isDraggable = true;
