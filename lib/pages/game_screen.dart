@@ -29,6 +29,7 @@ class GameScreen extends StatefulWidget {
     CardList.P3,
     CardList.P4
   ];
+
   @override
   _GameScreenState createState() => _GameScreenState();
 }
@@ -47,8 +48,35 @@ class _GameScreenState extends State<GameScreen> {
   List<PlayingCard> cardDeckClosed = [];
   List<PlayingCard> cardDeckOpened = [];
   double settingScore = 51;
+
   // Stores the card in the upper boxes
   List<PlayingCard> droppedCards = [];
+
+  PlayingCard drawFromDeck() {
+    if (this.cardDeckClosed.length == 0) {
+      this.recycleDeck();
+    }
+
+    return this.cardDeckClosed.removeLast()
+      ..faceUp = false
+      ..isDraggable = true
+      ..opened = true;
+  }
+
+  void recycleDeck() {
+    /// pulling out the last card so that it stays on the dropped cards stack
+    print("recycling the deck..");
+    var lastCard = this.droppedCards.removeLast();
+    this.cardDeckClosed.addAll(this.droppedCards.map((e) => e
+      ..opened = false
+      ..isDraggable = false
+      ..faceUp = false));
+    this.droppedCards.clear();
+
+    /// adding back the last card to the dropped cards stack
+    this.droppedCards.add(lastCard);
+    this.cardDeckClosed.shuffle();
+  }
 
   @override
   void initState() {
@@ -405,12 +433,9 @@ class _GameScreenState extends State<GameScreen> {
                   droppedCards.clear();
                 } else {
                   if (currentTurn.eligibleToDraw) {
-                    currentTurn.cards.add(
-                      cardDeckClosed.removeLast()
-                        ..faceUp = true
-                        ..opened = true
-                        ..isDraggable = true,
-                    );
+                    var newCard = this.drawFromDeck();
+                    newCard.faceUp = true;
+                    currentTurn.cards.add(newCard);
                     currentTurn.discarded = false;
                     currentTurn.eligibleToDraw = false;
                   } else {
@@ -486,12 +511,7 @@ class _GameScreenState extends State<GameScreen> {
                     /// set period of time, making the screen seem laggy or glitched.
                     //sleep(const Duration(seconds:1));
 
-                    currentTurn.cards.add(
-                      cardDeckClosed.removeLast()
-                        ..faceUp = false
-                        ..opened = true
-                        ..isDraggable = true,
-                    );
+                    currentTurn.cards.add(this.drawFromDeck());
                     var throwCard = currentTurn.cards[1];
                     throwCard.faceUp = true;
                     throwCard.isDraggable = true;
