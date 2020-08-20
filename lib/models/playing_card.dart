@@ -106,8 +106,8 @@ extension CardExt on CardType {
         /// ace is both in position 1 and 14
         return {
           "String": "Ace",
-          "BodyString": "1",
-          "HeadString": "1",
+          "BodyString": "",
+          "HeadString": "A",
           "Position": 1,
           "Penalty": 11
         };
