@@ -47,7 +47,7 @@ class _GameScreenState extends State<GameScreen> {
   // Stores the card deck
   List<PlayingCard> cardDeckClosed = [];
   List<PlayingCard> cardDeckOpened = [];
-  double settingScore = 10;
+  double settingScore = 51;
 
   // Stores the card in the upper boxes
   List<PlayingCard> droppedCards = [];
@@ -147,7 +147,11 @@ class _GameScreenState extends State<GameScreen> {
             child: Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _getSetListFromIndex(CardList.P2SET).length > 0
+                children: _getSetListFromIndex(CardList.P2SET)
+                            .expand((i) => i)
+                            .toList()
+                            .length >
+                        0
                     ? _getSetListFromIndex(CardList.P2SET)
                         .map(
                           (listCards) => CardColumn(
@@ -214,23 +218,26 @@ class _GameScreenState extends State<GameScreen> {
                     child: Container(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children:
-                            _getSetListFromIndex(CardList.P1SET).length > 0
-                                ? _getSetListFromIndex(CardList.P1SET)
-                                    .map(
-                                      (listCards) => CardColumn(
-                                        cards: listCards,
-                                        onCardsAdded: (cards, index, card) {},
-                                        columnIndex: CardList.P1,
-                                      ),
-                                    )
+                        children: _getSetListFromIndex(CardList.P1SET)
+                                    .expand((i) => i)
                                     .toList()
-                                : [
-                                    Container(
-                                      height: 0,
-                                      width: 0,
-                                    )
-                                  ],
+                                    .length >
+                                0
+                            ? _getSetListFromIndex(CardList.P1SET)
+                                .map(
+                                  (listCards) => CardColumn(
+                                    cards: listCards,
+                                    onCardsAdded: (cards, index, card) {},
+                                    columnIndex: CardList.P1,
+                                  ),
+                                )
+                                .toList()
+                            : [
+                                Container(
+                                  height: 0,
+                                  width: 0,
+                                )
+                              ],
                       ),
                     ),
                   ),
@@ -264,23 +271,26 @@ class _GameScreenState extends State<GameScreen> {
                     child: Container(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children:
-                            _getSetListFromIndex(CardList.P3SET).length > 0
-                                ? _getSetListFromIndex(CardList.P3SET)
-                                    .map(
-                                      (listCards) => CardColumn(
-                                        cards: listCards,
-                                        onCardsAdded: (cards, index, card) {},
-                                        columnIndex: CardList.P3,
-                                      ),
-                                    )
+                        children: _getSetListFromIndex(CardList.P3SET)
+                                    .expand((i) => i)
                                     .toList()
-                                : [
-                                    Container(
-                                      height: 0,
-                                      width: 0,
-                                    )
-                                  ],
+                                    .length >
+                                0
+                            ? _getSetListFromIndex(CardList.P3SET)
+                                .map(
+                                  (listCards) => CardColumn(
+                                    cards: listCards,
+                                    onCardsAdded: (cards, index, card) {},
+                                    columnIndex: CardList.P3,
+                                  ),
+                                )
+                                .toList()
+                            : [
+                                Container(
+                                  height: 0,
+                                  width: 0,
+                                )
+                              ],
                       ),
                     ),
                   ),
@@ -331,7 +341,11 @@ class _GameScreenState extends State<GameScreen> {
             child: Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _getSetListFromIndex(CardList.P4SET).length > 0
+                children: _getSetListFromIndex(CardList.P4SET)
+                            .expand((i) => i)
+                            .toList()
+                            .length >
+                        0
                     ? _getSetListFromIndex(CardList.P4SET)
                         .map(
                           (listCards) => Flexible(
