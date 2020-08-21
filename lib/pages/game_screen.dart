@@ -736,7 +736,11 @@ class _GameScreenState extends State<GameScreen> {
       return;
     }
     if (settingPlayer.discarded) {
-      settingScore = settingPlayer.setCards(settingScore, droppedCards.last);
+      droppedCards.isEmpty
+          ? settingScore = settingPlayer.setCards(settingScore)
+          : settingScore =
+              settingPlayer.setCards(settingScore, droppedCards.last);
+
       if (!settingPlayer.eligibleToDraw) {
         droppedCards.removeAt(droppedCards.indexOf(droppedCards.last));
         settingPlayer.discarded = false;
