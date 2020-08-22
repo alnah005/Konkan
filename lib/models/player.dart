@@ -51,16 +51,24 @@ class Player {
     } else {
       personalInfo.losses += 1;
     }
-    personalInfo.avgScore = (personalInfo.avgScore + _getScore(cards)) /
+    personalInfo.avgScore = (personalInfo.avgScore + _getPenalty(cards)) /
         (personalInfo.wins + personalInfo.losses);
   }
 
-  double _getScore(List<PlayingCard> cardsList) {
+  double _getPenalty(List<PlayingCard> cardsList) {
     double result = 0.0;
     for (int i = 0; i < cardsList.length; i++) {
       result += cardsList[i].penaltyVal;
     }
     return result;
+  }
+
+  double _getScore(List<PlayingCard> cardsList) {
+    var melds = validate(cardsList);
+    if (melds.length > 0) {
+      return melds[0].penalty.ceilToDouble();
+    }
+    return 0;
   }
 
   void initialize(String name) {
