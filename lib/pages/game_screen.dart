@@ -180,6 +180,7 @@ class _GameScreenState extends State<GameScreen> {
                               }
                             },
                             columnIndex: CardList.P2,
+                            setCards: true,
                           ),
                         )
                         .toList()
@@ -273,6 +274,7 @@ class _GameScreenState extends State<GameScreen> {
                                       }
                                     },
                                     columnIndex: CardList.P1,
+                                    setCards: true,
                                   ),
                                 )
                                 .toList()
@@ -348,6 +350,7 @@ class _GameScreenState extends State<GameScreen> {
                                       }
                                     },
                                     columnIndex: CardList.P3,
+                                    setCards: true,
                                   ),
                                 )
                                 .toList()
@@ -441,6 +444,7 @@ class _GameScreenState extends State<GameScreen> {
                                 }
                               },
                               columnIndex: CardList.P4,
+                              setCards: true,
                             ),
                           ),
                         )

@@ -17,10 +17,12 @@ class CardColumn extends StatefulWidget {
 
   // The index of the list in the game
   final CardList columnIndex;
+  final bool setCards;
   CardColumn(
       {@required this.cards,
       @required this.onCardsAdded,
-      @required this.columnIndex});
+      @required this.columnIndex,
+      this.setCards = false});
 
   @override
   _CardColumnState createState() => _CardColumnState();
@@ -79,7 +81,8 @@ class _CardColumnState extends State<CardColumn> {
         },
         onWillAccept: (value) {
           CardList index = value["fromIndex"];
-          if (index == widget.columnIndex) {
+          if ((index == widget.columnIndex) ||
+              (isAPlayerDeck(index) && widget.setCards)) {
             return true;
           }
           return false;
@@ -99,6 +102,21 @@ class _CardColumnState extends State<CardColumn> {
 //                            widget.cards.sublist(index, widget.cards.length),
       columnIndex: widget.columnIndex,
     );
+  }
+
+  bool isAPlayerDeck(CardList index) {
+    switch (index) {
+      case CardList.P1:
+        return true;
+      case CardList.P2:
+        return true;
+      case CardList.P3:
+        return true;
+      case CardList.P4:
+        return true;
+      default:
+        return false;
+    }
   }
 
   bool _horizontal() {
