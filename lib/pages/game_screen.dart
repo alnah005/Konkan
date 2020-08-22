@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:solitaire/models/groups.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/widgets/card_column.dart';
@@ -147,16 +148,37 @@ class _GameScreenState extends State<GameScreen> {
             child: Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _getSetListFromIndex(CardList.P2SET)
+                children: _getSetListFromIndex(CardList.P2)
                             .expand((i) => i)
                             .toList()
                             .length >
                         0
-                    ? _getSetListFromIndex(CardList.P2SET)
+                    ? _getSetListFromIndex(CardList.P2)
                         .map(
                           (listCards) => CardColumn(
                             cards: listCards,
-                            onCardsAdded: (cards, index, card) {},
+                            onCardsAdded: (cards, index, card) {
+                              var melds = validate(listCards);
+                              PlayingCard result = cards.first;
+                              if (melds.length > 0) {
+                                result = melds[0].dropCard(cards.first);
+                              }
+                              if (result != cards.first) {
+                                var returnDeck = _getListFromIndex(index);
+                                if (result != null) {
+                                  setState(() {
+                                    returnDeck.add(result);
+                                    returnDeck.remove(cards.first);
+                                    _refreshList(index);
+                                  });
+                                } else {
+                                  setState(() {
+                                    returnDeck.remove(cards.first);
+                                    _refreshList(index);
+                                  });
+                                }
+                              }
+                            },
                             columnIndex: CardList.P2,
                           ),
                         )
@@ -218,16 +240,38 @@ class _GameScreenState extends State<GameScreen> {
                     child: Container(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: _getSetListFromIndex(CardList.P1SET)
+                        children: _getSetListFromIndex(CardList.P1)
                                     .expand((i) => i)
                                     .toList()
                                     .length >
                                 0
-                            ? _getSetListFromIndex(CardList.P1SET)
+                            ? _getSetListFromIndex(CardList.P1)
                                 .map(
                                   (listCards) => CardColumn(
                                     cards: listCards,
-                                    onCardsAdded: (cards, index, card) {},
+                                    onCardsAdded: (cards, index, card) {
+                                      var melds = validate(listCards);
+                                      PlayingCard result = cards.first;
+                                      if (melds.length > 0) {
+                                        result = melds[0].dropCard(cards.first);
+                                      }
+                                      if (result != cards.first) {
+                                        var returnDeck =
+                                            _getListFromIndex(index);
+                                        if (result != null) {
+                                          setState(() {
+                                            returnDeck.add(result);
+                                            returnDeck.remove(cards.first);
+                                            _refreshList(index);
+                                          });
+                                        } else {
+                                          setState(() {
+                                            returnDeck.remove(cards.first);
+                                            _refreshList(index);
+                                          });
+                                        }
+                                      }
+                                    },
                                     columnIndex: CardList.P1,
                                   ),
                                 )
@@ -271,16 +315,38 @@ class _GameScreenState extends State<GameScreen> {
                     child: Container(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: _getSetListFromIndex(CardList.P3SET)
+                        children: _getSetListFromIndex(CardList.P3)
                                     .expand((i) => i)
                                     .toList()
                                     .length >
                                 0
-                            ? _getSetListFromIndex(CardList.P3SET)
+                            ? _getSetListFromIndex(CardList.P3)
                                 .map(
                                   (listCards) => CardColumn(
                                     cards: listCards,
-                                    onCardsAdded: (cards, index, card) {},
+                                    onCardsAdded: (cards, index, card) {
+                                      var melds = validate(listCards);
+                                      PlayingCard result = cards.first;
+                                      if (melds.length > 0) {
+                                        result = melds[0].dropCard(cards.first);
+                                      }
+                                      if (result != cards.first) {
+                                        var returnDeck =
+                                            _getListFromIndex(index);
+                                        if (result != null) {
+                                          setState(() {
+                                            returnDeck.add(result);
+                                            returnDeck.remove(cards.first);
+                                            _refreshList(index);
+                                          });
+                                        } else {
+                                          setState(() {
+                                            returnDeck.remove(cards.first);
+                                            _refreshList(index);
+                                          });
+                                        }
+                                      }
+                                    },
                                     columnIndex: CardList.P3,
                                   ),
                                 )
@@ -341,18 +407,39 @@ class _GameScreenState extends State<GameScreen> {
             child: Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _getSetListFromIndex(CardList.P4SET)
+                children: _getSetListFromIndex(CardList.P4)
                             .expand((i) => i)
                             .toList()
                             .length >
                         0
-                    ? _getSetListFromIndex(CardList.P4SET)
+                    ? _getSetListFromIndex(CardList.P4)
                         .map(
                           (listCards) => Flexible(
                             fit: FlexFit.loose,
                             child: CardColumn(
                               cards: listCards,
-                              onCardsAdded: (cards, index, card) {},
+                              onCardsAdded: (cards, index, card) {
+                                var melds = validate(listCards);
+                                PlayingCard result = cards.first;
+                                if (melds.length > 0) {
+                                  result = melds[0].dropCard(cards.first);
+                                }
+                                if (result != cards.first) {
+                                  var returnDeck = _getListFromIndex(index);
+                                  if (result != null) {
+                                    setState(() {
+                                      returnDeck.add(result);
+                                      returnDeck.remove(cards.first);
+                                      _refreshList(index);
+                                    });
+                                  } else {
+                                    setState(() {
+                                      returnDeck.remove(cards.first);
+                                      _refreshList(index);
+                                    });
+                                  }
+                                }
+                              },
                               columnIndex: CardList.P4,
                             ),
                           ),
@@ -695,13 +782,13 @@ class _GameScreenState extends State<GameScreen> {
 
   List<List<PlayingCard>> _getSetListFromIndex(CardList index) {
     switch (index) {
-      case CardList.P1SET:
+      case CardList.P1:
         return playersList[0].openCards;
-      case CardList.P2SET:
+      case CardList.P2:
         return playersList[1].openCards;
-      case CardList.P3SET:
+      case CardList.P3:
         return playersList[2].openCards;
-      case CardList.P4SET:
+      case CardList.P4:
         return playersList[3].openCards;
       default:
         return [];
