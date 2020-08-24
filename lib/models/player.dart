@@ -222,6 +222,8 @@ class Player {
     if (settingCards.length < 3) {
       return [[]];
     }
+
+    // begin generating groups from left to right and right to left
     List<List<PlayingCard>> result = [];
     List<List<PlayingCard>> leftGroups = _getGroups(settingCards);
     List<PlayingCard> reversedSettingCards =
@@ -230,6 +232,8 @@ class Player {
     List<List<int>> leftRange = _getRangeFromGroups(leftGroups, settingCards);
     List<List<int>> rightRange =
         _getRangeFromGroups(rightGroups, reversedSettingCards);
+
+    // fix the range because of reversing cards
     for (int i = 0; i < rightRange.length; i++) {
       rightRange[i] = rightRange[i].reversed.toList().cast<int>();
       rightRange[i] = [
@@ -237,6 +241,9 @@ class Player {
         settingCards.length - rightRange[i][1]
       ];
     }
+    // end generating groups from left to right and right to left
+
+    // begin combining left and right groups
     var left = new List<int>.generate(leftRange.length, (i) => i);
     var right = new List<int>.generate(rightRange.length, (i) => i);
     int i = 0;
@@ -268,27 +275,14 @@ class Player {
       }
       i += 1;
     }
+    // end combining left and right groups
+
     left.forEach((element) {
       result.add(leftGroups[element]);
     });
     right.forEach((element) {
+      // fix the cards because of reversing cards
       result.add(rightGroups[element].reversed.toList().cast<PlayingCard>());
-    });
-
-    if (result.length < 1) {
-      return [[]];
-    }
-
-    List<PlayingCard> remainingCards = List.from(settingCards);
-    left.forEach((element) {
-      leftGroups[element].forEach((element2) {
-        remainingCards.removeAt(remainingCards.indexOf(element2));
-      });
-    });
-    right.forEach((element) {
-      rightGroups[element].forEach((element2) {
-        remainingCards.removeAt(remainingCards.indexOf(element2));
-      });
     });
 
     double leftScore = _getGroupScore(leftGroups);
@@ -303,6 +297,9 @@ class Player {
       if (rightScore > combined) {
         return rightGroups;
       }
+    }
+    if (result.length < 1) {
+      return [[]];
     }
     return result;
   }
