@@ -95,13 +95,13 @@ class Player {
   double _afterFirstTime(double settingScore, PlayingCard extraCard) {
     List<List<PlayingCard>> groups;
     if (extraCard != null) {
-      groups = _getGroups(cards + [extraCard]);
+      groups = _getOptimalGroups(cards + [extraCard]);
       if (groups.expand((i) => i).toList().length < 1) {
-        print("You have nothing to awt");
+        print("You have nothing to set");
         return settingScore;
       }
     } else {
-      groups = _getGroups(cards);
+      groups = _getOptimalGroups(cards);
     }
     this.eligibleToDraw = false;
     for (int i = 0; i < groups.length; i++) {
@@ -116,10 +116,10 @@ class Player {
   double _firstTime(double settingScore, PlayingCard extraCard) {
     List<List<PlayingCard>> groups;
     if (extraCard != null) {
-      groups = _getGroups(cards + [extraCard]);
+      groups = _getOptimalGroups(cards + [extraCard]);
     } else {
-      groups = _getGroups(cards);
-      if (groups.expand((i) => i).toList().length < 15) {
+      groups = _getOptimalGroups(cards);
+      if (groups.expand((i) => i).toList().length != 14) {
         print("You have not won");
         return settingScore;
       }
@@ -164,6 +164,7 @@ class Player {
         groupIsValid = _checkIfValid(
             settingCards.getRange(beginIndex, groupIndex).toList());
       }
+      // last element in list
       if (groupIsValid) {
         result.add(settingCards.sublist(beginIndex, groupIndex));
       } else {
@@ -173,6 +174,7 @@ class Player {
           result.add(settingCards.sublist(beginIndex, groupIndex - 1));
         }
       }
+      // restart grouping from index of last group
       if (groupIsValid) {
         beginIndex = groupIndex - 1;
       } else {
@@ -200,16 +202,168 @@ class Player {
 
   bool _checkIfValid(List<PlayingCard> list) {
     List<MeldClass> melds = validate(list);
-//    var cardz = list.map((e) => e.string);
-//    print("\nGroup = ${cardz} has ${melds.length} possible melds:");
-//    int i = 1;
-//    melds.forEach((element) {
-//      print("\t" + i.toString() + ")  " + element.shortInfo);
-//      i++;
-//    });
     if (melds.length == 0) {
       return false;
     }
     return true;
+  }
+
+  /*
+  This method check groups from left to right
+  Then it checks groups from right to left
+  Then it calculates the overlap between the groups
+  and picks groups that have a higher score.
+  if combining left and right groups gives a higher
+  score, the groups that gave that score are returned,
+  otherwise the higher between the left and right groups
+  is returned instead
+   */
+  List<List<PlayingCard>> _getOptimalGroups(List<PlayingCard> settingCards) {
+    if (settingCards.length < 3) {
+      return [[]];
+    }
+    List<List<PlayingCard>> result = [];
+    List<List<PlayingCard>> leftGroups = _getGroups(settingCards);
+    List<PlayingCard> reversedSettingCards =
+        List.from(settingCards).reversed.toList().cast<PlayingCard>();
+    List<List<PlayingCard>> rightGroups = _getGroups(reversedSettingCards);
+    List<List<int>> leftRange = _getRangeFromGroups(leftGroups, settingCards);
+    List<List<int>> rightRange =
+        _getRangeFromGroups(rightGroups, reversedSettingCards);
+    for (int i = 0; i < rightRange.length; i++) {
+      rightRange[i] = rightRange[i].reversed.toList().cast<int>();
+      rightRange[i] = [
+        settingCards.length - rightRange[i][0],
+        settingCards.length - rightRange[i][1]
+      ];
+    }
+    var left = new List<int>.generate(leftRange.length, (i) => i);
+    var right = new List<int>.generate(rightRange.length, (i) => i);
+    int i = 0;
+    int j = 0;
+    while (true) {
+      bool finishedGroup = true;
+      if (i >= left.length) {
+        break;
+      }
+      while (finishedGroup) {
+        if (j >= right.length) {
+          finishedGroup = false;
+          j = 0;
+          continue;
+        }
+        if (rangeCollision(leftRange[left[i]], rightRange[right[j]])) {
+          if (_getScore(leftGroups[left[i]]) >=
+              _getScore(rightGroups[right[j]])) {
+            right.removeAt(j);
+          } else {
+            left.removeAt(i);
+            if (i >= left.length) {
+              break;
+            }
+          }
+        } else {
+          j += 1;
+        }
+      }
+      i += 1;
+    }
+    left.forEach((element) {
+      result.add(leftGroups[element]);
+    });
+    right.forEach((element) {
+      result.add(rightGroups[element].reversed.toList().cast<PlayingCard>());
+    });
+
+    if (result.length < 1) {
+      return [[]];
+    }
+
+    List<PlayingCard> remainingCards = List.from(settingCards);
+    left.forEach((element) {
+      leftGroups[element].forEach((element2) {
+        remainingCards.removeAt(remainingCards.indexOf(element2));
+      });
+    });
+    right.forEach((element) {
+      rightGroups[element].forEach((element2) {
+        remainingCards.removeAt(remainingCards.indexOf(element2));
+      });
+    });
+
+    double leftScore = _getGroupScore(leftGroups);
+    double rightScore = _getGroupScore(rightGroups);
+    double combined = _getGroupScore(result);
+    if (leftScore > combined) {
+      if (leftScore > rightScore) {
+        return leftGroups;
+      }
+    }
+    {
+      if (rightScore > combined) {
+        return rightGroups;
+      }
+    }
+    return result;
+  }
+
+  /*
+  Example:
+      If you have A J J J 2 2 2 K
+      This method returns
+      [[1,4],[4,7]]
+      which are the range of
+      JJJ [1,4)
+      and 222 [4, 7)
+      respectively
+   */
+  List<List<int>> _getRangeFromGroups(
+      List<List<PlayingCard>> groups, List<PlayingCard> cards) {
+    List<List<int>> result = [];
+    int iterator = 0;
+    int i = 0;
+    int j = 0;
+    while (iterator < cards.length) {
+      if (i < groups.length && j >= groups[i].length) {
+        j = 0;
+        i += 1;
+      }
+      if (i >= groups.length) {
+        break;
+      }
+      if (cards[iterator] == groups[i][j]) {
+        result.add([iterator, iterator + groups[i].length]);
+        iterator += groups[i].length;
+        i += 1;
+        j = 0;
+      } else {
+        iterator += 1;
+      }
+    }
+    return result;
+  }
+
+  /*
+  This method checks if two range list values overlap
+  Example:
+      A A JKR J J
+      for A A JKR your range is [0,3)
+      for JKR J J your range is [2,5)
+      which overlap
+   */
+  bool rangeCollision(List<int> group1, List<int> group2) {
+    if (group1[0] == group2[0]) {
+      return true;
+    }
+    if (group1[0] < group2[0]) {
+      if (group1[1] > group2[0]) {
+        return true;
+      }
+    } else {
+      if (group2[1] > group1[0]) {
+        return true;
+      }
+    }
+    return false;
   }
 }

@@ -128,4 +128,97 @@ void main() {
       expect(player.openCards, [[]]);
     });
   });
+
+  group("Optimality of setting cards", () {
+    Player player = Player(PositionOnScreen.bottom);
+    final cards = [
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.one),
+      PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.one),
+      PlayingCard(cardSuit: CardSuit.joker, cardType: CardType.joker),
+      PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.five),
+    ];
+    final extraCard =
+        PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five);
+    test("Left is better than right", () {
+      player.initialize("");
+      expect(player.cards, []);
+      player.cards = List.from(cards);
+      expect(player.cards, cards);
+      double setScore = player.setCards(0, extraCard);
+      expect(setScore, 33.0);
+      for (int i = 0; i < 3; i++) {
+        expect(player.openCards[0][i], cards[i]);
+      }
+    });
+
+    final cards2 = [
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five),
+      PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.five),
+      PlayingCard(cardSuit: CardSuit.joker, cardType: CardType.joker),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
+    ];
+    final extraCard2 =
+        PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.jack);
+    test("Right is better than left", () {
+      player.initialize("");
+      expect(player.cards, []);
+      player.cards = List.from(cards2);
+      expect(player.cards, cards2);
+      double setScore = player.setCards(0, extraCard2);
+      expect(setScore, 30.0);
+
+      expect(player.openCards[0][0], cards2[2]);
+      expect(player.openCards[0][1], cards2[3]);
+      expect(player.openCards[0][2], extraCard2);
+    });
+
+    final cards3 = [
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
+      PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.jack),
+      PlayingCard(cardSuit: CardSuit.joker, cardType: CardType.joker),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five),
+      PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.five),
+      PlayingCard(cardSuit: CardSuit.joker, cardType: CardType.joker),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
+    ];
+    final extraCard3 =
+        PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.jack);
+    test("Right and Left both have high groups", () {
+      player.initialize("");
+      expect(player.cards, []);
+      player.cards = List.from(cards3);
+      expect(player.cards, cards3);
+      double setScore = player.setCards(0, extraCard3);
+      expect(setScore, 60.0);
+      for (int i = 0; i < 3; i++) {
+        expect(player.openCards[0][i], cards3[i]);
+      }
+      expect(player.openCards[1][0], cards3[5]);
+      expect(player.openCards[1][1], cards3[6]);
+      expect(player.openCards[1][2], extraCard3);
+    });
+
+    final cards4 = [
+      PlayingCard(cardSuit: CardSuit.clubs, cardType: CardType.one),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.one),
+      PlayingCard(cardSuit: CardSuit.joker, cardType: CardType.joker),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.ten),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
+      PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.queen),
+    ];
+    test("Extreme case", () {
+      player.initialize("");
+      expect(player.cards, []);
+      player.cards = List.from(cards4);
+      expect(player.cards, cards4);
+      double setScore = player.setCards(0, extraCard3);
+      expect(setScore, 63.0);
+      for (int i = 0; i < 3; i++) {
+        expect(player.openCards[0][i], cards4[i]);
+      }
+      expect(player.openCards[1][0], cards4[3]);
+      expect(player.openCards[1][1], cards4[4]);
+      expect(player.openCards[1][2], cards4[5]);
+    });
+  });
 }
