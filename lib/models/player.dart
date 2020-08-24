@@ -103,7 +103,11 @@ class Player {
     } else {
       groups = _getOptimalGroups(cards);
     }
-    this.eligibleToDraw = false;
+    if (extraCard != null) {
+      if (groups.expand((i) => i).toList().contains(extraCard)) {
+        this.eligibleToDraw = false;
+      }
+    }
     for (int i = 0; i < groups.length; i++) {
       if (groups.expand((i) => i).toList().length > 0) {
         openCards.add(groups[i]);
@@ -115,25 +119,45 @@ class Player {
 
   double _firstTime(double settingScore, PlayingCard extraCard) {
     List<List<PlayingCard>> groups;
+    bool setSuccessful = false;
     if (extraCard != null) {
       groups = _getOptimalGroups(cards + [extraCard]);
     } else {
       groups = _getOptimalGroups(cards);
-      if (groups.expand((i) => i).toList().length != 14) {
-        print("You have not won");
-        return settingScore;
-      }
+    }
+    if (groups.expand((i) => i).toList().length == 14) {
+      print("You have won");
+      setSuccessful = true;
+    }
+    if (setSuccessful) {
+      openCards = groups;
+      this._delCardsFromMain(groups.expand((element) => element).toList());
+      return settingScore;
+    }
+    if (!setSuccessful && !(extraCard != null)) {
+      print("draw a card you have not won");
+      return settingScore;
     }
     double settingRes = _getGroupScore(groups);
     if (settingRes >= settingScore) {
-      openCards = groups;
-      this._delCardsFromMain(groups.expand((element) => element).toList());
-      print("new set score is " + settingRes.toString());
-      this.eligibleToDraw = false;
+      if (groups.expand((i) => i).toList().contains(extraCard)) {
+        this.eligibleToDraw = false;
+        openCards = groups;
+        this._delCardsFromMain(groups.expand((element) => element).toList());
+        print("new set score is " + settingRes.toString());
+        setSuccessful = true;
+      } else {
+        print("you didn't use the discarded drawn card");
+        this.eligibleToDraw = true;
+        setSuccessful = false;
+      }
     } else {
-      settingRes = settingScore;
       print("your set score is not enough");
       this.eligibleToDraw = true;
+      setSuccessful = false;
+    }
+    if (setSuccessful) {
+      return settingScore;
     }
     return settingRes;
   }
@@ -150,8 +174,7 @@ class Player {
   List<List<PlayingCard>> _getGroups(List<PlayingCard> settingCards) {
     List<List<PlayingCard>> result = [];
     if (settingCards.length < 2) {
-      result.add([]);
-      return result;
+      return [[]];
     }
     int beginIndex = 0;
     int lastElement = settingCards.length;
