@@ -122,23 +122,27 @@ class Player {
     bool setSuccessful = false;
     if (extraCard != null) {
       groups = _getOptimalGroups(cards + [extraCard]);
+      if (groups.expand((i) => i).toList().length == (cards.length)) {
+        print("You have won");
+        setSuccessful = true;
+      }
     } else {
       groups = _getOptimalGroups(cards);
+      if (groups.expand((i) => i).toList().length == (cards.length - 1)) {
+        print("You have won");
+        setSuccessful = true;
+      }
     }
-    if (groups.expand((i) => i).toList().length == 14) {
-      print("You have won");
-      setSuccessful = true;
-    }
+    double settingRes = _getGroupScore(groups);
     if (setSuccessful) {
       openCards = groups;
       this._delCardsFromMain(groups.expand((element) => element).toList());
-      return settingScore;
+      return settingRes;
     }
     if (!setSuccessful && !(extraCard != null)) {
       print("draw a card you have not won");
       return settingScore;
     }
-    double settingRes = _getGroupScore(groups);
     if (settingRes >= settingScore) {
       if (groups.expand((i) => i).toList().contains(extraCard)) {
         this.eligibleToDraw = false;
@@ -157,16 +161,15 @@ class Player {
       setSuccessful = false;
     }
     if (setSuccessful) {
-      return settingScore;
+      return settingRes;
     }
-    return settingRes;
+    return settingScore;
   }
 
   double _getGroupScore(List<List<PlayingCard>> groups) {
     double settingRes = 0;
     for (int i = 0; i < groups.length; i++) {
       settingRes += _getScore(groups[i]);
-      print(settingRes.toString());
     }
     return settingRes;
   }
@@ -283,11 +286,12 @@ class Player {
           continue;
         }
         if (rangeCollision(leftRange[left[i]], rightRange[right[j]])) {
-          if (_getScore(leftGroups[left[i]]) >=
+          if (_getScore(leftGroups[left[i]]) >
               _getScore(rightGroups[right[j]])) {
             right.removeAt(j);
           } else {
             left.removeAt(i);
+            j = 0;
             if (i >= left.length) {
               break;
             }
@@ -299,7 +303,6 @@ class Player {
       i += 1;
     }
     // end combining left and right groups
-
     left.forEach((element) {
       result.add(leftGroups[element]);
     });
@@ -307,7 +310,6 @@ class Player {
       // fix the cards because of reversing cards
       result.add(rightGroups[element].reversed.toList().cast<PlayingCard>());
     });
-
     double leftScore = _getGroupScore(leftGroups);
     double rightScore = _getGroupScore(rightGroups);
     double combined = _getGroupScore(result);
@@ -376,11 +378,11 @@ class Player {
       return true;
     }
     if (group1[0] < group2[0]) {
-      if (group1[1] > group2[0]) {
+      if (group1[1] >= group2[0]) {
         return true;
       }
     } else {
-      if (group2[1] > group1[0]) {
+      if (group2[1] >= group1[0]) {
         return true;
       }
     }
