@@ -41,28 +41,26 @@ class _GameScreenState extends State<GameScreen> {
   List<PlayingCard> droppedCards = [];
 
   PlayingCard drawFromDeck() {
-    if (this.cardDeckClosed.length == 0) {
-      this.recycleDeck();
-    }
-
-    return this.cardDeckClosed.removeLast()
+    print(cardDeckClosed.length);
+    var result = this.cardDeckClosed.removeLast()
       ..faceUp = false
       ..isDraggable = true
       ..opened = true;
+    if (this.cardDeckClosed.length == 0) {
+      setState(() {
+        recycleDeck();
+      });
+    }
+    return result;
   }
 
   void recycleDeck() {
-    /// pulling out the last card so that it stays on the dropped cards stack
     print("recycling the deck..");
-    var lastCard = this.droppedCards.removeLast();
     this.cardDeckClosed.addAll(this.droppedCards.map((e) => e
       ..opened = false
       ..isDraggable = false
       ..faceUp = false));
     this.droppedCards.clear();
-
-    /// adding back the last card to the dropped cards stack
-    this.droppedCards.add(lastCard);
     this.cardDeckClosed.shuffle();
   }
 
@@ -245,25 +243,16 @@ class _GameScreenState extends State<GameScreen> {
       child: Row(
         children: <Widget>[
           InkWell(
-            child: cardDeckClosed.isNotEmpty
-                ? Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: TransformedCard(
-                      playingCard: cardDeckClosed.last,
-                    ),
-                  )
-                : Opacity(
-                    opacity: 0.4,
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: TransformedCard(
-                        playingCard: PlayingCard(
-                          cardSuit: CardSuit.diamonds,
-                          cardType: CardType.five,
-                        ),
-                      ),
-                    ),
-                  ),
+            child: Opacity(
+              opacity: ((cardDeckClosed.length) / 50) * 0.6 + 0.4,
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: TransformedCard(
+                  // random card
+                  playingCard: cardDeckClosed.last,
+                ),
+              ),
+            ),
             onTap: () {
               setState(() {
                 if (cardDeckClosed.isEmpty) {
