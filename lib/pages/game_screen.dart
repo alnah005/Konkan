@@ -106,7 +106,7 @@ class _GameScreenState extends State<GameScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Flexible(
-            flex: 3,
+            flex: 4,
             fit: FlexFit.loose,
             child: _getPlayerColumn(playersList[1].cards, CardList.P2),
           ),
@@ -295,67 +295,58 @@ class _GameScreenState extends State<GameScreen> {
   // Build the final decks of cards
   Widget _buildFinalDecks() {
     return Container(
-      child: Stack(
-        children: <Widget>[
-          Container(
-            decoration: ShapeDecoration(
-              shape: StadiumBorder(),
-              color: Color.fromRGBO(135, 0, 0, 1),
-              shadows: [
-                BoxShadow(
-                  offset: const Offset(0, 0),
-                  blurRadius: 5.0,
-                  spreadRadius: 3.0,
-                )
-              ],
-            ),
-            // todo fix this for all kinds of devices using Build Context
-            height: 88,
-            width: 68,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: EmptyCardDeck(
-              cardSuit: CardSuit.hearts,
-              cardsAdded: droppedCards,
-              onCardAdded: (cards, index, card) {
-                if (_getPositionFromIndex(index) == currentTurn.position &&
-                    !currentTurn.discarded) {
-                  droppedCards.add(cards.first..isDraggable = true);
-                  _getListFromIndex(index)
-                      .removeAt(_getListFromIndex(index).indexOf(cards.first));
-                  _refreshList(index);
-                  currentTurn = _getNextPlayer(currentTurn);
-
-                  while (currentTurn.isAI) {
-                    currentTurn.cards.shuffle();
-
-                    /// in the commented line below, I tried to add some time before
-                    /// the AI makes a decision but it needs to have an asynchronous
-                    /// environment. This needs a lot of refactoring to the code.
-                    //await new Future.delayed(const Duration(seconds: 5));
-
-                    /// We can use this code however this freezes everything for the
-                    /// set period of time, making the screen seem laggy or glitched.
-                    //sleep(const Duration(seconds:1));
-
-                    currentTurn.cards.add(this.drawFromDeck());
-                    var throwCard = currentTurn.cards[1];
-                    throwCard.faceUp = true;
-                    throwCard.isDraggable = true;
-                    droppedCards.add(throwCard);
-                    currentTurn.cards.removeAt(1);
-                    currentTurn = _getNextPlayer(currentTurn);
-                    currentTurn.initializeForNextTurn();
-                  }
-
-                  currentTurn.initializeForNextTurn();
-                }
-              },
-              columnIndex: CardList.DROPPED,
-            ),
-          ),
+      decoration: ShapeDecoration(
+        shape: StadiumBorder(),
+        color: Color.fromRGBO(135, 0, 0, 1),
+        shadows: [
+          BoxShadow(
+            offset: const Offset(0, 0),
+            blurRadius: 5.0,
+            spreadRadius: 3.0,
+          )
         ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: EmptyCardDeck(
+          cardSuit: CardSuit.hearts,
+          cardsAdded: droppedCards,
+          onCardAdded: (cards, index, card) {
+            if (_getPositionFromIndex(index) == currentTurn.position &&
+                !currentTurn.discarded) {
+              droppedCards.add(cards.first..isDraggable = true);
+              _getListFromIndex(index)
+                  .removeAt(_getListFromIndex(index).indexOf(cards.first));
+              _refreshList(index);
+              currentTurn = _getNextPlayer(currentTurn);
+
+              while (currentTurn.isAI) {
+                currentTurn.cards.shuffle();
+
+                /// in the commented line below, I tried to add some time before
+                /// the AI makes a decision but it needs to have an asynchronous
+                /// environment. This needs a lot of refactoring to the code.
+                //await new Future.delayed(const Duration(seconds: 5));
+
+                /// We can use this code however this freezes everything for the
+                /// set period of time, making the screen seem laggy or glitched.
+                //sleep(const Duration(seconds:1));
+
+                currentTurn.cards.add(this.drawFromDeck());
+                var throwCard = currentTurn.cards[1];
+                throwCard.faceUp = true;
+                throwCard.isDraggable = true;
+                droppedCards.add(throwCard);
+                currentTurn.cards.removeAt(1);
+                currentTurn = _getNextPlayer(currentTurn);
+                currentTurn.initializeForNextTurn();
+              }
+
+              currentTurn.initializeForNextTurn();
+            }
+          },
+          columnIndex: CardList.DROPPED,
+        ),
       ),
     );
   }
