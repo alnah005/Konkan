@@ -83,19 +83,4 @@ class _EmptyCardDeckState extends State<EmptyCardDeck> {
       },
     );
   }
-
-  Image _suitToImage() {
-    switch (widget.cardSuit) {
-      case CardSuit.hearts:
-        return Image.asset('assets/images/hearts.png');
-      case CardSuit.diamonds:
-        return Image.asset('assets/images/diamonds.png');
-      case CardSuit.clubs:
-        return Image.asset('assets/images/clubs.png');
-      case CardSuit.spades:
-        return Image.asset('assets/images/spades.png');
-      default:
-        return null;
-    }
-  }
 }
