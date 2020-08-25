@@ -196,9 +196,9 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ),
           ),
-          Flexible(flex: 5, fit: FlexFit.loose, child: _buildCardDeck()),
+          Flexible(flex: 3, fit: FlexFit.loose, child: _buildCardDeck()),
           Flexible(
-            flex: 5,
+            flex: 3,
             fit: FlexFit.loose,
             child: IconButton(
               icon: Icon(Icons.add_circle),
@@ -420,15 +420,23 @@ class _GameScreenState extends State<GameScreen> {
       }
     }
     cardDeckClosed = allCards;
+    _refreshList();
   }
 
-  void _refreshList(CardList index) {
+  void _refreshList([CardList index]) {
     for (int players = 0;
         players < GameScreen.playerCardLists.length;
         players++) {
       if (_getListFromIndex(GameScreen.playerCardLists[players]).length == 0) {
         _handleWin(GameScreen.playerCardLists[players]);
       }
+    }
+    if (index != null) {
+      setState(() {
+        _getListFromIndex(index);
+      });
+    } else {
+      setState(() {});
     }
   }
 
