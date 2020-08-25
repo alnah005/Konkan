@@ -9,19 +9,7 @@ import 'package:solitaire/widgets/card_column.dart';
 import 'package:solitaire/widgets/empty_card.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
 
-enum CardList {
-  P1,
-  P2,
-  P3,
-  P4,
-  P1SET,
-  P2SET,
-  P3SET,
-  P4SET,
-  DROPPED,
-  REMAINING,
-  BURNT
-}
+enum CardList { P1, P2, P3, P4, P1SET, P2SET, P3SET, P4SET, DROPPED, REMAINING }
 
 class GameScreen extends StatefulWidget {
   static final List<CardList> playerCardLists = [
@@ -47,7 +35,6 @@ class _GameScreenState extends State<GameScreen> {
 
   // Stores the card deck
   List<PlayingCard> cardDeckClosed = [];
-  List<PlayingCard> cardDeckOpened = [];
   double settingScore = 51;
 
   // Stores the card in the upper boxes
@@ -83,10 +70,10 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     _initialiseGame();
+    settingScore = 51;
     currentTurn = playersList[3];
   }
 
-// todo card_columns don't do anything when dragged to.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,26 +108,7 @@ class _GameScreenState extends State<GameScreen> {
           Flexible(
             flex: 3,
             fit: FlexFit.loose,
-            child: CardColumn(
-              cards: playersList[1].cards,
-              onCardsAdded: (cards, index, card) {
-                if (cards.first != card) {
-                  setState(() {
-                    List<PlayingCard> currentCards = _getListFromIndex(index);
-                    int cardIndex = currentCards.indexOf(cards.first);
-                    int newIndex = currentCards.indexOf(card);
-                    currentCards.insert(
-                        cardIndex >= newIndex ? newIndex : newIndex + 1,
-                        cards.first);
-                    currentCards.removeAt(cardIndex >= (newIndex + 1)
-                        ? cardIndex + 1
-                        : cardIndex);
-                    _refreshList(index);
-                  });
-                }
-              },
-              columnIndex: CardList.P2,
-            ),
+            child: _getPlayerColumn(playersList[1].cards, CardList.P2),
           ),
           Flexible(
             flex: 7,
@@ -153,37 +121,7 @@ class _GameScreenState extends State<GameScreen> {
                             .toList()
                             .length >
                         0
-                    ? _getSetListFromIndex(CardList.P2)
-                        .map(
-                          (listCards) => CardColumn(
-                            cards: listCards,
-                            onCardsAdded: (cards, index, card) {
-                              var melds = validate(listCards);
-                              PlayingCard result = cards.first;
-                              if (melds.length > 0) {
-                                result = melds[0].dropCard(cards.first);
-                              }
-                              if (result != cards.first) {
-                                var returnDeck = _getListFromIndex(index);
-                                if (result != null) {
-                                  setState(() {
-                                    returnDeck.add(result);
-                                    returnDeck.remove(cards.first);
-                                    _refreshList(index);
-                                  });
-                                } else {
-                                  setState(() {
-                                    returnDeck.remove(cards.first);
-                                    _refreshList(index);
-                                  });
-                                }
-                              }
-                            },
-                            columnIndex: CardList.P2,
-                            setCards: true,
-                          ),
-                        )
-                        .toList()
+                    ? _getPlayerSetColumn(CardList.P2)
                     : [
                         Container(
                           height: 0,
@@ -193,16 +131,6 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ),
           ),
-//          Flexible(
-//            fit: FlexFit.loose,
-//            child: IconButton(
-//              icon: Icon(Icons.add_circle),
-//              tooltip: 'Set cards',
-//              onPressed: () {
-//                _handleSetCards(playersList[1]);
-//              },
-//            ),
-//          ),
           Flexible(
             flex: 10,
             fit: FlexFit.loose,
@@ -213,27 +141,7 @@ class _GameScreenState extends State<GameScreen> {
                   Flexible(
                     flex: 3,
                     fit: FlexFit.loose,
-                    child: CardColumn(
-                      cards: playersList[0].cards,
-                      onCardsAdded: (cards, index, card) {
-                        if (cards.first != card) {
-                          setState(() {
-                            List<PlayingCard> currentCards =
-                                _getListFromIndex(index);
-                            int cardIndex = currentCards.indexOf(cards.first);
-                            int newIndex = currentCards.indexOf(card);
-                            currentCards.insert(
-                                cardIndex >= newIndex ? newIndex : newIndex + 1,
-                                cards.first);
-                            currentCards.removeAt(cardIndex >= (newIndex + 1)
-                                ? cardIndex + 1
-                                : cardIndex);
-                            _refreshList(index);
-                          });
-                        }
-                      },
-                      columnIndex: CardList.P1,
-                    ),
+                    child: _getPlayerColumn(playersList[0].cards, CardList.P1),
                   ),
                   Flexible(
                     flex: 7,
@@ -246,38 +154,7 @@ class _GameScreenState extends State<GameScreen> {
                                     .toList()
                                     .length >
                                 0
-                            ? _getSetListFromIndex(CardList.P1)
-                                .map(
-                                  (listCards) => CardColumn(
-                                    cards: listCards,
-                                    onCardsAdded: (cards, index, card) {
-                                      var melds = validate(listCards);
-                                      PlayingCard result = cards.first;
-                                      if (melds.length > 0) {
-                                        result = melds[0].dropCard(cards.first);
-                                      }
-                                      if (result != cards.first) {
-                                        var returnDeck =
-                                            _getListFromIndex(index);
-                                        if (result != null) {
-                                          setState(() {
-                                            returnDeck.add(result);
-                                            returnDeck.remove(cards.first);
-                                            _refreshList(index);
-                                          });
-                                        } else {
-                                          setState(() {
-                                            returnDeck.remove(cards.first);
-                                            _refreshList(index);
-                                          });
-                                        }
-                                      }
-                                    },
-                                    columnIndex: CardList.P1,
-                                    setCards: true,
-                                  ),
-                                )
-                                .toList()
+                            ? _getPlayerSetColumn(CardList.P1)
                             : [
                                 Container(
                                   height: 0,
@@ -287,30 +164,8 @@ class _GameScreenState extends State<GameScreen> {
                       ),
                     ),
                   ),
-//                  Flexible(
-//                    flex: 1,
-//                    fit: FlexFit.loose,
-//                    child: IconButton(
-//                      icon: Icon(Icons.add_circle),
-//                      tooltip: 'Set cards',
-//                      onPressed: () {
-//                        _handleSetCards(playersList[0]);
-//                      },
-//                    ),
-//                  ),
                   Flexible(
                       flex: 7, fit: FlexFit.loose, child: _buildFinalDecks()),
-//                  Flexible(
-//                    flex: 1,
-//                    fit: FlexFit.loose,
-//                    child: IconButton(
-//                      icon: Icon(Icons.add_circle),
-//                      tooltip: 'Set cards',
-//                      onPressed: () {
-//                        _handleSetCards(playersList[2]);
-//                      },
-//                    ),
-//                  ),
                   Flexible(
                     flex: 7,
                     fit: FlexFit.loose,
@@ -322,38 +177,7 @@ class _GameScreenState extends State<GameScreen> {
                                     .toList()
                                     .length >
                                 0
-                            ? _getSetListFromIndex(CardList.P3)
-                                .map(
-                                  (listCards) => CardColumn(
-                                    cards: listCards,
-                                    onCardsAdded: (cards, index, card) {
-                                      var melds = validate(listCards);
-                                      PlayingCard result = cards.first;
-                                      if (melds.length > 0) {
-                                        result = melds[0].dropCard(cards.first);
-                                      }
-                                      if (result != cards.first) {
-                                        var returnDeck =
-                                            _getListFromIndex(index);
-                                        if (result != null) {
-                                          setState(() {
-                                            returnDeck.add(result);
-                                            returnDeck.remove(cards.first);
-                                            _refreshList(index);
-                                          });
-                                        } else {
-                                          setState(() {
-                                            returnDeck.remove(cards.first);
-                                            _refreshList(index);
-                                          });
-                                        }
-                                      }
-                                    },
-                                    columnIndex: CardList.P3,
-                                    setCards: true,
-                                  ),
-                                )
-                                .toList()
+                            ? _getPlayerSetColumn(CardList.P3)
                             : [
                                 Container(
                                   height: 0,
@@ -366,27 +190,7 @@ class _GameScreenState extends State<GameScreen> {
                   Flexible(
                     flex: 3,
                     fit: FlexFit.loose,
-                    child: CardColumn(
-                      cards: playersList[2].cards,
-                      onCardsAdded: (cards, index, card) {
-                        if (cards.first != card) {
-                          setState(() {
-                            List<PlayingCard> currentCards =
-                                _getListFromIndex(index);
-                            int cardIndex = currentCards.indexOf(cards.first);
-                            int newIndex = currentCards.indexOf(card);
-                            currentCards.insert(
-                                cardIndex >= newIndex ? newIndex : newIndex + 1,
-                                cards.first);
-                            currentCards.removeAt(cardIndex >= (newIndex + 1)
-                                ? cardIndex + 1
-                                : cardIndex);
-                            _refreshList(index);
-                          });
-                        }
-                      },
-                      columnIndex: CardList.P3,
-                    ),
+                    child: _getPlayerColumn(playersList[2].cards, CardList.P3),
                   ),
                 ],
               ),
@@ -415,40 +219,7 @@ class _GameScreenState extends State<GameScreen> {
                             .toList()
                             .length >
                         0
-                    ? _getSetListFromIndex(CardList.P4)
-                        .map(
-                          (listCards) => Flexible(
-                            fit: FlexFit.loose,
-                            child: CardColumn(
-                              cards: listCards,
-                              onCardsAdded: (cards, index, card) {
-                                var melds = validate(listCards);
-                                PlayingCard result = cards.first;
-                                if (melds.length > 0) {
-                                  result = melds[0].dropCard(cards.first);
-                                }
-                                if (result != cards.first) {
-                                  var returnDeck = _getListFromIndex(index);
-                                  if (result != null) {
-                                    setState(() {
-                                      returnDeck.add(result);
-                                      returnDeck.remove(cards.first);
-                                      _refreshList(index);
-                                    });
-                                  } else {
-                                    setState(() {
-                                      returnDeck.remove(cards.first);
-                                      _refreshList(index);
-                                    });
-                                  }
-                                }
-                              },
-                              columnIndex: CardList.P4,
-                              setCards: true,
-                            ),
-                          ),
-                        )
-                        .toList()
+                    ? _getPlayerSetColumn(CardList.P4)
                     : [
                         Container(
                           height: 0,
@@ -461,33 +232,13 @@ class _GameScreenState extends State<GameScreen> {
           Flexible(
             flex: 7,
             fit: FlexFit.loose,
-            child: CardColumn(
-              cards: playersList[3].cards,
-              onCardsAdded: (cards, index, card) {
-                if (cards.first != card) {
-                  setState(() {
-                    List<PlayingCard> currentCards = _getListFromIndex(index);
-                    int cardIndex = currentCards.indexOf(cards.first);
-                    int newIndex = currentCards.indexOf(card);
-                    currentCards.insert(
-                        cardIndex >= newIndex ? newIndex : newIndex + 1,
-                        cards.first);
-                    currentCards.removeAt(cardIndex >= (newIndex + 1)
-                        ? cardIndex + 1
-                        : cardIndex);
-                    _refreshList(index);
-                  });
-                }
-              },
-              columnIndex: CardList.P4,
-            ),
+            child: _getPlayerColumn(playersList[3].cards, CardList.P4),
           ),
         ],
       ),
     );
   }
 
-  // This is where the deck and the burnt card deck are drawn.
   // Build the deck of cards left after building card columns
   Widget _buildCardDeck() {
     return Container(
@@ -536,20 +287,6 @@ class _GameScreenState extends State<GameScreen> {
               });
             },
           ),
-//          cardDeckOpened.isNotEmpty
-//              ? Padding(
-//                  padding: const EdgeInsets.all(4.0),
-//                  child: TransformedCard(
-//                    playingCard: cardDeckOpened.last,
-////                    attachedCards: [
-////                      cardDeckOpened.last,
-////                    ],
-//                    columnIndex: CardList.BURNT,
-//                  ),
-//                )
-//              : Container(
-//                  width: 40.0,
-//                ),
         ],
       ),
     );
@@ -566,9 +303,9 @@ class _GameScreenState extends State<GameScreen> {
               color: Color.fromRGBO(135, 0, 0, 1),
               shadows: [
                 BoxShadow(
-                  offset: const Offset(3.0, 3.0),
+                  offset: const Offset(0, 0),
                   blurRadius: 5.0,
-                  spreadRadius: 2.0,
+                  spreadRadius: 3.0,
                 )
               ],
             ),
@@ -630,7 +367,6 @@ class _GameScreenState extends State<GameScreen> {
     }
     // Stores the card deck
     cardDeckClosed = [];
-    cardDeckOpened = [];
 
     // Stores the card in the upper boxes
     droppedCards = [];
@@ -684,18 +420,8 @@ class _GameScreenState extends State<GameScreen> {
       }
     }
     cardDeckClosed = allCards;
-
-    // add card in the bottom to the "burnt" cards
-    cardDeckOpened.add(
-      cardDeckClosed.removeAt(random.nextInt(allCards.length))
-        ..opened = true
-        ..faceUp = true,
-    );
-    // todo know the purpose of this set state
-    setState(() {});
   }
 
-  // todo remove turning the card in the bottom of the column face-up
   void _refreshList(CardList index) {
     for (int players = 0;
         players < GameScreen.playerCardLists.length;
@@ -704,13 +430,6 @@ class _GameScreenState extends State<GameScreen> {
         _handleWin(GameScreen.playerCardLists[players]);
       }
     }
-    setState(() {
-      if (_getListFromIndex(index).length != 0) {
-        _getListFromIndex(index)[_getListFromIndex(index).length - 1]
-          ..opened = true
-          ..faceUp = true;
-      }
-    });
   }
 
   // Handle a win condition
@@ -801,8 +520,6 @@ class _GameScreenState extends State<GameScreen> {
 
   List<PlayingCard> _getListFromIndex(CardList index) {
     switch (index) {
-      case CardList.BURNT:
-        return cardDeckOpened;
       case CardList.REMAINING:
         return cardDeckClosed;
       case CardList.P1:
@@ -854,5 +571,64 @@ class _GameScreenState extends State<GameScreen> {
       settingScore = settingPlayer.setCards(settingScore);
     }
     _refreshList(_cardListFromPlayer(settingPlayer.position));
+  }
+
+  Widget _getPlayerColumn(List<PlayingCard> playerCards, CardList whichPlayer) {
+    return CardColumn(
+      cards: playerCards,
+      onCardsAdded: (cards, index, card) {
+        if (cards.first != card) {
+          setState(() {
+            List<PlayingCard> currentCards = _getListFromIndex(index);
+            int cardIndex = currentCards.indexOf(cards.first);
+            int newIndex = currentCards.indexOf(card);
+            currentCards.insert(
+                cardIndex >= newIndex ? newIndex : newIndex + 1, cards.first);
+            currentCards.removeAt(
+                cardIndex >= (newIndex + 1) ? cardIndex + 1 : cardIndex);
+            _refreshList(index);
+          });
+        }
+      },
+      columnIndex: whichPlayer,
+    );
+  }
+
+  List<Flexible> _getPlayerSetColumn(CardList whichPlayer) {
+    return _getSetListFromIndex(whichPlayer)
+        .map(
+          (listCards) => Flexible(
+            flex: listCards.length,
+            fit: FlexFit.loose,
+            child: CardColumn(
+              cards: listCards,
+              onCardsAdded: (cards, index, card) {
+                var melds = validate(listCards);
+                PlayingCard result = cards.first;
+                if (melds.length > 0) {
+                  result = melds[0].dropCard(cards.first);
+                }
+                if (result != cards.first) {
+                  var returnDeck = _getListFromIndex(index);
+                  if (result != null) {
+                    setState(() {
+                      returnDeck.add(result);
+                      returnDeck.remove(cards.first);
+                      _refreshList(index);
+                    });
+                  } else {
+                    setState(() {
+                      returnDeck.remove(cards.first);
+                      _refreshList(index);
+                    });
+                  }
+                }
+              },
+              columnIndex: whichPlayer,
+              setCards: true,
+            ),
+          ),
+        )
+        .toList();
   }
 }
