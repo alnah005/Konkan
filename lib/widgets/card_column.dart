@@ -34,10 +34,14 @@ class _CardColumnState extends State<CardColumn> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     double optimalTranslation = (width - 40) / 14;
     translation = widget.columnIndex == CardList.P4
         ? optimalTranslation
-        : optimalTranslation / 17;
+        : optimalTranslation / 2;
+    translation = !_horizontal()
+        ? height < width ? translation / 8.5 : translation
+        : translation;
     return Container(
       width: _horizontal()
           ? double.infinity

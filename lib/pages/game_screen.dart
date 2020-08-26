@@ -104,7 +104,7 @@ class _GameScreenState extends State<GameScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Flexible(
-            flex: 4,
+            flex: 5,
             fit: FlexFit.loose,
             child: _getPlayerColumn(playersList[1].cards, CardList.P2),
           ),
@@ -130,7 +130,7 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
           Flexible(
-            flex: 10,
+            flex: 20,
             fit: FlexFit.loose,
             child: Container(
               child: Row(
@@ -142,10 +142,10 @@ class _GameScreenState extends State<GameScreen> {
                     child: _getPlayerColumn(playersList[0].cards, CardList.P1),
                   ),
                   Flexible(
-                    flex: 7,
+                    flex: 15,
                     fit: FlexFit.loose,
                     child: Container(
-                      child: Row(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: _getSetListFromIndex(CardList.P1)
                                     .expand((i) => i)
@@ -165,10 +165,10 @@ class _GameScreenState extends State<GameScreen> {
                   Flexible(
                       flex: 7, fit: FlexFit.loose, child: _buildFinalDecks()),
                   Flexible(
-                    flex: 7,
+                    flex: 15,
                     fit: FlexFit.loose,
                     child: Container(
-                      child: Row(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: _getSetListFromIndex(CardList.P3)
                                     .expand((i) => i)
@@ -311,6 +311,7 @@ class _GameScreenState extends State<GameScreen> {
 
               while (currentTurn.isAI) {
                 currentTurn.cards.shuffle();
+                _handleSetCards(currentTurn);
 
                 /// in the commented line below, I tried to add some time before
                 /// the AI makes a decision but it needs to have an asynchronous
