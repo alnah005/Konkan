@@ -195,7 +195,7 @@ class _GameScreenState extends State<GameScreen> {
                     ),
                   ),
                   Flexible(
-                      flex: 5, fit: FlexFit.tight, child: _buildFinalDecks()),
+                      flex: 10, fit: FlexFit.loose, child: _buildFinalDecks()),
                   Flexible(
                     flex: 10,
                     fit: FlexFit.tight,
