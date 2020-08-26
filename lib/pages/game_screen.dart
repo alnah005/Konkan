@@ -105,12 +105,12 @@ class _GameScreenState extends State<GameScreen> {
         children: <Widget>[
           Flexible(
             flex: 5,
-            fit: FlexFit.loose,
+            fit: FlexFit.tight,
             child: _getPlayerColumn(playersList[1].cards, CardList.P2),
           ),
           Flexible(
-            flex: 7,
-            fit: FlexFit.loose,
+            flex: 10,
+            fit: FlexFit.tight,
             child: Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -130,74 +130,138 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
           Flexible(
-            flex: 20,
-            fit: FlexFit.loose,
+            flex: 30,
+            fit: FlexFit.tight,
             child: Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Flexible(
-                    flex: 3,
-                    fit: FlexFit.loose,
+                    flex: 2,
+                    fit: FlexFit.tight,
                     child: _getPlayerColumn(playersList[0].cards, CardList.P1),
                   ),
                   Flexible(
-                    flex: 15,
-                    fit: FlexFit.loose,
-                    child: Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: _getSetListFromIndex(CardList.P1)
-                                    .expand((i) => i)
-                                    .toList()
-                                    .length >
-                                0
-                            ? _getPlayerSetColumn(CardList.P1)
-                            : [
-                                Container(
-                                  height: 0,
-                                  width: 0,
-                                )
-                              ],
-                      ),
+                    flex: 10,
+                    fit: FlexFit.tight,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Flexible(
+                          flex: 1,
+                          fit: FlexFit.tight,
+                          child: Container(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: _getSetListFromIndex(CardList.P1)
+                                          .expand((i) => i)
+                                          .toList()
+                                          .length >
+                                      0
+                                  ? _getPlayerSetColumn(CardList.P1)
+                                      .sublist(0, 2)
+                                  : [
+                                      Container(
+                                        height: 0,
+                                        width: 0,
+                                      )
+                                    ],
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          flex: 1,
+                          fit: FlexFit.tight,
+                          child: Container(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: _getSetListFromIndex(CardList.P1)
+                                          .expand((i) => i)
+                                          .toList()
+                                          .length >
+                                      2
+                                  ? _getPlayerSetColumn(CardList.P1)
+                                      .sublist(2, 4)
+                                  : [
+                                      Container(
+                                        height: 0,
+                                        width: 0,
+                                      )
+                                    ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Flexible(
-                      flex: 7, fit: FlexFit.loose, child: _buildFinalDecks()),
+                      flex: 5, fit: FlexFit.tight, child: _buildFinalDecks()),
                   Flexible(
-                    flex: 15,
-                    fit: FlexFit.loose,
-                    child: Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: _getSetListFromIndex(CardList.P3)
-                                    .expand((i) => i)
-                                    .toList()
-                                    .length >
-                                0
-                            ? _getPlayerSetColumn(CardList.P3)
-                            : [
-                                Container(
-                                  height: 0,
-                                  width: 0,
-                                )
-                              ],
-                      ),
+                    flex: 10,
+                    fit: FlexFit.tight,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Flexible(
+                          flex: 1,
+                          fit: FlexFit.tight,
+                          child: Container(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: _getSetListFromIndex(CardList.P3)
+                                          .expand((i) => i)
+                                          .toList()
+                                          .length >
+                                      0
+                                  ? _getPlayerSetColumn(CardList.P3)
+                                      .sublist(0, 2)
+                                  : [
+                                      Container(
+                                        height: 0,
+                                        width: 0,
+                                      )
+                                    ],
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          flex: 1,
+                          fit: FlexFit.tight,
+                          child: Container(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: _getSetListFromIndex(CardList.P3)
+                                          .expand((i) => i)
+                                          .toList()
+                                          .length >
+                                      2
+                                  ? _getPlayerSetColumn(CardList.P3)
+                                      .sublist(2, 4)
+                                  : [
+                                      Container(
+                                        height: 0,
+                                        width: 0,
+                                      )
+                                    ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Flexible(
-                    flex: 3,
-                    fit: FlexFit.loose,
+                    flex: 2,
+                    fit: FlexFit.tight,
                     child: _getPlayerColumn(playersList[2].cards, CardList.P3),
                   ),
                 ],
               ),
             ),
           ),
-          Flexible(flex: 4, fit: FlexFit.loose, child: _buildCardDeck()),
+          Flexible(flex: 4, fit: FlexFit.tight, child: _buildCardDeck()),
           Flexible(
             flex: 3,
-            fit: FlexFit.loose,
+            fit: FlexFit.tight,
             child: IconButton(
               icon: Icon(Icons.add_circle),
               tooltip: 'Set cards',
@@ -207,8 +271,8 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
           Flexible(
-            flex: 7,
-            fit: FlexFit.loose,
+            flex: 10,
+            fit: FlexFit.tight,
             child: Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -228,8 +292,8 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
           Flexible(
-            flex: 8,
-            fit: FlexFit.loose,
+            flex: 10,
+            fit: FlexFit.tight,
             child: _getPlayerColumn(playersList[3].cards, CardList.P4),
           ),
         ],
