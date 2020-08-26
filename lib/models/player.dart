@@ -3,8 +3,64 @@ import 'package:solitaire/models/meld.dart';
 import 'package:solitaire/models/playing_card.dart';
 
 enum PositionOnScreen { bottom, right, left, top }
+enum InteractiveCardGroups { ClosedCards, OpenCards }
 
-class PlayerInfo {
+abstract class OtherPlayerBase {
+  String name;
+  String avatarPath;
+  int age;
+  int wins;
+  int losses;
+}
+
+class OtherPlayerState extends OtherPlayerBase {
+  PositionOnScreen position;
+  int numberOfCards = 0;
+  bool hasExtraCard = false;
+  bool _isTurn = false;
+  DateTime startTurn;
+
+  double get elapsedTime {
+    return startTurn.difference(DateTime.now()).inMilliseconds /
+        1000; // seconds
+  }
+
+  void updateFromJson(String actions) {
+    // todo implement api
+  }
+
+  void drawsNewCard() {
+    // todo implement animation
+    numberOfCards += 1;
+  }
+
+  void throwsCard(PlayingCard card) {
+    numberOfCards -= 1;
+    // todo add the thrown card to openCards
+  }
+
+  void pullsExtraCard() {
+    hasExtraCard = true;
+    numberOfCards += 1;
+  }
+
+  void returnsExtraCard() {
+    hasExtraCard ? numberOfCards -= 1 : numberOfCards -= 0;
+  }
+
+  void meldsCard(PlayingCard card, int meldID) {
+    hasExtraCard = false;
+    numberOfCards -= 1;
+  }
+
+  void setsCardGroups(List<List> groups) {
+    hasExtraCard = false;
+    numberOfCards -= groups.fold(
+        0, (previousValue, element) => previousValue += element.length);
+  }
+}
+
+class PlayerInfo extends OtherPlayerBase {
   String avatarPath;
   int age;
   int wins;
@@ -12,6 +68,7 @@ class PlayerInfo {
   double avgScore;
   int id;
   String name;
+
   PlayerInfo(
       {this.avatarPath = "",
       this.age = 18,
@@ -36,9 +93,11 @@ class Player {
   PlayingCard extraCard;
   PositionOnScreen position;
   PlayerInfo personalInfo = new PlayerInfo();
+
   Player(this.position, {this.isAI = false}) {
     if (this.isAI) {}
   }
+
   bool discarded = true;
   bool eligibleToDraw = true;
   bool isAI = false;
