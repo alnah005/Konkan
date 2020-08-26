@@ -8,16 +8,11 @@ import 'package:solitaire/pages/game_screen.dart';
 // position in the stack.
 class TransformedCard extends StatefulWidget {
   final PlayingCard playingCard;
-  final double transformDistance;
   final CardList columnIndex;
-
-//  final List<PlayingCard> attachedCards;
 
   TransformedCard({
     @required this.playingCard,
-    this.transformDistance = 20.0,
     this.columnIndex,
-//    this.attachedCards,
   });
 
   @override

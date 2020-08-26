@@ -194,7 +194,7 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ),
           ),
-          Flexible(flex: 3, fit: FlexFit.loose, child: _buildCardDeck()),
+          Flexible(flex: 4, fit: FlexFit.loose, child: _buildCardDeck()),
           Flexible(
             flex: 3,
             fit: FlexFit.loose,
@@ -228,7 +228,7 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
           Flexible(
-            flex: 7,
+            flex: 8,
             fit: FlexFit.loose,
             child: _getPlayerColumn(playersList[3].cards, CardList.P4),
           ),
