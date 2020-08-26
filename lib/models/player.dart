@@ -92,6 +92,9 @@ class Player {
     return _afterFirstTime(settingScore, extraCard);
   }
 
+  // todo make a function that transfers cards from cards to openCards
+  // todo test not only grouping but also melding to identify winning
+  // todo draw card from discarded deck into places other than end of cards
   double _afterFirstTime(double settingScore, PlayingCard extraCard) {
     List<List<PlayingCard>> groups;
     if (extraCard != null) {
@@ -110,7 +113,13 @@ class Player {
     }
     for (int i = 0; i < groups.length; i++) {
       if (groups.expand((i) => i).toList().length > 0) {
-        openCards.add(groups[i]);
+        openCards.add(groups[i]
+          ..forEach((element) {
+            element
+              ..faceUp = true
+              ..opened = true
+              ..isDraggable = true;
+          }));
       }
     }
     this._delCardsFromMain(groups.expand((element) => element).toList());
@@ -135,7 +144,16 @@ class Player {
     }
     double settingRes = _getGroupScore(groups);
     if (setSuccessful) {
-      openCards = groups;
+      openCards = groups
+        ..forEach((element) {
+          element
+            ..forEach((element2) {
+              element2
+                ..faceUp = true
+                ..opened = true
+                ..isDraggable = true;
+            });
+        });
       this._delCardsFromMain(groups.expand((element) => element).toList());
       return settingRes;
     }
@@ -146,7 +164,16 @@ class Player {
     if (settingRes >= settingScore) {
       if (groups.expand((i) => i).toList().contains(extraCard)) {
         this.eligibleToDraw = false;
-        openCards = groups;
+        openCards = groups
+          ..forEach((element) {
+            element
+              ..forEach((element2) {
+                element2
+                  ..faceUp = true
+                  ..opened = true
+                  ..isDraggable = true;
+              });
+          });
         this._delCardsFromMain(groups.expand((element) => element).toList());
         print("new set score is " + settingRes.toString());
         setSuccessful = true;
