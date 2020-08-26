@@ -104,8 +104,8 @@ class _GameScreenState extends State<GameScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Flexible(
-            flex: 5,
-            fit: FlexFit.tight,
+            flex: 7,
+            fit: FlexFit.loose,
             child: _getPlayerColumn(playersList[1].cards, CardList.P2),
           ),
           Flexible(
@@ -258,7 +258,7 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ),
           ),
-          Flexible(flex: 4, fit: FlexFit.tight, child: _buildCardDeck()),
+          Flexible(flex: 7, fit: FlexFit.tight, child: _buildCardDeck()),
           Flexible(
             flex: 3,
             fit: FlexFit.tight,

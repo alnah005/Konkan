@@ -92,6 +92,9 @@ class Player {
     return _afterFirstTime(settingScore, extraCard);
   }
 
+  // todo make a function that transfers cards from cards to openCards
+  // todo test not only grouping but also melding to identify winning
+  // todo draw card from discarded deck into places other than end of cards
   double _afterFirstTime(double settingScore, PlayingCard extraCard) {
     List<List<PlayingCard>> groups;
     if (extraCard != null) {
