@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "950693703741",
+    "firebase_url": "https://konkan-61954.firebaseio.com",
+    "project_id": "konkan-61954",
+    "storage_bucket": "konkan-61954.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950693703741:android:8326d95f6f243fe08fba54",
+        "android_client_info": {
+          "package_name": "com.example.solitaire"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "950693703741-rugsbtruifd1kvnmfkkegdi5ttge8530.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9RzAgj3gz_3HvWw5au33Nz6mCI8Ve4A8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "950693703741-rugsbtruifd1kvnmfkkegdi5ttge8530.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
