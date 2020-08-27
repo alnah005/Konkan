@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:solitaire/pages/game_screen.dart';
+import 'package:solitaire/pages/login.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(new LoginPage());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
