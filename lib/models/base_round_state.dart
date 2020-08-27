@@ -22,11 +22,11 @@ abstract class BaseRoundState<T> {
   ///      [nextPlayer]: player next in line to replace current player
   ///      [playerInfo]: information about the player in the game
   void nextTurnVariables(Player nextPlayer, T playerInfo) {
-    this._trackTurnStats();
+    this.trackTurnStats();
     _currentPlayer = nextPlayer;
     _playerGameInfo = playerInfo;
   }
 
   /// call this method after a turn has finished to track player info
-  void _trackTurnStats();
+  void trackTurnStats();
 }
