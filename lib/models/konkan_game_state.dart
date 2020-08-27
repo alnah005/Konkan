@@ -23,7 +23,6 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
   @override
   void initializeGame(
       [int numOfPlayers,
-      int numOfRounds,
       List<Player> playerList,
       List<Y> playerInfo,
       BaseRoundState roundState]) {
