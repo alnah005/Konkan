@@ -2,10 +2,13 @@ import 'package:solitaire/models/base_round_state.dart';
 import 'package:solitaire/models/player.dart';
 
 abstract class BaseGameState<T> {
-  int _numberOfPlayers;
-  List<Player> _players;
-  List<T> _playerGameInfo;
-  BaseRoundState<T> _round;
+  int numberOfPlayers;
+  List<Player> players;
+  List<T> playerGameInfo;
+  BaseRoundState<T> round;
+
+  BaseGameState(
+      {this.numberOfPlayers, this.players, this.playerGameInfo, this.round});
 
   /// This method is called to initialize GameState
   ///
