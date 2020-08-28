@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/groups.dart';
@@ -8,7 +6,7 @@ import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/utils/enums.dart';
 import 'package:solitaire/widgets/card_column.dart';
 import 'package:solitaire/widgets/empty_card.dart';
-import 'package:solitaire/widgets/transformed_card.dart';
+import 'package:solitaire/widgets/konkan_deck.dart';
 
 class GameScreen extends StatefulWidget {
   static final List<CardList> playerCardLists = [
@@ -33,40 +31,36 @@ class _GameScreenState extends State<GameScreen> {
   Player currentTurn;
 
   // Stores the card deck
-  List<PlayingCard> cardDeckClosed = [];
   double settingScore = 51;
 
   // Stores the card in the upper boxes
   List<PlayingCard> droppedCards = [];
 
+  GlobalKey<KonkanDeckState> deckKey = GlobalKey();
+  var deck;
   PlayingCard drawFromDeck() {
-    print(cardDeckClosed.length);
-    var result = this.cardDeckClosed.removeLast()
-      ..faceUp = false
-      ..isDraggable = true
-      ..opened = true;
-    if (this.cardDeckClosed.length == 0) {
-      setState(() {
-        recycleDeck();
-      });
+    var result = deckKey.currentState
+        .drawFromDeck(droppedCards.isNotEmpty ? droppedCards.last : null);
+    if (result != null) {
+      return result;
     }
-    return result;
-  }
-
-  void recycleDeck() {
-    print("recycling the deck..");
-    this.cardDeckClosed.addAll(this.droppedCards.map((e) => e
-      ..opened = false
-      ..isDraggable = false
-      ..faceUp = false));
-    this.droppedCards.clear();
-    this.cardDeckClosed.shuffle();
+    deckKey.currentState.recycleDeck();
+    droppedCards.clear();
+    return deckKey.currentState.drawFromDeck();
   }
 
   @override
   void initState() {
     super.initState();
-    _initialiseGame();
+    deck = KonkanDeck(
+      key: deckKey,
+      numberOfDecks: 2,
+      numberOfJokers: 2,
+    );
+    Future.delayed(const Duration(milliseconds: 30), () {
+      /// Anything that uses a key will go here.
+      _initialiseGame();
+    });
     settingScore = 51;
     currentTurn = playersList[3];
   }
@@ -306,35 +300,17 @@ class _GameScreenState extends State<GameScreen> {
       child: Row(
         children: <Widget>[
           InkWell(
-            child: Opacity(
-              opacity: ((cardDeckClosed.length) / 50) * 0.6 + 0.4,
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: TransformedCard(
-                  // random card
-                  playingCard: cardDeckClosed.last,
-                ),
-              ),
-            ),
+            child: deck,
             onTap: () {
               setState(() {
-                if (cardDeckClosed.isEmpty) {
-                  cardDeckClosed.addAll(droppedCards.map((card) {
-                    return card
-                      ..opened = false
-                      ..faceUp = false;
-                  }));
-                  droppedCards.clear();
+                if (currentTurn.eligibleToDraw) {
+                  var newCard = this.drawFromDeck();
+                  newCard.faceUp = true;
+                  currentTurn.cards.add(newCard);
+                  currentTurn.discarded = false;
+                  currentTurn.eligibleToDraw = false;
                 } else {
-                  if (currentTurn.eligibleToDraw) {
-                    var newCard = this.drawFromDeck();
-                    newCard.faceUp = true;
-                    currentTurn.cards.add(newCard);
-                    currentTurn.discarded = false;
-                    currentTurn.eligibleToDraw = false;
-                  } else {
-                    print("you need to throw a card");
-                  }
+                  print("you need to throw a card");
                 }
               });
             },
@@ -409,44 +385,15 @@ class _GameScreenState extends State<GameScreen> {
     for (int i = 0; i < playersList.length; i++) {
       playersList[i].initialize("Player " + (i + 1).toString());
     }
-    // Stores the card deck
-    cardDeckClosed = [];
 
     // Stores the card in the upper boxes
     droppedCards = [];
 
-    List<PlayingCard> allCards = [];
-
-    // Add all cards to deck
-    for (var i = 0; i < 2; i++) {
-      /// This adds one joker per loop (per deck.)
-      allCards.add(PlayingCard(
-        cardType: CardType.joker,
-        cardSuit: CardSuit.joker,
-        faceUp: false,
-      ));
-      CardSuit.values.forEach((suit) {
-        CardType.values.forEach((type) {
-          /// if the card is a joker then it is discarded.
-          if ((type != CardType.joker) && (suit != CardSuit.joker)) {
-            allCards.add(PlayingCard(
-              cardType: type,
-              cardSuit: suit,
-              faceUp: false,
-            ));
-          }
-        });
-      });
-    }
-
-    Random random = Random();
-    for (int cards = 0; cards < 14; cards++) {
-      for (int players = 0;
-          players < GameScreen.playerCardLists.length;
-          players++) {
-        int randomNumber = random.nextInt(allCards.length);
-        var cardList = _getListFromIndex(GameScreen.playerCardLists[players]);
-        PlayingCard card = allCards[randomNumber];
+    for (int players = 0;
+        players < GameScreen.playerCardLists.length;
+        players++) {
+      var cardList = _getListFromIndex(GameScreen.playerCardLists[players]);
+      for (var card in deckKey.currentState.distributeCards(14)) {
         playersList[players].isAI
             ? cardList.add(
                 card
@@ -459,11 +406,9 @@ class _GameScreenState extends State<GameScreen> {
                   ..faceUp = true
                   ..isDraggable = true,
               );
-
-        allCards.removeAt(randomNumber);
       }
     }
-    cardDeckClosed = allCards;
+
     _refreshList();
   }
 
@@ -572,8 +517,6 @@ class _GameScreenState extends State<GameScreen> {
 
   List<PlayingCard> _getListFromIndex(CardList index) {
     switch (index) {
-      case CardList.REMAINING:
-        return cardDeckClosed;
       case CardList.P1:
         return playersList[0].cards;
       case CardList.P2:
