@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/pages/game_screen.dart';
+import 'package:solitaire/utils/enums.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
 
 typedef Null CardAcceptCallback(

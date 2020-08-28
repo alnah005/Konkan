@@ -1,5 +1,6 @@
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
+import 'package:solitaire/utils/enums.dart';
 import 'package:test/test.dart';
 
 void main() {

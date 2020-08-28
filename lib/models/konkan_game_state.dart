@@ -2,6 +2,7 @@ import 'package:solitaire/models/base_game_state.dart';
 import 'package:solitaire/models/base_round_state.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
+import 'package:solitaire/utils/enums.dart';
 
 class KonkanGameState<Y> extends BaseGameState<Y> {
   List<PlayingCard> cardDeckClosed = [];

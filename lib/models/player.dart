@@ -1,8 +1,7 @@
 import 'package:solitaire/models/groups.dart';
 import 'package:solitaire/models/meld.dart';
 import 'package:solitaire/models/playing_card.dart';
-
-enum PositionOnScreen { bottom, right, left, top }
+import 'package:solitaire/utils/enums.dart';
 
 class PlayerInfo {
   String avatarPath;

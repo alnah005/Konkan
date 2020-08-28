@@ -5,11 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:solitaire/models/groups.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
+import 'package:solitaire/utils/enums.dart';
 import 'package:solitaire/widgets/card_column.dart';
 import 'package:solitaire/widgets/empty_card.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
-
-enum CardList { P1, P2, P3, P4, P1SET, P2SET, P3SET, P4SET, DROPPED, REMAINING }
 
 class GameScreen extends StatefulWidget {
   static final List<CardList> playerCardLists = [
