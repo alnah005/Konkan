@@ -270,4 +270,17 @@ class PlayingCard extends Card {
 //    result += ']';
     return result;
   }
+
+  PlayingCard.clone(PlayingCard source)
+      : this.cardType = source.cardType,
+        this.cardSuit = source.cardSuit,
+        this.faceUp = source.faceUp,
+        this.isDraggable = source.isDraggable,
+        this.opened = source.opened,
+        this.typeToString = source.typeToString,
+        this.typeToStringBody = source.typeToStringBody,
+        this.penaltyVal = source.penaltyVal,
+        this.suitImage = source.suitImage,
+        this.cardColor = source.cardColor,
+        this.position = source.position;
 }

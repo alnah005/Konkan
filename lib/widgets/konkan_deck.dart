@@ -16,8 +16,8 @@ class KonkanDeck extends StatefulWidget {
 
 class KonkanDeckState extends State<KonkanDeck> {
   final List<PlayingCard> _cards = [];
-  final List<PlayingCard> _dropped = [];
-
+  var numOfPlayers = 0;
+  var maxDeckCards = 106;
   @override
   void initState() {
     super.initState();
@@ -26,9 +26,10 @@ class KonkanDeckState extends State<KonkanDeck> {
 
   @override
   Widget build(BuildContext context) {
+    maxDeckCards =
+        widget.numberOfDecks * 52 + widget.numberOfJokers - numOfPlayers * 14;
     return Opacity(
-      opacity:
-          ((_cards.length) / (_cards.length + _dropped.length)) * 0.6 + 0.4,
+      opacity: (_cards.length / maxDeckCards) * 0.6 + 0.4,
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: Container(
@@ -45,7 +46,6 @@ class KonkanDeckState extends State<KonkanDeck> {
   }
 
   void initializeDecks() {
-    print('hello');
     for (var i = 0; i < widget.numberOfDecks; i++) {
       CardSuit.values.forEach((suit) {
         CardType.values.forEach((type) {
@@ -70,7 +70,6 @@ class KonkanDeckState extends State<KonkanDeck> {
   }
 
   PlayingCard drawFromDeck([PlayingCard discarded]) {
-    print(_cards.length);
     var result;
     if (_cards.isNotEmpty) {
       setState(() {
@@ -80,14 +79,10 @@ class KonkanDeckState extends State<KonkanDeck> {
           ..opened = true;
       });
     }
-    if (discarded != null) {
-      _dropped.add(discarded);
-    }
     return result;
   }
 
   List<PlayingCard> distributeCards(int numCards) {
-    print(_cards.length);
     List<PlayingCard> res = [];
     for (int i = 0; i < numCards; i++) {
       res.add(_cards.removeLast()
@@ -96,18 +91,23 @@ class KonkanDeckState extends State<KonkanDeck> {
         ..opened = true);
       _cards.shuffle();
     }
+    numOfPlayers += 1;
     return res;
   }
 
-  void recycleDeck() {
+  void recycleDeck(List<PlayingCard> dropped) {
     print("recycling the deck..");
-    setState(() {
-      _cards.addAll(_dropped.map((e) => e
-        ..opened = false
-        ..isDraggable = false
-        ..faceUp = false));
-      _dropped.clear();
-      _cards.shuffle();
-    });
+    if (dropped.isNotEmpty) {
+      setState(() {
+        _cards.addAll(dropped.map((e) => e
+          ..opened = false
+          ..isDraggable = false
+          ..faceUp = false));
+      });
+    }
+    if (_cards.length == (widget.numberOfDecks * 52 + widget.numberOfJokers)) {
+      numOfPlayers = 0;
+    }
+    _cards.shuffle();
   }
 }

@@ -71,6 +71,8 @@ class Player {
   }
 
   void initialize(String name) {
+    this.cards.clear();
+    this.openCards.clear();
     this.cards = [];
     this.openCards = [[]];
     this.name = name;

@@ -5,7 +5,7 @@ import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/utils/enums.dart';
 import 'package:solitaire/widgets/card_column.dart';
-import 'package:solitaire/widgets/empty_card.dart';
+import 'package:solitaire/widgets/discarded_deck.dart';
 import 'package:solitaire/widgets/konkan_deck.dart';
 
 class GameScreen extends StatefulWidget {
@@ -32,30 +32,74 @@ class _GameScreenState extends State<GameScreen> {
 
   // Stores the card deck
   double settingScore = 51;
-
-  // Stores the card in the upper boxes
-  List<PlayingCard> droppedCards = [];
-
   GlobalKey<KonkanDeckState> deckKey = GlobalKey();
+  GlobalKey<DiscardedDeckState> discardedDeckKey = GlobalKey();
   var deck;
+  var discardedDeck;
   PlayingCard drawFromDeck() {
-    var result = deckKey.currentState
-        .drawFromDeck(droppedCards.isNotEmpty ? droppedCards.last : null);
+    var result = deckKey.currentState.drawFromDeck();
     if (result != null) {
       return result;
     }
-    deckKey.currentState.recycleDeck();
-    droppedCards.clear();
+    this.recycleDecks();
     return deckKey.currentState.drawFromDeck();
+  }
+
+  void recycleDecks() {
+    deckKey.currentState
+        .recycleDeck(discardedDeckKey.currentState.recycleDeck());
   }
 
   @override
   void initState() {
     super.initState();
+    for (int i = 0; i < playersList.length; i++) {
+      playersList[i].initialize("Player " + (i + 1).toString());
+    }
     deck = KonkanDeck(
       key: deckKey,
       numberOfDecks: 2,
       numberOfJokers: 2,
+    );
+    discardedDeck = DiscardedDeck(
+      key: discardedDeckKey,
+      onCardAdded: (cards, index, card) {
+        if (_getPositionFromIndex(index) == currentTurn.position &&
+            !currentTurn.discarded) {
+          discardedDeckKey.currentState
+              .throwToDeck(cards.first..isDraggable = true);
+          _getListFromIndex(index)
+              .removeAt(_getListFromIndex(index).indexOf(cards.first));
+          _refreshList(index);
+          currentTurn = _getNextPlayer(currentTurn);
+
+          while (currentTurn.isAI) {
+            currentTurn.cards.shuffle();
+            _handleSetCards(currentTurn);
+
+            /// in the commented line below, I tried to add some time before
+            /// the AI makes a decision but it needs to have an asynchronous
+            /// environment. This needs a lot of refactoring to the code.
+            //await new Future.delayed(const Duration(seconds: 5));
+
+            /// We can use this code however this freezes everything for the
+            /// set period of time, making the screen seem laggy or glitched.
+            //sleep(const Duration(seconds:1));
+
+            currentTurn.cards.add(this.drawFromDeck());
+            var throwCard = currentTurn.cards[1];
+            throwCard.faceUp = true;
+            throwCard.isDraggable = true;
+            discardedDeckKey.currentState.throwToDeck(throwCard);
+            currentTurn.cards.removeAt(1);
+            currentTurn = _getNextPlayer(currentTurn);
+            currentTurn.initializeForNextTurn();
+          }
+
+          currentTurn.initializeForNextTurn();
+        }
+      },
+      columnIndex: CardList.DROPPED,
     );
     Future.delayed(const Duration(milliseconds: 30), () {
       /// Anything that uses a key will go here.
@@ -336,59 +380,35 @@ class _GameScreenState extends State<GameScreen> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(4.0),
-        child: EmptyCardDeck(
-          cardSuit: CardSuit.hearts,
-          cardsAdded: droppedCards,
-          onCardAdded: (cards, index, card) {
-            if (_getPositionFromIndex(index) == currentTurn.position &&
-                !currentTurn.discarded) {
-              droppedCards.add(cards.first..isDraggable = true);
-              _getListFromIndex(index)
-                  .removeAt(_getListFromIndex(index).indexOf(cards.first));
-              _refreshList(index);
-              currentTurn = _getNextPlayer(currentTurn);
-
-              while (currentTurn.isAI) {
-                currentTurn.cards.shuffle();
-                _handleSetCards(currentTurn);
-
-                /// in the commented line below, I tried to add some time before
-                /// the AI makes a decision but it needs to have an asynchronous
-                /// environment. This needs a lot of refactoring to the code.
-                //await new Future.delayed(const Duration(seconds: 5));
-
-                /// We can use this code however this freezes everything for the
-                /// set period of time, making the screen seem laggy or glitched.
-                //sleep(const Duration(seconds:1));
-
-                currentTurn.cards.add(this.drawFromDeck());
-                var throwCard = currentTurn.cards[1];
-                throwCard.faceUp = true;
-                throwCard.isDraggable = true;
-                droppedCards.add(throwCard);
-                currentTurn.cards.removeAt(1);
-                currentTurn = _getNextPlayer(currentTurn);
-                currentTurn.initializeForNextTurn();
-              }
-
-              currentTurn.initializeForNextTurn();
-            }
-          },
-          columnIndex: CardList.DROPPED,
-        ),
+        child: discardedDeck,
       ),
     );
   }
 
   // Initialise a new game
   void _initialiseGame() {
+    /// Discard all player cards to discarded deck
+    for (int players = 0;
+        players < GameScreen.playerCardLists.length;
+        players++) {
+      var cardList = _getListFromIndex(GameScreen.playerCardLists[players]);
+      var setCardList =
+          _getSetListFromIndex(GameScreen.playerCardLists[players]);
+      cardList.forEach((e) => discardedDeckKey.currentState.throwToDeck(e));
+      setCardList.forEach((e) => e.forEach((element) {
+            discardedDeckKey.currentState.throwToDeck(element);
+          }));
+    }
+
+    /// clear all player decks
     for (int i = 0; i < playersList.length; i++) {
       playersList[i].initialize("Player " + (i + 1).toString());
     }
 
-    // Stores the card in the upper boxes
-    droppedCards = [];
+    /// move all discarded cards to main deck
+    this.recycleDecks();
 
+    /// redistribute cards to players
     for (int players = 0;
         players < GameScreen.playerCardLists.length;
         players++) {
@@ -409,6 +429,7 @@ class _GameScreenState extends State<GameScreen> {
       }
     }
 
+    /// refresh player cards
     _refreshList();
   }
 
@@ -425,7 +446,13 @@ class _GameScreenState extends State<GameScreen> {
         _getListFromIndex(index);
       });
     } else {
-      setState(() {});
+      setState(() {
+        for (int players = 0;
+            players < GameScreen.playerCardLists.length;
+            players++) {
+          _getListFromIndex(GameScreen.playerCardLists[players]);
+        }
+      });
     }
   }
 
@@ -525,8 +552,6 @@ class _GameScreenState extends State<GameScreen> {
         return playersList[2].cards;
       case CardList.P4:
         return playersList[3].cards;
-      case CardList.DROPPED:
-        return droppedCards;
       default:
         return [];
     }
@@ -553,14 +578,13 @@ class _GameScreenState extends State<GameScreen> {
       return;
     }
     if (settingPlayer.discarded) {
-      droppedCards.isEmpty
-          ? settingScore = settingPlayer.setCards(settingScore)
-          : settingScore =
-              settingPlayer.setCards(settingScore, droppedCards.last);
+      var lastCard = discardedDeckKey.currentState.getLastCard();
+      settingScore = settingPlayer.setCards(settingScore, lastCard);
 
       if (!settingPlayer.eligibleToDraw) {
-        droppedCards.removeAt(droppedCards.indexOf(droppedCards.last));
         settingPlayer.discarded = false;
+      } else {
+        discardedDeckKey.currentState.throwToDeck(lastCard);
       }
     } else {
       settingScore = settingPlayer.setCards(settingScore);
