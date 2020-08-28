@@ -73,10 +73,12 @@ class KonkanDeckState extends State<KonkanDeck> {
     print(_cards.length);
     var result;
     if (_cards.isNotEmpty) {
-      result = _cards.removeLast()
-        ..faceUp = false
-        ..isDraggable = true
-        ..opened = true;
+      setState(() {
+        result = _cards.removeLast()
+          ..faceUp = false
+          ..isDraggable = true
+          ..opened = true;
+      });
     }
     if (discarded != null) {
       _dropped.add(discarded);
