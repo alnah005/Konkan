@@ -17,6 +17,12 @@ class JokerPlaceHolder {
     }
     return false;
   }
+
+  JokerPlaceHolder.fromCard(PlayingCard card, int index) {
+    this.type = card.cardType;
+    this.suit = card.cardSuit;
+    this.index = index;
+  }
 }
 
 enum MeldType { sequence, suit }
@@ -39,6 +45,8 @@ abstract class MeldClass extends Object {
   Map<int, PlayingCard> get meldMap;
 
   List<JokerPlaceHolder> jokers;
+
+  void insertCard(PlayingCard card, int index);
 
   String get shortInfo {
     String mType;
@@ -80,6 +88,17 @@ class Meld extends MeldClass {
 
   List<JokerPlaceHolder> jokers = new List<JokerPlaceHolder>();
 
+  void insertCard(PlayingCard card, int index) {
+    if (index == 0) {
+      this.cards.insert(0, card);
+      this.jokers.forEach((element) {
+        element.index += 1;
+      });
+    } else {
+      this.cards.add(card);
+    }
+  }
+
   PlayingCard dropCard(PlayingCard card) {
     print("\ndropping ${card.string} on ${this.cards.map((e) => e.string)}");
     var swap = this.swapCard(card);
@@ -109,23 +128,34 @@ class Meld extends MeldClass {
   }
 
   PlayingCard meldCard(PlayingCard card) {
-    print(this.meldMap);
-    var result = meldMap.entries.firstWhere(
-        (element) =>
-            element.value.cardType == card.cardType &&
-            element.value.cardSuit == card.cardSuit,
-        orElse: () => null);
-
-    if (result != null) {
-      if (result.key == 0) {
-        this.cards.insert(result.key, card);
-        this.jokers.forEach((element) {
-          element.index += 1;
-        });
-      } else {
-        this.cards.add(card);
+//    print(this.meldMap);
+    if (card.cardType == CardType.joker) {
+      var melds = this.meldMap.entries.toList();
+      melds.sort((e, r) => e.value.position.compareTo(r.value.position));
+      var swapIn = melds.last;
+      int index;
+      switch (swapIn.key) {
+        case 0:
+          index = 0;
+          break;
+        case 1:
+          index = this.cards.length;
+          break;
       }
+      this.insertCard(card, index);
+      this.jokers.add(JokerPlaceHolder.fromCard(swapIn.value, index));
       return null;
+    } else {
+      var result = meldMap.entries.firstWhere(
+          (element) =>
+              element.value.cardType == card.cardType &&
+              element.value.cardSuit == card.cardSuit,
+          orElse: () => null);
+
+      if (result != null) {
+        this.insertCard(card, result.key);
+        return null;
+      }
     }
 
     return card;
