@@ -52,7 +52,9 @@ class PlayerWidgetState extends State<PlayerWidget> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: widget.player.openCards.expand((i) => i).toList().length > 0
-              ? _getPlayerSetColumn()
+              ? (widget.horizontal
+                  ? _getPlayerSetColumn()
+                  : setCardsSplitter(_getPlayerSetColumn()))
               : [
                   Container(
                     height: 0,
@@ -107,7 +109,9 @@ class PlayerWidgetState extends State<PlayerWidget> {
             flex: listCards.length,
             fit: FlexFit.loose,
             child: CardColumn(
-              cards: listCards,
+              cards: listCards.map((element) {
+                return element..isDraggable = false;
+              }).toList(),
               onWillAcceptAdded: (card, player, destinationCard) {
                 return true;
               },
@@ -137,5 +141,32 @@ class PlayerWidgetState extends State<PlayerWidget> {
           ),
         )
         .toList();
+  }
+
+  List<Column> setCardsSplitter(List<Widget> cols) {
+    if (cols.length > 3) {
+      return widget.reverseOrder
+          ? [
+              Column(
+                children: cols.sublist(3, cols.length),
+              ),
+              Column(
+                children: cols.sublist(0, 3),
+              ),
+            ]
+          : [
+              Column(
+                children: cols.sublist(0, 3),
+              ),
+              Column(
+                children: cols.sublist(3, cols.length),
+              ),
+            ];
+    }
+    return [
+      Column(
+        children: cols,
+      )
+    ];
   }
 }
