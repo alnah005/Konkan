@@ -1,3 +1,4 @@
+import 'package:solitaire/models/base_entity.dart';
 import 'package:solitaire/models/groups.dart';
 import 'package:solitaire/models/meld.dart';
 import 'package:solitaire/models/playing_card.dart';
@@ -29,23 +30,24 @@ class PlayerInfo {
   }
 }
 
-class Player {
-  List<PlayingCard> cards = [];
+class Player extends BaseEntity {
   List<List<PlayingCard>> openCards = [[]];
   PlayingCard extraCard;
-  PositionOnScreen position;
   PlayerInfo personalInfo = new PlayerInfo();
-  Player(this.position, {this.isAI = false}) {
+  Player(CardList identifier, {this.isAI = false})
+      : super(
+          identifier,
+        ) {
     if (this.isAI) {}
   }
   bool discarded = true;
   bool eligibleToDraw = true;
   bool isAI = false;
 
-  void recordGame(PositionOnScreen winnerPosition) {
+  void recordGame(CardList winnerPosition) {
     personalInfo.avgScore =
         personalInfo.avgScore * (personalInfo.wins + personalInfo.losses);
-    if (winnerPosition == this.position) {
+    if (winnerPosition == this.identifier) {
       personalInfo.wins += 1;
     } else {
       personalInfo.losses += 1;

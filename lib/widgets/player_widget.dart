@@ -2,18 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:solitaire/models/groups.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/utils/enums.dart';
 
 import 'card_column.dart';
 
 class PlayerWidget extends StatefulWidget {
-  final CardList playerIndex;
   final Player player;
   final horizontal;
   final reverseOrder;
   PlayerWidget({
     Key key,
-    @required this.playerIndex,
     @required this.player,
     this.horizontal = false,
     this.reverseOrder = false,
@@ -78,7 +75,11 @@ class PlayerWidgetState extends State<PlayerWidget> {
     return CardColumn(
       cards: widget.player.cards,
       onWillAcceptAdded: (card, player, destinationCard) {
-        return true;
+        if (player.identifier == widget.player.identifier) {
+          return true;
+        } else {
+          return false;
+        }
       },
       onCardsAdded: (sourceCard, player, destinationCard) {
         if (sourceCard != destinationCard) {
@@ -93,7 +94,7 @@ class PlayerWidgetState extends State<PlayerWidget> {
           });
         }
       },
-      columnIndex: widget.playerIndex,
+      entity: widget.player,
     );
   }
 
@@ -128,8 +129,8 @@ class PlayerWidgetState extends State<PlayerWidget> {
                   }
                 }
               },
-              columnIndex: widget.playerIndex,
               setCards: true,
+              entity: widget.player,
             ),
           ),
         )

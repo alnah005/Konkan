@@ -2,7 +2,6 @@ import 'package:solitaire/models/base_game_state.dart';
 import 'package:solitaire/models/base_round_state.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/utils/enums.dart';
 
 class KonkanGameState<Y> extends BaseGameState<Y> {
   List<PlayingCard> cardDeckClosed = [];
@@ -57,12 +56,12 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
         "Gamestate must have at most 4 players");
     if (playerList.isEmpty) {
       for (int i = 0; i < super.numberOfPlayers - 1; i++) {
-        if (PositionOnScreen.values[i] != PositionOnScreen.bottom) {
-          super.players.add(new Player(PositionOnScreen.values[i], isAI: true));
-        }
-        super.players.add(new Player(
-              PositionOnScreen.bottom,
-            ));
+//        if (PositionOnScreen.values[i] != PositionOnScreen.bottom) {
+//          super.players.add(new Player(PositionOnScreen.values[i], isAI: true));
+//        }
+//        super.players.add(new Player(
+//              PositionOnScreen.bottom,
+//            ));
       }
     }
   }

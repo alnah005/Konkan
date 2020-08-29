@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:solitaire/models/base_entity.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/utils/enums.dart';
@@ -22,10 +23,10 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   // Stores the cards on the seven columns
   List<Player> playerObjects = [
-    new Player(PositionOnScreen.left, isAI: true),
-    new Player(PositionOnScreen.top, isAI: true),
-    new Player(PositionOnScreen.right, isAI: true),
-    new Player(PositionOnScreen.bottom)
+    new Player(CardList.P1, isAI: true),
+    new Player(CardList.P2, isAI: true),
+    new Player(CardList.P3, isAI: true),
+    new Player(CardList.P4)
   ];
   Player currentTurn;
 
@@ -59,8 +60,16 @@ class _GameScreenState extends State<GameScreen> {
     );
     discardedDeck = DiscardedDeck(
       key: discardedDeckKey,
+      onWillAcceptAdded: (sourceCard, player, destinationCard) {
+        print(player.identifier);
+        if (GameScreen.playerCardLists.contains(player.identifier)) {
+          return true;
+        }
+        return false;
+      },
       onCardAdded: (sourceCard, player, destinationCard) {
-        if (player.position == currentTurn.position && !currentTurn.discarded) {
+        if (player.identifier == currentTurn.identifier &&
+            !currentTurn.discarded) {
           discardedDeckKey.currentState
               .throwToDeck(sourceCard..isDraggable = true);
           setState(() {
@@ -94,7 +103,7 @@ class _GameScreenState extends State<GameScreen> {
           currentTurn.initializeForNextTurn();
         }
       },
-      columnIndex: CardList.DROPPED,
+      discardEntity: BaseEntity(CardList.DROPPED),
     );
     Future.delayed(const Duration(milliseconds: 30), () {
       /// Anything that uses a key will go here.
@@ -139,7 +148,6 @@ class _GameScreenState extends State<GameScreen> {
             flex: 7,
             fit: FlexFit.loose,
             child: PlayerWidget(
-              playerIndex: CardList.P2,
               player: playerObjects[1],
               horizontal: true,
             ),
@@ -156,7 +164,6 @@ class _GameScreenState extends State<GameScreen> {
                     flex: 7,
                     fit: FlexFit.loose,
                     child: PlayerWidget(
-                      playerIndex: CardList.P1,
                       player: playerObjects[0],
                     ),
                   ),
@@ -167,7 +174,6 @@ class _GameScreenState extends State<GameScreen> {
                     flex: 7,
                     fit: FlexFit.loose,
                     child: PlayerWidget(
-                      playerIndex: CardList.P3,
                       player: playerObjects[2],
                       reverseOrder: true,
                     ),
@@ -193,11 +199,11 @@ class _GameScreenState extends State<GameScreen> {
               flex: 7,
               fit: FlexFit.loose,
               child: PlayerWidget(
-                playerIndex: CardList.P4,
                 player: playerObjects[3],
                 horizontal: true,
                 reverseOrder: true,
               )),
+          Expanded(child: Container()),
         ],
       ),
     );
@@ -323,9 +329,8 @@ class _GameScreenState extends State<GameScreen> {
 
   // Handle a win condition
   void _handleWin(CardList whichPlayer) {
-    PositionOnScreen winnerPosition = _getPositionFromIndex(whichPlayer);
     for (int i = 0; i < playerObjects.length; i++) {
-      playerObjects[i].recordGame(winnerPosition);
+      playerObjects[i].recordGame(whichPlayer);
     }
     showDialog(
       context: context,
@@ -362,33 +367,18 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  PositionOnScreen _getPositionFromIndex(CardList index) {
-    switch (index) {
-      case CardList.P1:
-        return PositionOnScreen.left;
-      case CardList.P2:
-        return PositionOnScreen.top;
-      case CardList.P3:
-        return PositionOnScreen.right;
+  Player _getNextPlayer(Player currentPlayer) {
+    switch (currentPlayer.identifier) {
       case CardList.P4:
-        return PositionOnScreen.bottom;
+        return playerObjects[1];
+      case CardList.P1:
+        return playerObjects[2];
+      case CardList.P2:
+        return playerObjects[3];
+      case CardList.P3:
+        return playerObjects[0];
       default:
         return null;
-    }
-  }
-
-  Player _getNextPlayer(Player currentPlayer) {
-    switch (currentPlayer.position) {
-      case PositionOnScreen.left:
-        return playerObjects[1];
-      case PositionOnScreen.top:
-        return playerObjects[2];
-      case PositionOnScreen.right:
-        return playerObjects[3];
-      case PositionOnScreen.bottom:
-        return playerObjects[0];
-      default:
-        return playerObjects[0];
     }
   }
 
@@ -422,21 +412,6 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  CardList _cardListFromPlayer(PositionOnScreen pos) {
-    switch (pos) {
-      case PositionOnScreen.left:
-        return CardList.P1;
-      case PositionOnScreen.top:
-        return CardList.P2;
-      case PositionOnScreen.right:
-        return CardList.P3;
-      case PositionOnScreen.bottom:
-        return CardList.P4;
-      default:
-        return null;
-    }
-  }
-
   void _handleSetCards(Player settingPlayer) {
     if (settingPlayer != currentTurn) {
       print("Its not your turn");
@@ -454,6 +429,6 @@ class _GameScreenState extends State<GameScreen> {
     } else {
       settingScore = settingPlayer.setCards(settingScore);
     }
-    _refreshList(_cardListFromPlayer(settingPlayer.position));
+    _refreshList(settingPlayer.identifier);
   }
 }
