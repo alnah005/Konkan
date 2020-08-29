@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:solitaire/models/groups.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/utils/enums.dart';
-import 'package:solitaire/widgets/card_column.dart';
 import 'package:solitaire/widgets/discarded_deck.dart';
 import 'package:solitaire/widgets/konkan_deck.dart';
+import 'package:solitaire/widgets/player_widget.dart';
 
 class GameScreen extends StatefulWidget {
   static final List<CardList> playerCardLists = [
@@ -22,7 +21,7 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   // Stores the cards on the seven columns
-  List<Player> playersList = [
+  List<Player> playerObjects = [
     new Player(PositionOnScreen.left, isAI: true),
     new Player(PositionOnScreen.top, isAI: true),
     new Player(PositionOnScreen.right, isAI: true),
@@ -53,9 +52,6 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < playersList.length; i++) {
-      playersList[i].initialize("Player " + (i + 1).toString());
-    }
     deck = KonkanDeck(
       key: deckKey,
       numberOfDecks: 2,
@@ -63,14 +59,13 @@ class _GameScreenState extends State<GameScreen> {
     );
     discardedDeck = DiscardedDeck(
       key: discardedDeckKey,
-      onCardAdded: (cards, index, card) {
-        if (_getPositionFromIndex(index) == currentTurn.position &&
-            !currentTurn.discarded) {
+      onCardAdded: (sourceCard, player, destinationCard) {
+        if (player.position == currentTurn.position && !currentTurn.discarded) {
           discardedDeckKey.currentState
-              .throwToDeck(cards.first..isDraggable = true);
-          _getListFromIndex(index)
-              .removeAt(_getListFromIndex(index).indexOf(cards.first));
-          _refreshList(index);
+              .throwToDeck(sourceCard..isDraggable = true);
+          setState(() {
+            player.cards.removeAt(player.cards.indexOf(sourceCard));
+          });
           currentTurn = _getNextPlayer(currentTurn);
 
           while (currentTurn.isAI) {
@@ -104,9 +99,9 @@ class _GameScreenState extends State<GameScreen> {
     Future.delayed(const Duration(milliseconds: 30), () {
       /// Anything that uses a key will go here.
       _initialiseGame();
+      currentTurn = playerObjects[3];
     });
     settingScore = 51;
-    currentTurn = playersList[3];
   }
 
   @override
@@ -143,196 +138,66 @@ class _GameScreenState extends State<GameScreen> {
           Flexible(
             flex: 7,
             fit: FlexFit.loose,
-            child: _getPlayerColumn(playersList[1].cards, CardList.P2),
-          ),
-          Flexible(
-            flex: 10,
-            fit: FlexFit.tight,
-            child: Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _getSetListFromIndex(CardList.P2)
-                            .expand((i) => i)
-                            .toList()
-                            .length >
-                        0
-                    ? _getPlayerSetColumn(CardList.P2)
-                    : [
-                        Container(
-                          height: 0,
-                          width: 0,
-                        )
-                      ],
-              ),
+            child: PlayerWidget(
+              playerIndex: CardList.P2,
+              player: playerObjects[1],
+              horizontal: true,
             ),
           ),
+          Expanded(child: Container()),
           Flexible(
             flex: 30,
-            fit: FlexFit.tight,
+            fit: FlexFit.loose,
             child: Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Flexible(
-                    flex: 3,
+                    flex: 7,
                     fit: FlexFit.loose,
-                    child: _getPlayerColumn(playersList[0].cards, CardList.P1),
-                  ),
-                  Flexible(
-                    flex: 10,
-                    fit: FlexFit.tight,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          fit: FlexFit.tight,
-                          child: Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: _getSetListFromIndex(CardList.P1)
-                                          .expand((i) => i)
-                                          .toList()
-                                          .length >
-                                      0
-                                  ? _getPlayerSetColumn(CardList.P1)
-                                      .sublist(0, 2)
-                                  : [
-                                      Container(
-                                        height: 0,
-                                        width: 0,
-                                      )
-                                    ],
-                            ),
-                          ),
-                        ),
-                        Flexible(
-                          flex: 1,
-                          fit: FlexFit.tight,
-                          child: Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: _getSetListFromIndex(CardList.P1)
-                                          .expand((i) => i)
-                                          .toList()
-                                          .length >
-                                      2
-                                  ? _getPlayerSetColumn(CardList.P1)
-                                      .sublist(2, 4)
-                                  : [
-                                      Container(
-                                        height: 0,
-                                        width: 0,
-                                      )
-                                    ],
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: PlayerWidget(
+                      playerIndex: CardList.P1,
+                      player: playerObjects[0],
                     ),
                   ),
+                  Expanded(child: Container()),
                   Flexible(
                       flex: 10, fit: FlexFit.loose, child: _buildFinalDecks()),
                   Flexible(
-                    flex: 10,
-                    fit: FlexFit.tight,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          fit: FlexFit.tight,
-                          child: Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: _getSetListFromIndex(CardList.P3)
-                                          .expand((i) => i)
-                                          .toList()
-                                          .length >
-                                      0
-                                  ? _getPlayerSetColumn(CardList.P3)
-                                      .sublist(0, 2)
-                                  : [
-                                      Container(
-                                        height: 0,
-                                        width: 0,
-                                      )
-                                    ],
-                            ),
-                          ),
-                        ),
-                        Flexible(
-                          flex: 1,
-                          fit: FlexFit.tight,
-                          child: Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: _getSetListFromIndex(CardList.P3)
-                                          .expand((i) => i)
-                                          .toList()
-                                          .length >
-                                      2
-                                  ? _getPlayerSetColumn(CardList.P3)
-                                      .sublist(2, 4)
-                                  : [
-                                      Container(
-                                        height: 0,
-                                        width: 0,
-                                      )
-                                    ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Flexible(
-                    flex: 2,
+                    flex: 7,
                     fit: FlexFit.loose,
-                    child: _getPlayerColumn(playersList[2].cards, CardList.P3),
+                    child: PlayerWidget(
+                      playerIndex: CardList.P3,
+                      player: playerObjects[2],
+                      reverseOrder: true,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
           Flexible(flex: 7, fit: FlexFit.tight, child: _buildCardDeck()),
+          Expanded(child: Container()),
           Flexible(
             flex: 3,
-            fit: FlexFit.tight,
+            fit: FlexFit.loose,
             child: IconButton(
               icon: Icon(Icons.add_circle),
               tooltip: 'Set cards',
               onPressed: () {
-                _handleSetCards(playersList[3]);
+                _handleSetCards(playerObjects[3]);
               },
             ),
           ),
           Flexible(
-            flex: 10,
-            fit: FlexFit.tight,
-            child: Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _getSetListFromIndex(CardList.P4)
-                            .expand((i) => i)
-                            .toList()
-                            .length >
-                        0
-                    ? _getPlayerSetColumn(CardList.P4)
-                    : [
-                        Container(
-                          height: 0,
-                          width: 0,
-                        )
-                      ],
-              ),
-            ),
-          ),
-          Flexible(
-            flex: 10,
-            fit: FlexFit.tight,
-            child: _getPlayerColumn(playersList[3].cards, CardList.P4),
-          ),
+              flex: 7,
+              fit: FlexFit.loose,
+              child: PlayerWidget(
+                playerIndex: CardList.P4,
+                player: playerObjects[3],
+                horizontal: true,
+                reverseOrder: true,
+              )),
         ],
       ),
     );
@@ -401,8 +266,8 @@ class _GameScreenState extends State<GameScreen> {
     }
 
     /// clear all player decks
-    for (int i = 0; i < playersList.length; i++) {
-      playersList[i].initialize("Player " + (i + 1).toString());
+    for (int i = 0; i < playerObjects.length; i++) {
+      playerObjects[i].initialize(playerObjects[i].name);
     }
 
     /// move all discarded cards to main deck
@@ -414,7 +279,7 @@ class _GameScreenState extends State<GameScreen> {
         players++) {
       var cardList = _getListFromIndex(GameScreen.playerCardLists[players]);
       for (var card in deckKey.currentState.distributeCards(14)) {
-        playersList[players].isAI
+        playerObjects[players].isAI
             ? cardList.add(
                 card
                   ..opened = true
@@ -459,8 +324,8 @@ class _GameScreenState extends State<GameScreen> {
   // Handle a win condition
   void _handleWin(CardList whichPlayer) {
     PositionOnScreen winnerPosition = _getPositionFromIndex(whichPlayer);
-    for (int i = 0; i < playersList.length; i++) {
-      playersList[i].recordGame(winnerPosition);
+    for (int i = 0; i < playerObjects.length; i++) {
+      playerObjects[i].recordGame(winnerPosition);
     }
     showDialog(
       context: context,
@@ -485,13 +350,13 @@ class _GameScreenState extends State<GameScreen> {
   String _getNameFromIndex(CardList index) {
     switch (index) {
       case CardList.P1:
-        return playersList[0].name;
+        return playerObjects[0].name;
       case CardList.P2:
-        return playersList[1].name;
+        return playerObjects[1].name;
       case CardList.P3:
-        return playersList[2].name;
+        return playerObjects[2].name;
       case CardList.P4:
-        return playersList[3].name;
+        return playerObjects[3].name;
       default:
         return "Null";
     }
@@ -515,28 +380,28 @@ class _GameScreenState extends State<GameScreen> {
   Player _getNextPlayer(Player currentPlayer) {
     switch (currentPlayer.position) {
       case PositionOnScreen.left:
-        return playersList[1];
+        return playerObjects[1];
       case PositionOnScreen.top:
-        return playersList[2];
+        return playerObjects[2];
       case PositionOnScreen.right:
-        return playersList[3];
+        return playerObjects[3];
       case PositionOnScreen.bottom:
-        return playersList[0];
+        return playerObjects[0];
       default:
-        return playersList[0];
+        return playerObjects[0];
     }
   }
 
   List<List<PlayingCard>> _getSetListFromIndex(CardList index) {
     switch (index) {
       case CardList.P1:
-        return playersList[0].openCards;
+        return playerObjects[0].openCards;
       case CardList.P2:
-        return playersList[1].openCards;
+        return playerObjects[1].openCards;
       case CardList.P3:
-        return playersList[2].openCards;
+        return playerObjects[2].openCards;
       case CardList.P4:
-        return playersList[3].openCards;
+        return playerObjects[3].openCards;
       default:
         return [];
     }
@@ -545,13 +410,13 @@ class _GameScreenState extends State<GameScreen> {
   List<PlayingCard> _getListFromIndex(CardList index) {
     switch (index) {
       case CardList.P1:
-        return playersList[0].cards;
+        return playerObjects[0].cards;
       case CardList.P2:
-        return playersList[1].cards;
+        return playerObjects[1].cards;
       case CardList.P3:
-        return playersList[2].cards;
+        return playerObjects[2].cards;
       case CardList.P4:
-        return playersList[3].cards;
+        return playerObjects[3].cards;
       default:
         return [];
     }
@@ -590,64 +455,5 @@ class _GameScreenState extends State<GameScreen> {
       settingScore = settingPlayer.setCards(settingScore);
     }
     _refreshList(_cardListFromPlayer(settingPlayer.position));
-  }
-
-  Widget _getPlayerColumn(List<PlayingCard> playerCards, CardList whichPlayer) {
-    return CardColumn(
-      cards: playerCards,
-      onCardsAdded: (cards, index, card) {
-        if (cards.first != card) {
-          setState(() {
-            List<PlayingCard> currentCards = _getListFromIndex(index);
-            int cardIndex = currentCards.indexOf(cards.first);
-            int newIndex = currentCards.indexOf(card);
-            currentCards.insert(
-                cardIndex >= newIndex ? newIndex : newIndex + 1, cards.first);
-            currentCards.removeAt(
-                cardIndex >= (newIndex + 1) ? cardIndex + 1 : cardIndex);
-            _refreshList(index);
-          });
-        }
-      },
-      columnIndex: whichPlayer,
-    );
-  }
-
-  List<Flexible> _getPlayerSetColumn(CardList whichPlayer) {
-    return _getSetListFromIndex(whichPlayer)
-        .map(
-          (listCards) => Flexible(
-            flex: listCards.length,
-            fit: FlexFit.loose,
-            child: CardColumn(
-              cards: listCards,
-              onCardsAdded: (cards, index, card) {
-                var melds = validate(listCards);
-                PlayingCard result = cards.first;
-                if (melds.length > 0) {
-                  result = melds[0].dropCard(cards.first);
-                }
-                if (result != cards.first) {
-                  var returnDeck = _getListFromIndex(index);
-                  if (result != null) {
-                    setState(() {
-                      returnDeck.add(result);
-                      returnDeck.remove(cards.first);
-                      _refreshList(index);
-                    });
-                  } else {
-                    setState(() {
-                      returnDeck.remove(cards.first);
-                      _refreshList(index);
-                    });
-                  }
-                }
-              },
-              columnIndex: whichPlayer,
-              setCards: true,
-            ),
-          ),
-        )
-        .toList();
   }
 }

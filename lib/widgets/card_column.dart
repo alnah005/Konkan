@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/utils/enums.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
 
 typedef Null CardAcceptCallback(
-    List<PlayingCard> card, CardList fromIndex, PlayingCard cardAfter);
+    PlayingCard sourceCard, Player fromPlayer, PlayingCard destinationCard);
+typedef bool CardWillAcceptCallback(
+    PlayingCard sourceCard, Player fromPlayer, PlayingCard destinationCard);
 
 // This is a stack of overlayed cards (implemented using a stack)
 class CardColumn extends StatefulWidget {
@@ -13,16 +16,19 @@ class CardColumn extends StatefulWidget {
   final List<PlayingCard> cards;
 
   // Callback when card is added to the stack
+  final CardWillAcceptCallback onWillAcceptAdded;
   final CardAcceptCallback onCardsAdded;
 
   // The index of the list in the game
   final CardList columnIndex;
   final bool setCards;
-  CardColumn(
-      {@required this.cards,
-      @required this.onCardsAdded,
-      @required this.columnIndex,
-      this.setCards = false});
+  CardColumn({
+    @required this.cards,
+    @required this.onCardsAdded,
+    @required this.columnIndex,
+    @required this.onWillAcceptAdded,
+    this.setCards = false,
+  });
 
   @override
   _CardColumnState createState() => _CardColumnState();
@@ -84,15 +90,11 @@ class _CardColumnState extends State<CardColumn> {
           return transformedCard(card, index);
         },
         onWillAccept: (value) {
-          CardList index = value["fromIndex"];
-          if ((index == widget.columnIndex) ||
-              (isAPlayerDeck(index) && widget.setCards)) {
-            return true;
-          }
-          return false;
+          return widget.onWillAcceptAdded(
+              value["sourceCard"], value["player"], card);
         },
         onAccept: (value) {
-          widget.onCardsAdded(value["cards"], value["fromIndex"], card);
+          widget.onCardsAdded(value["sourceCard"], value["player"], card);
         },
       ),
     );
@@ -101,7 +103,6 @@ class _CardColumnState extends State<CardColumn> {
   Widget transformedCard(PlayingCard card, int index) {
     return TransformedCard(
       playingCard: card,
-      columnIndex: widget.columnIndex,
     );
   }
 

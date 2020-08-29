@@ -73,13 +73,13 @@ class DiscardedDeckState extends State<DiscardedDeck> {
                         children: _cards.map((card) {
                       return TransformedCard(
                         playingCard: card,
-                        columnIndex: widget.columnIndex,
                       );
                     }).toList()),
                   ),
           );
         },
         onWillAccept: (value) {
+          print(value);
           CardList cardIndex = value["fromIndex"];
           for (int players = 0; players < playerCardLists.length; players++) {
             if (cardIndex == playerCardLists[players]) {

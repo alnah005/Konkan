@@ -1,18 +1,18 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/utils/enums.dart';
 
 // TransformedCard makes the card draggable and translates it according to
 // position in the stack.
 class TransformedCard extends StatefulWidget {
   final PlayingCard playingCard;
-  final CardList columnIndex;
+  final Player player;
 
   TransformedCard({
     @required this.playingCard,
-    this.columnIndex,
+    this.player,
   });
 
   @override
@@ -45,8 +45,8 @@ class _TransformedCardState extends State<TransformedCard> {
                   height: 60.0,
                 ),
                 data: {
-                  "cards": [widget.playingCard],
-                  "fromIndex": widget.columnIndex,
+                  "sourceCard": widget.playingCard,
+                  "player": widget.player,
                 },
               )
             : _buildFaceUpCard();
