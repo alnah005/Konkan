@@ -31,44 +31,46 @@ class PlayerWidgetState extends State<PlayerWidget> {
     return widget.horizontal
         ? Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: widget.reverseOrder
-                ? _getChildren().reversed.cast<Flexible>().toList()
-                : _getChildren(),
+            children: _getChildren(),
           )
         : Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: widget.reverseOrder
-                ? _getChildren().reversed.cast<Flexible>().toList()
-                : _getChildren(),
+            children: _getChildren(),
           );
   }
 
   List<Flexible> _getChildren() {
-    return [
-      Flexible(
-        flex: 7,
-        fit: FlexFit.loose,
-        child: _getPlayerColumn(),
-      ),
-      Flexible(
-        flex: 10,
-        fit: FlexFit.loose,
-        child: Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children:
-                widget.player.openCards.expand((i) => i).toList().length > 0
-                    ? _getPlayerSetColumn()
-                    : [
-                        Container(
-                          height: 0,
-                          width: 0,
-                        )
-                      ],
-          ),
+    var cards = Flexible(
+      flex: 7,
+      fit: FlexFit.loose,
+      child: _getPlayerColumn(),
+    );
+    var setCards = Flexible(
+      flex: 10,
+      fit: FlexFit.loose,
+      child: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: widget.player.openCards.expand((i) => i).toList().length > 0
+              ? _getPlayerSetColumn()
+              : [
+                  Container(
+                    height: 0,
+                    width: 0,
+                  )
+                ],
         ),
-      )
-    ];
+      ),
+    );
+    return widget.reverseOrder
+        ? [
+            setCards,
+            cards,
+          ]
+        : [
+            cards,
+            setCards,
+          ];
   }
 
   CardColumn _getPlayerColumn() {
