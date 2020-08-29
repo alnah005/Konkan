@@ -1,15 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/base_entity.dart';
-import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/utils/enums.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
 
 typedef Null CardAcceptCallback(
-    PlayingCard sourceCard, Player fromPlayer, PlayingCard destinationCard);
+    PlayingCard sourceCard, BaseEntity fromPlayer, PlayingCard destinationCard);
 typedef bool CardWillAcceptCallback(
-    PlayingCard sourceCard, Player fromPlayer, PlayingCard destinationCard);
+    PlayingCard sourceCard, BaseEntity fromPlayer, PlayingCard destinationCard);
 
 // This is a stack of overlayed cards (implemented using a stack)
 class CardColumn extends StatefulWidget {

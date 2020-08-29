@@ -6,27 +6,27 @@ import 'package:test/test.dart';
 void main() {
   group('recording game', () {
     test('recording losses and wins', () {
-      final player = Player(PositionOnScreen.bottom);
+      final player = Player(CardList.P1);
       expect(player.personalInfo.wins, 0);
       expect(player.personalInfo.losses, 0);
-      player.recordGame(PositionOnScreen.bottom);
+      player.recordGame(CardList.P1);
       expect(player.personalInfo.wins, 1);
       expect(player.personalInfo.losses, 0);
-      player.recordGame(PositionOnScreen.right);
+      player.recordGame(CardList.P2);
       expect(player.personalInfo.wins, 1);
       expect(player.personalInfo.losses, 1);
     });
     test('avg score', () {
-      final player = Player(PositionOnScreen.bottom);
+      final player = Player(CardList.P1);
       List<PlayingCard> cards = [
         PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
         PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
         PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
       ];
       player.cards = cards;
-      player.recordGame(PositionOnScreen.bottom);
+      player.recordGame(CardList.P1);
       expect(player.personalInfo.avgScore, 30.0);
-      player.recordGame(PositionOnScreen.bottom);
+      player.recordGame(CardList.P1);
       expect(player.personalInfo.avgScore, 30.0);
       player.cards.add(
           PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five));
@@ -40,13 +40,13 @@ void main() {
           PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five));
       player.cards.add(
           PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five));
-      player.recordGame(PositionOnScreen.bottom);
+      player.recordGame(CardList.P1);
       expect(player.personalInfo.avgScore, 40.0);
     });
   });
 
   group("Setting cards", () {
-    Player player = Player(PositionOnScreen.bottom);
+    Player player = Player(CardList.P1);
     final cards = [
       PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five),
       PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
@@ -135,7 +135,7 @@ void main() {
   });
 
   group("Optimality of setting cards", () {
-    Player player = Player(PositionOnScreen.bottom);
+    Player player = Player(CardList.P1);
     final cards = [
       PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.queen),
       PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.one),

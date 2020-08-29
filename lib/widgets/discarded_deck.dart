@@ -68,7 +68,6 @@ class DiscardedDeckState extends State<DiscardedDeck> {
                     width: containerWidth - 2 * padSize,
                     child: Stack(
                         children: widget.discardEntity.cards.map((card) {
-                      print(widget.discardEntity.identifier);
                       return TransformedCard(
                         playingCard: card,
                         entity: widget.discardEntity,

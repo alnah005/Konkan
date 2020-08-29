@@ -369,13 +369,13 @@ class _GameScreenState extends State<GameScreen> {
 
   Player _getNextPlayer(Player currentPlayer) {
     switch (currentPlayer.identifier) {
-      case CardList.P4:
-        return playerObjects[1];
       case CardList.P1:
-        return playerObjects[2];
+        return playerObjects[1];
       case CardList.P2:
-        return playerObjects[3];
+        return playerObjects[2];
       case CardList.P3:
+        return playerObjects[3];
+      case CardList.P4:
         return playerObjects[0];
       default:
         return null;
