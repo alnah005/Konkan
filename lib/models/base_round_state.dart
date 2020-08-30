@@ -4,7 +4,9 @@ abstract class BaseRoundState<T> {
   Player currentPlayer;
   T playerGameInfo;
 
-  // initialize variables in round and start round
+  BaseRoundState({this.currentPlayer, this.playerGameInfo});
+
+  /// initialize variables in round and start round
   void initializeRound();
 
   /// call this method after a round has finished to start a new round

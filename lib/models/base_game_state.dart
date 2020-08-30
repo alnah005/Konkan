@@ -62,4 +62,7 @@ abstract class BaseGameState<T> {
 
   /// call this to add a player into the game
   void addPlayer(Player player, T playerInfo);
+
+  /// This method is called to set up next round (cards, scores...etc)
+  void nextRound();
 }

@@ -327,7 +327,7 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  // Handle a win condition
+  /// Handle a win condition
   void _handleWin(CardList whichPlayer) {
     for (int i = 0; i < playerObjects.length; i++) {
       playerObjects[i].recordGame(whichPlayer);
