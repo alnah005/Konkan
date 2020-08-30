@@ -13,7 +13,7 @@ abstract class BaseGameState<T> {
   /// This method is called to initialize GameState
   ///
   ///Mainly called to initialize GameState (method constructor)
-  void initializeGame(
+  BaseGameState.initializeGame(
       [int numOfPlayers,
       List<Player> playerList,
       List<T> playerInfo,

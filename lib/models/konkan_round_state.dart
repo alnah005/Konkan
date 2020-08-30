@@ -10,7 +10,7 @@ class KonkanRoundState<Y> extends BaseRoundState<Y> {
   final GlobalKey<DiscardedDeckState> discardedDeckKey;
   double settingScore;
 
-  KonkanRoundState(this.deckKey, this.discardedDeckKey,
+  KonkanRoundState(this.deckKey, this.discardedDeckKey, this.settingScore,
       {Player currentPlayer, Y playerGameInfo})
       : super(currentPlayer: currentPlayer, playerGameInfo: playerGameInfo);
   @override
@@ -26,6 +26,12 @@ class KonkanRoundState<Y> extends BaseRoundState<Y> {
   @override
   void trackTurnStats() {
     // TODO: implement trackTurnStats
+  }
+
+  void throwToDeck(PlayingCard card) {
+    discardedDeckKey.currentState.throwToDeck(card..isDraggable = true);
+    currentPlayer.cards.removeAt(currentPlayer.cards.indexOf(card));
+    print("Done");
   }
 
   PlayingCard drawFromDeck() {
@@ -50,7 +56,6 @@ class KonkanRoundState<Y> extends BaseRoundState<Y> {
     if (settingPlayer.discarded) {
       var lastCard = discardedDeckKey.currentState.getLastCard();
       settingScore = settingPlayer.setCards(settingScore, lastCard);
-
       if (!settingPlayer.eligibleToDraw) {
         settingPlayer.discarded = false;
       } else {
@@ -59,5 +64,28 @@ class KonkanRoundState<Y> extends BaseRoundState<Y> {
     } else {
       settingScore = settingPlayer.setCards(settingScore);
     }
+  }
+
+  bool handleAITurns() {
+    if (!currentPlayer.isAI) {
+      return false;
+    }
+    currentPlayer.cards.shuffle();
+    this.handleSetCards(currentPlayer);
+
+    /// in the commented line below, I tried to add some time before
+    /// the AI makes a decision but it needs to have an asynchronous
+    /// environment. This needs a lot of refactoring to the code.
+    //await new Future.delayed(const Duration(seconds: 5));
+
+    /// We can use this code however this freezes everything for the
+    /// set period of time, making the screen seem laggy or glitched.
+    //sleep(const Duration(seconds:1));
+    currentPlayer.cards.add(drawFromDeck());
+    var throwCard = currentPlayer.cards[1]
+      ..faceUp = true
+      ..isDraggable = true;
+    throwToDeck(throwCard);
+    return true;
   }
 }

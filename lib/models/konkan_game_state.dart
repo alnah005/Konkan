@@ -4,7 +4,6 @@ import 'package:solitaire/models/base_round_state.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/pages/game_screen.dart';
-import 'package:solitaire/utils/enums.dart';
 import 'package:solitaire/widgets/discarded_deck.dart';
 import 'package:solitaire/widgets/konkan_deck.dart';
 
@@ -15,9 +14,8 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
   double settingScore = 51;
   GlobalKey<KonkanDeckState> deckKey = GlobalKey();
   GlobalKey<DiscardedDeckState> discardedDeckKey = GlobalKey();
-  var deck;
-  var discardedDeck;
   static int playerIndex = 3;
+  List<int> _playerIndexes = [0, 1, 2, 3];
   KonkanRoundState<Y> roundState;
   // Stores the card in the upper boxes
   List<PlayingCard> droppedCards = [];
@@ -54,30 +52,28 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
   }
 
   @override
-  void initializeGame(
+  KonkanGameState.initializeGame(
       [int numOfPlayers,
       List<Player> playerList,
       List<Y> playerInfo,
-      BaseRoundState roundState]) {
-    // TODO: implement initializeGame
-    KonkanGameState(
-        numOfPlayers: numOfPlayers,
-        playerList: playerList,
-        playerInfo: playerInfo,
-        roundState: roundState);
-    assert(super.numberOfPlayers <= 0 && playerList.isEmpty,
+      BaseRoundState roundState])
+      : super(
+            numberOfPlayers: numOfPlayers,
+            players: playerList,
+            playerGameInfo: playerInfo,
+            round: roundState) {
+    assert(numberOfPlayers > 0 || playerList.isNotEmpty,
         "Gamestate must have at least 1 player");
-    assert(super.numberOfPlayers > 4 || playerList.length > 4,
+    assert(numberOfPlayers < 5 && playerList.length < 5,
         "Gamestate must have at most 4 players");
     if (playerList.isEmpty) {
       this.initializePlayers();
     }
-    if (roundState != null) {
-      this.initializeRound(this.players);
-    } else {
-      roundState = KonkanRoundState(deckKey, discardedDeckKey);
+    if (roundState == null) {
+      print("keys synced");
+      this.roundState =
+          KonkanRoundState(deckKey, discardedDeckKey, settingScore);
     }
-    settingScore = 51;
   }
 
   void initializePlayers() {
@@ -86,23 +82,33 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     }
     super.players.add(new Player(
           GameScreen.playerCardLists[super.numberOfPlayers - 1],
+          isAI: true,
         ));
   }
 
   @override
   Player initializeRound(List<Player> playerList) {
-    round.currentPlayer = playerList[playerIndex];
-    round.initializeRound();
-    return round.currentPlayer;
+    this.redistributeCards();
+    roundState.currentPlayer = playerList[3];
+    roundState.playerGameInfo = playerGameInfo[3];
+    roundState.initializeRound();
+    return roundState.currentPlayer;
   }
 
   @override
   Player nextPlayer() {
-    round.nextTurnVariables(
-        this.players[playerIndex], this.playerGameInfo[playerIndex]);
+    assert(roundState.currentPlayer.cards.length < 15);
     playerIndex += 1;
     playerIndex = playerIndex % this.players.length;
-    return round.currentPlayer;
+    roundState.nextTurnVariables(
+        this.players[playerIndex], this.playerGameInfo[playerIndex]);
+    while (roundState.handleAITurns()) {
+      playerIndex += 1;
+      playerIndex = playerIndex % this.players.length;
+      roundState.nextTurnVariables(
+          this.players[playerIndex], this.playerGameInfo[playerIndex]);
+    }
+    return roundState.currentPlayer;
   }
 
   @override
@@ -118,12 +124,37 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
   @override
   void trackRoundStats() {
     for (int i = 0; i < this.players.length; i++) {
-      this.players[i].recordGame(round.currentPlayer.identifier);
+      this.players[i].recordGame(roundState.currentPlayer.identifier);
     }
   }
 
   @override
   void nextRound() {
+    redistributeCards();
+    roundState = roundState.nextRound(roundState);
+  }
+
+  void setCards(Player player) {
+    this.roundState.handleSetCards(player);
+  }
+
+  Player getMainPlayer() {
+    return players[_playerIndexes[3]];
+  }
+
+  Player getRightPlayer() {
+    return players[_playerIndexes[0]];
+  }
+
+  Player getTopPlayer() {
+    return players[_playerIndexes[1]];
+  }
+
+  Player getLeftPlayer() {
+    return players[_playerIndexes[2]];
+  }
+
+  void redistributeCards() {
     /// Discard all player cards to discarded deck
     for (int i = 0; i < this.players.length; i++) {
       var cardList = this.players[i].cards;
@@ -133,8 +164,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
             discardedDeckKey.currentState.throwToDeck(element);
           }));
     }
-    round = round.nextRound(round);
-    this.nextPlayer();
+    roundState.recycleDecks();
 
     /// clear all player decks
     for (int i = 0; i < this.players.length; i++) {
@@ -158,40 +188,6 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
                   ..isDraggable = true,
               );
       }
-    }
-  }
-
-  void setCards(Player player) {
-    this.roundState.handleSetCards(player);
-  }
-
-  String _getNameFromIndex(CardList index) {
-    switch (index) {
-      case CardList.P1:
-        return this.players[0].name;
-      case CardList.P2:
-        return this.players[1].name;
-      case CardList.P3:
-        return this.players[2].name;
-      case CardList.P4:
-        return this.players[3].name;
-      default:
-        return "Null";
-    }
-  }
-
-  Player _getNextPlayer() {
-    switch (roundState.currentPlayer.identifier) {
-      case CardList.P1:
-        return this.players[1];
-      case CardList.P2:
-        return this.players[2];
-      case CardList.P3:
-        return this.players[3];
-      case CardList.P4:
-        return this.players[0];
-      default:
-        return null;
     }
   }
 }

@@ -27,6 +27,7 @@ abstract class BaseRoundState<T> {
     this.trackTurnStats();
     currentPlayer = nextPlayer;
     playerGameInfo = playerInfo;
+    currentPlayer.initializeForNextTurn();
   }
 
   /// call this method after a turn has finished to track player info
