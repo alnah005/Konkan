@@ -1,172 +1,144 @@
 import 'package:flutter/material.dart';
 
+import 'auth.dart';
+
+class EmailFieldValidator {
+  static String validate(String value) {
+    return value.isEmpty ? 'Email can\'t be empty' : null;
+  }
+}
+
+class PasswordFieldValidator {
+  static String validate(String value) {
+    return value.isEmpty ? 'Password can\'t be empty' : null;
+  }
+}
+
 class LoginPage extends StatefulWidget {
+  const LoginPage({this.onSignedIn});
+  final VoidCallback onSignedIn;
+
   @override
-  _State createState() => _State();
+  State<StatefulWidget> createState() => _LoginPageState();
 }
 
-class _State extends State<LoginPage> {
-  var page = LoginOptions();
+enum FormType {
+  login,
+  register,
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-            body: Padding(
-                padding: EdgeInsets.fromLTRB(10, 25, 10, 10),
-                child: this.page)));
+class _LoginPageState extends State<LoginPage> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  String _email;
+  String _password;
+  FormType _formType = FormType.login;
+
+  bool validateAndSave() {
+    final FormState form = formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      return true;
+    }
+    return false;
   }
-}
 
-class LoginOptions extends StatefulWidget {
-  @override
-  _LoginOptionsState createState() => _LoginOptionsState();
-}
+  Future<void> validateAndSubmit() async {
+    if (validateAndSave()) {
+      try {
+        final BaseAuth auth = AuthProvider.of(context).auth;
+        if (_formType == FormType.login) {
+          final String userId =
+              await auth.signInWithEmailAndPassword(_email, _password);
+          print('Signed in: $userId');
+        } else {
+          final String userId =
+              await auth.createUserWithEmailAndPassword(_email, _password);
+          print('Registered user: $userId');
+        }
+        widget.onSignedIn();
+      } catch (e) {
+        print('Error: $e');
+      }
+    }
+  }
 
-class _LoginOptionsState extends State<LoginOptions> {
-  var choice;
+  void moveToRegister() {
+    formKey.currentState.reset();
+    setState(() {
+      _formType = FormType.register;
+    });
+  }
+
+  void moveToLogin() {
+    formKey.currentState.reset();
+    setState(() {
+      _formType = FormType.login;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.fromLTRB(10, 10, 10, 50),
-            child: Text(
-              'KonKan',
-              style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 30),
-            )),
-        Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.fromLTRB(10, 10, 10, 30),
-            child: Text(
-              'Sign in',
-              style: TextStyle(fontSize: 20),
-            )),
-        Container(
-            height: 50,
-            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-            child: RaisedButton(
-              textColor: Colors.white,
-              color: Colors.blue,
-              child: Text(
-                'Email',
-                style: TextStyle(fontSize: 20),
-              ),
-              onPressed: () {
-                EmailLogin();
-              },
-            )),
-        Padding(
-          padding: EdgeInsets.fromLTRB(0, 25, 0, 0),
-          child: Container(
-              height: 50,
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: RaisedButton(
-                textColor: Colors.white,
-                color: Colors.indigo,
-                child: Text(
-                  'Login with facebook',
-                  style: TextStyle(fontSize: 20),
-                ),
-                onPressed: () {
-//                            print(nameController.text);
-//                            print(passwordController.text);
-                },
-              )),
-        ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(0, 25, 0, 0),
-          child: Container(
-              height: 50,
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: RaisedButton(
-                textColor: Colors.white,
-                color: Colors.redAccent,
-                child: Text(
-                  'Login with Gmail account',
-                  style: TextStyle(fontSize: 20),
-                ),
-                onPressed: () {
-//                            print(nameController.text);
-//                            print(passwordController.text);
-                },
-              )),
-        ),
-        Container(
-            child: Padding(
-          padding: EdgeInsets.fromLTRB(0, 50, 0, 10),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Flutter login demo'),
+      ),
+      body: Container(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: formKey,
           child: Column(
-            children: <Widget>[
-              Text('Don\'t have account?'),
-              FlatButton(
-                textColor: Colors.blue,
-                child: Text(
-                  'Sign up',
-                  style: TextStyle(fontSize: 20),
-                ),
-                onPressed: () {
-                  //signup screen
-                },
-              )
-            ],
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: buildInputs() + buildSubmitButtons(),
           ),
-        ))
-      ],
+        ),
+      ),
     );
   }
-}
 
-class EmailLogin extends StatefulWidget {
-  @override
-  _EmailLoginState createState() => _EmailLoginState();
-}
+  List<Widget> buildInputs() {
+    return <Widget>[
+      TextFormField(
+        key: Key('email'),
+        decoration: InputDecoration(labelText: 'Email'),
+        validator: EmailFieldValidator.validate,
+        onSaved: (String value) => _email = value,
+      ),
+      TextFormField(
+        key: Key('password'),
+        decoration: InputDecoration(labelText: 'Password'),
+        obscureText: true,
+        validator: PasswordFieldValidator.validate,
+        onSaved: (String value) => _password = value,
+      ),
+    ];
+  }
 
-class _EmailLoginState extends State<EmailLogin> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.all(10),
-          child: TextField(
-            controller: nameController,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'User Name',
-            ),
-          ),
+  List<Widget> buildSubmitButtons() {
+    if (_formType == FormType.login) {
+      return <Widget>[
+        RaisedButton(
+          key: Key('signIn'),
+          child: Text('Login', style: TextStyle(fontSize: 20.0)),
+          onPressed: validateAndSubmit,
         ),
-        Container(
-          padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-          child: TextField(
-            obscureText: true,
-            controller: passwordController,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Password',
-            ),
-          ),
+        FlatButton(
+          child: Text('Create an account', style: TextStyle(fontSize: 20.0)),
+          onPressed: moveToRegister,
         ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
-          child: FlatButton(
-            onPressed: () {
-              //forgot password screen
-            },
-            textColor: Colors.blue,
-            child: Text('Forgot Password'),
-          ),
+      ];
+    } else {
+      return <Widget>[
+        RaisedButton(
+          child: Text('Create an account', style: TextStyle(fontSize: 20.0)),
+          onPressed: validateAndSubmit,
         ),
-      ],
-    );
+        FlatButton(
+          child:
+              Text('Have an account? Login', style: TextStyle(fontSize: 20.0)),
+          onPressed: moveToLogin,
+        ),
+      ];
+    }
   }
 }

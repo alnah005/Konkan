@@ -162,26 +162,26 @@ class Player {
       return settingScore;
     }
     if (settingRes >= settingScore) {
-      if (groups.expand((i) => i).toList().contains(extraCard)) {
-        this.eligibleToDraw = false;
-        openCards = groups
-          ..forEach((element) {
-            element
-              ..forEach((element2) {
-                element2
-                  ..faceUp = true
-                  ..opened = true
-                  ..isDraggable = true;
-              });
-          });
-        this._delCardsFromMain(groups.expand((element) => element).toList());
-        print("new set score is " + settingRes.toString());
-        setSuccessful = true;
-      } else {
-        print("you didn't use the discarded drawn card");
-        this.eligibleToDraw = true;
-        setSuccessful = false;
-      }
+//      if (groups.expand((i) => i).toList().contains(extraCard)) {
+      this.eligibleToDraw = false;
+      openCards = groups
+        ..forEach((element) {
+          element
+            ..forEach((element2) {
+              element2
+                ..faceUp = true
+                ..opened = true
+                ..isDraggable = true;
+            });
+        });
+      this._delCardsFromMain(groups.expand((element) => element).toList());
+      print("new set score is " + settingRes.toString());
+      setSuccessful = true;
+//      } else {
+//        print("you didn't use the discarded drawn card");
+//        this.eligibleToDraw = true;
+//        setSuccessful = false;
+//      }
     } else {
       print("your set score is not enough");
       this.eligibleToDraw = true;
