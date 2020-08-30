@@ -2,6 +2,18 @@ import 'package:flutter/material.dart';
 
 import 'auth.dart';
 
+class LoginPage2 extends StatefulWidget {
+  @override
+  _LoginPage2State createState() => _LoginPage2State();
+}
+
+class _LoginPage2State extends State<LoginPage2> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
 class EmailFieldValidator {
   static String validate(String value) {
     return value.isEmpty ? 'Email can\'t be empty' : null;
@@ -101,11 +113,13 @@ class _LoginPageState extends State<LoginPage> {
       TextFormField(
         key: Key('email'),
         decoration: InputDecoration(labelText: 'Email'),
+        initialValue: "email@example.com",
         validator: EmailFieldValidator.validate,
         onSaved: (String value) => _email = value,
       ),
       TextFormField(
         key: Key('password'),
+        initialValue: "password",
         decoration: InputDecoration(labelText: 'Password'),
         obscureText: true,
         validator: PasswordFieldValidator.validate,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:solitaire/pages/game_screen.dart';
 
 import 'auth.dart';
-import 'home_page.dart';
 import 'login.dart';
 
 class RootPage extends StatefulWidget {
@@ -19,9 +19,10 @@ class _RootPageState extends State<RootPage> {
   AuthStatus authStatus = AuthStatus.notDetermined;
 
   @override
-  void didChangeDependencies() {
+  Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
     final BaseAuth auth = AuthProvider.of(context).auth;
+    await auth.signOut();
     auth.currentUser().then((String userId) {
       setState(() {
         authStatus =
@@ -33,6 +34,7 @@ class _RootPageState extends State<RootPage> {
   void _signedIn() {
     setState(() {
       authStatus = AuthStatus.signedIn;
+      this.build(context);
     });
   }
 
@@ -52,9 +54,7 @@ class _RootPageState extends State<RootPage> {
           onSignedIn: _signedIn,
         );
       case AuthStatus.signedIn:
-        return HomePage(
-          onSignedOut: _signedOut,
-        );
+        return GameScreen();
     }
     return null;
   }
