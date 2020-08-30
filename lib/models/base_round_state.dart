@@ -1,5 +1,7 @@
 import 'package:solitaire/models/player.dart';
 
+/// This class template encapsulates what is necessary for a round
+/// in this app
 abstract class BaseRoundState<T> {
   Player currentPlayer;
   T playerGameInfo;

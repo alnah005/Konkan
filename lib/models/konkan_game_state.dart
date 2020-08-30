@@ -11,14 +11,32 @@ import 'konkan_round_state.dart';
 
 class KonkanGameState<Y> extends BaseGameState<Y> {
   List<PlayingCard> cardDeckClosed = [];
-  double settingScore = 51;
+  final double settingScore = 51;
+
+  /// this is necessary because it saves the states of the deck and discarded
+  /// deck widgets to be able to call the methods within them
+  ///
+  /// These can be removed by creating new separate models for both
+  /// deck and discarded deck
   GlobalKey<KonkanDeckState> deckKey = GlobalKey();
   GlobalKey<DiscardedDeckState> discardedDeckKey = GlobalKey();
+
+  /// playerIndex keeps track of the current player within _playerIndexes
   static int playerIndex = 3;
+
+  /// [_playerIndexes] keeps track of player indexes with respect to
+  /// the players array in [BaseGameState]
+  ///
+  /// [getMainPlayer()] returns the player from the players
+  ///   array using the index from the 4th value
+  /// [getRightPlayer()] returns the player from the players
+  ///   array using the index from the 1st value
+  /// [getTopPlayer()] returns the player from the players
+  ///   array using the index from the 2nd value
+  /// [getLeftPlayer()] returns the player from the players
+  ///   array using the index from the 3rd value
   List<int> _playerIndexes = [0, 1, 2, 3];
   KonkanRoundState<Y> roundState;
-  // Stores the card in the upper boxes
-  List<PlayingCard> droppedCards = [];
 
   KonkanGameState(
       {int numOfPlayers,
@@ -45,12 +63,15 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
   @override
   bool checkRoundWin() {
     if (roundState.currentPlayer.cards.length == 0) {
+      this.trackRoundStats();
       this.nextRound();
       return true;
     }
     return false;
   }
 
+  /// Named constructor that creates the players and the roundstate
+  /// Round needs to be initialized before a game starts
   @override
   KonkanGameState.initializeGame(
       [int numOfPlayers,
@@ -76,16 +97,20 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     }
   }
 
+  /// This is only called when an array of players wasn't passed
+  /// into [KonkanGameState] during instantiation in [GameScreen]
   void initializePlayers() {
     for (int i = 0; i < super.numberOfPlayers - 1; i++) {
       super.players.add(new Player(GameScreen.playerCardLists[i], isAI: true));
     }
     super.players.add(new Player(
           GameScreen.playerCardLists[super.numberOfPlayers - 1],
-          isAI: true,
+//          isAI: true,
         ));
   }
 
+  /// Round is initialized here separately from name constructor
+  /// because this deals with widget keys.
   @override
   Player initializeRound(List<Player> playerList) {
     this.redistributeCards();
@@ -95,6 +120,9 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     return roundState.currentPlayer;
   }
 
+  /// This cycles the [playerIndex] variable between 3,0,1,2 and
+  /// sets the appropriate round variables accordingly
+  /// if a [Player] is an AI this is dealt with in [KonkanRoundState]
   @override
   Player nextPlayer() {
     assert(roundState.currentPlayer.cards.length < 15);
@@ -128,12 +156,15 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     }
   }
 
+  /// Called after a round is won
   @override
   void nextRound() {
     redistributeCards();
     roundState = roundState.nextRound(roundState);
+    roundState.settingScore = this.settingScore;
   }
 
+  /// called when current human player wants to set cards
   void setCards(Player player) {
     this.roundState.handleSetCards(player);
   }
@@ -154,6 +185,9 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     return players[_playerIndexes[2]];
   }
 
+  /// Method throws all player cards to discarded deck then recycles
+  /// discarded deck and main deck. Then distributes 14 cards to all
+  /// players.
   void redistributeCards() {
     /// Discard all player cards to discarded deck
     for (int i = 0; i < this.players.length; i++) {

@@ -1,6 +1,8 @@
 import 'package:solitaire/models/base_round_state.dart';
 import 'package:solitaire/models/player.dart';
 
+/// This class template encapsulates what is necessary for
+/// a card game to function in this app
 abstract class BaseGameState<T> {
   int numberOfPlayers;
   List<Player> players;

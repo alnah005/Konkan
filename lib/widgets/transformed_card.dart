@@ -38,12 +38,10 @@ class _TransformedCardState extends State<TransformedCard> {
           )
         : widget.playingCard.isDraggable
             ? Draggable<Map>(
-                child: _buildFaceUpCard(),
-                feedback: _buildFaceUpCard(),
-                childWhenDragging: Container(
-                  width: 40.0,
-                  height: 60.0,
-                ),
+                child: Opacity(opacity: 1, child: _buildFaceUpCard()),
+                feedback: Opacity(opacity: 0.8, child: _buildFaceUpCard()),
+                childWhenDragging:
+                    Opacity(opacity: 0.8, child: _buildFaceUpCard()),
                 data: {
                   "sourceCard": widget.playingCard,
                   "entity": widget.entity,

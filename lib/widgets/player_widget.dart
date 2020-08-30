@@ -80,21 +80,25 @@ class PlayerWidgetState extends State<PlayerWidget> {
       cards: widget.player.cards,
       onWillAcceptAdded: (card, player, destinationCard) {
         if (player.identifier == widget.player.identifier) {
-          return true;
-        } else {
-          return false;
+          if (card != destinationCard) {
+            setState(() {
+              List<PlayingCard> currentCards = player.cards;
+              int cardIndex = currentCards.indexOf(card);
+              int newIndex = currentCards.indexOf(destinationCard);
+              currentCards.insert(
+                  cardIndex >= newIndex ? newIndex : newIndex + 1, card);
+              currentCards.removeAt(
+                  cardIndex >= (newIndex + 1) ? cardIndex + 1 : cardIndex);
+            });
+            return true;
+          }
         }
+        return false;
       },
       onCardsAdded: (sourceCard, player, destinationCard) {
         if (sourceCard != destinationCard) {
           setState(() {
-            List<PlayingCard> currentCards = player.cards;
-            int cardIndex = currentCards.indexOf(sourceCard);
-            int newIndex = currentCards.indexOf(destinationCard);
-            currentCards.insert(
-                cardIndex >= newIndex ? newIndex : newIndex + 1, sourceCard);
-            currentCards.removeAt(
-                cardIndex >= (newIndex + 1) ? cardIndex + 1 : cardIndex);
+            /// logic for lighting cards based on groups
           });
         }
       },

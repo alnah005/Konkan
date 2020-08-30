@@ -82,6 +82,10 @@ class KonkanDeckState extends State<KonkanDeck> {
     return result;
   }
 
+  /// return  this [numCards] of [PlayingCard]
+  ///
+  /// removes one card at a time from deck. Shuffles, removes, shuffles...etc
+  /// until it has a list of [PlayingCard] of size [numCards]
   List<PlayingCard> distributeCards(int numCards) {
     List<PlayingCard> res = [];
     for (int i = 0; i < numCards; i++) {
@@ -107,6 +111,7 @@ class KonkanDeckState extends State<KonkanDeck> {
     }
     if (_cards.length == (widget.numberOfDecks * 52 + widget.numberOfJokers)) {
       numOfPlayers = 0;
+      print(_cards.length);
     }
     _cards.shuffle();
   }

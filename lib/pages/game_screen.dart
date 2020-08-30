@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/konkan_game_state.dart';
 import 'package:solitaire/models/player.dart';
-import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/utils/enums.dart';
 import 'package:solitaire/widgets/discarded_deck.dart';
 import 'package:solitaire/widgets/konkan_deck.dart';
 import 'package:solitaire/widgets/player_widget.dart';
 
 class GameScreen extends StatefulWidget {
+  /// to differentiate players from other entities
   static final List<CardList> playerCardLists = [
     CardList.P1,
     CardList.P2,
@@ -22,19 +22,6 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   KonkanGameState gameState;
-  // Stores the cards on the seven columns
-
-  // Stores the card deck
-  double settingScore = 51;
-  PlayingCard drawFromDeck() {
-    return gameState.roundState.drawFromDeck();
-  }
-
-  void recycleDecks() {
-    setState(() {
-      gameState.roundState.recycleDecks();
-    });
-  }
 
   @override
   void initState() {
@@ -44,11 +31,12 @@ class _GameScreenState extends State<GameScreen> {
       [],
       [null, null, null, null],
     );
+
+    /// Build must be called at least once for widget keys to work
     Future.delayed(const Duration(milliseconds: 30), () {
       /// Anything that uses a widget key will go here.
       _initialiseGame();
     });
-    settingScore = 51;
   }
 
   @override
@@ -129,7 +117,9 @@ class _GameScreenState extends State<GameScreen> {
               icon: Icon(Icons.add_circle),
               tooltip: 'Set cards',
               onPressed: () {
-                gameState.setCards(gameState.getMainPlayer());
+                setState(() {
+                  gameState.setCards(gameState.getMainPlayer());
+                });
               },
             ),
           ),
@@ -160,8 +150,9 @@ class _GameScreenState extends State<GameScreen> {
             ),
             onTap: () {
               setState(() {
+                /// Todo make a method in konkan gamestate to take care of this
                 if (gameState.roundState.currentPlayer.eligibleToDraw) {
-                  var newCard = this.drawFromDeck()..faceUp;
+                  var newCard = gameState.roundState.drawFromDeck()..faceUp;
                   newCard.faceUp = true;
                   gameState.roundState.currentPlayer.cards.add(newCard);
                   gameState.roundState.currentPlayer.discarded = false;
@@ -212,8 +203,9 @@ class _GameScreenState extends State<GameScreen> {
               });
               if (gameState.checkRoundWin()) {
                 _handleWin(gameState.roundState.currentPlayer);
+              } else {
+                gameState.nextPlayer();
               }
-              gameState.nextPlayer();
             }
           },
         ),
@@ -221,7 +213,7 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  // Initialise a new game
+  /// Initialise a new game in a new round
   void _initialiseGame() {
     setState(() {
       gameState.initializeRound(gameState.players);
@@ -230,9 +222,6 @@ class _GameScreenState extends State<GameScreen> {
 
   /// Handle a win condition
   void _handleWin(Player whichPlayer) {
-    for (int i = 0; i < gameState.players.length; i++) {
-      gameState.players[i].recordGame(whichPlayer.identifier);
-    }
     showDialog(
       context: context,
       builder: (context) {

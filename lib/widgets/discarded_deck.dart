@@ -100,6 +100,8 @@ class DiscardedDeckState extends State<DiscardedDeck> {
     return result;
   }
 
+  /// Creates a copy of all discarded cards and returns the copy
+  /// it also deletes the original list that is getting rendered
   List<PlayingCard> recycleDeck() {
     if (discardEntity.cards.isEmpty) {
       return [];
