@@ -21,6 +21,8 @@ class CardColumn extends StatefulWidget {
 
   // The index of the list in the game
   final BaseEntity entity;
+
+  /// todo use setCards for a different functionality
   final bool setCards;
   CardColumn({
     @required this.cards,
