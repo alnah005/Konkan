@@ -1,5 +1,6 @@
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/utils/meld.dart';
+import 'package:solitaire/utils/playing_card_util.dart';
 
 List<Meld> validate(List<PlayingCard> cards) {
   Map<int, PlayingCard> cardsMap = cards.asMap();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/playing_card.dart';
+import 'package:solitaire/utils/playing_card_util.dart';
 
 /// Class to visualize and regulate deck that players draw from
 class KonkanDeck extends StatefulWidget {

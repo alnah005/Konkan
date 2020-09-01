@@ -1,7 +1,7 @@
 import 'package:solitaire/models/playing_card.dart';
+import 'package:solitaire/utils/groups.dart';
+import 'package:solitaire/utils/playing_card_util.dart';
 import 'package:test/test.dart';
-
-import 'file:///D:/app/solitaire/solitaire/lib/utils/groups.dart';
 
 void main() {
   group("basic melds", () {
