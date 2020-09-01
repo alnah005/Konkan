@@ -105,7 +105,7 @@ class Player extends BaseEntity {
             element
               ..faceUp = true
               ..opened = true
-              ..isDraggable = true;
+              ..isDraggable = false;
           }));
       }
     }
@@ -158,7 +158,7 @@ class Player extends BaseEntity {
                 element2
                   ..faceUp = true
                   ..opened = true
-                  ..isDraggable = true;
+                  ..isDraggable = false;
               });
           });
         this._delCardsFromMain(groups.expand((element) => element).toList());
