@@ -1,4 +1,4 @@
-import 'playing_card.dart';
+import 'package:solitaire/models/playing_card.dart';
 
 class JokerPlaceHolder {
   int index;

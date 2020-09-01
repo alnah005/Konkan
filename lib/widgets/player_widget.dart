@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:solitaire/models/groups.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
+import 'package:solitaire/utils/groups.dart';
 
 import 'card_column.dart';
 
