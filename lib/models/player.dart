@@ -51,16 +51,9 @@ class Player extends BaseEntity {
     } else {
       personalInfo.losses += 1;
     }
-    personalInfo.avgScore = (personalInfo.avgScore + _getPenalty(cards)) /
-        (personalInfo.wins + personalInfo.losses);
-  }
-
-  double _getPenalty(List<PlayingCard> cardsList) {
-    double result = 0.0;
-    for (int i = 0; i < cardsList.length; i++) {
-      result += cardsList[i].penaltyVal;
-    }
-    return result;
+    personalInfo.avgScore =
+        (personalInfo.avgScore + PlayerUtil.getPenalty(cards)) /
+            (personalInfo.wins + personalInfo.losses);
   }
 
   void initialize(String name) {
@@ -145,7 +138,7 @@ class Player extends BaseEntity {
               element2
                 ..faceUp = true
                 ..opened = true
-                ..isDraggable = true;
+                ..isDraggable = false;
             });
         });
       this._delCardsFromMain(groups.expand((element) => element).toList());

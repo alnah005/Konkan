@@ -19,6 +19,14 @@ class PlayerUtil {
     return settingRes;
   }
 
+  static double getPenalty(List<PlayingCard> cardsList) {
+    double result = 0.0;
+    for (int i = 0; i < cardsList.length; i++) {
+      result += cardsList[i].penaltyVal;
+    }
+    return result;
+  }
+
   static bool _checkIfValid(List<PlayingCard> list) {
     List<MeldClass> melds = validate(list);
     if (melds.length == 0) {

@@ -113,9 +113,7 @@ class PlayerWidgetState extends State<PlayerWidget> {
             flex: listCards.length,
             fit: FlexFit.loose,
             child: CardColumn(
-              cards: listCards.map((element) {
-                return element..isDraggable = false;
-              }).toList(),
+              cards: listCards,
               onWillAcceptAdded: (card, player, destinationCard) {
                 return true;
               },
