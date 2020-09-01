@@ -213,7 +213,7 @@ extension CardExt on CardType {
           "BodyString": "",
           "HeadString": "JKR",
           "Position": 15,
-          "Penalty": 0
+          "Penalty": 50
         };
     }
     return {};
