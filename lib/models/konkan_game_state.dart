@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:solitaire/models/base_entity.dart';
 import 'package:solitaire/models/base_game_state.dart';
 import 'package:solitaire/models/base_round_state.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/pages/game_screen.dart';
+import 'package:solitaire/utils/enums.dart';
 import 'package:solitaire/widgets/discarded_deck.dart';
 import 'package:solitaire/widgets/konkan_deck.dart';
 
@@ -38,6 +40,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
   List<int> _playerIndexes = [0, 1, 2, 3];
   KonkanRoundState<Y> roundState;
 
+  BaseEntity discardedDeck;
   KonkanGameState(
       {int numOfPlayers,
       List<Player> playerList,
@@ -87,6 +90,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
         "Gamestate must have at least 1 player");
     assert(numberOfPlayers < 5 && playerList.length < 5,
         "Gamestate must have at most 4 players");
+    this.discardedDeck = BaseEntity(CardList.DROPPED);
     if (playerList.isEmpty) {
       this.initializePlayers();
     }
@@ -223,5 +227,9 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
               );
       }
     }
+  }
+
+  BaseEntity getDiscardedDeck() {
+    return discardedDeck;
   }
 }

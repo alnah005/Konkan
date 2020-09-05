@@ -42,6 +42,8 @@ class Player extends BaseEntity {
   bool discarded = true;
   bool eligibleToDraw = true;
   bool isAI = false;
+  bool isCurrentPlayer = false;
+  bool mustSetCards = false;
 
   void recordGame(CardList winnerPosition) {
     personalInfo.avgScore =
@@ -191,5 +193,16 @@ class Player extends BaseEntity {
   void initializeForNextTurn() {
     this.discarded = true;
     this.eligibleToDraw = true;
+    this.isCurrentPlayer = true;
+  }
+
+  bool endTurn() {
+    if (this.mustSetCards) {
+      return false;
+    }
+    this.discarded = true;
+    this.eligibleToDraw = false;
+    this.isCurrentPlayer = false;
+    return true;
   }
 }

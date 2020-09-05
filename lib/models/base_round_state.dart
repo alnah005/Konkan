@@ -27,6 +27,7 @@ abstract class BaseRoundState<T> {
   ///      [playerInfo]: information about the player in the game
   void nextTurnVariables(Player nextPlayer, T playerInfo) {
     this.trackTurnStats();
+    currentPlayer.endTurn();
     currentPlayer = nextPlayer;
     playerGameInfo = playerInfo;
     currentPlayer.initializeForNextTurn();

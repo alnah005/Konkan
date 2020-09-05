@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/base_entity.dart';
 import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/utils/enums.dart';
 import 'package:solitaire/widgets/transformed_card.dart';
 
 import 'card_column.dart';
@@ -9,10 +8,12 @@ import 'card_column.dart';
 class DiscardedDeck extends StatefulWidget {
   final CardAcceptCallback onCardAdded;
   final CardWillAcceptCallback onWillAcceptAdded;
+  final BaseEntity discardEntity;
   const DiscardedDeck({
     Key key,
     @required this.onCardAdded,
     @required this.onWillAcceptAdded,
+    @required this.discardEntity,
   }) : super(key: key);
 
   @override
@@ -20,8 +21,6 @@ class DiscardedDeck extends StatefulWidget {
 }
 
 class DiscardedDeckState extends State<DiscardedDeck> {
-  BaseEntity discardEntity = BaseEntity(CardList.DROPPED);
-
   @override
   Widget build(BuildContext context) {
     return OrientationBuilder(builder: (context, orientation) {
@@ -47,7 +46,7 @@ class DiscardedDeckState extends State<DiscardedDeck> {
             height: containerHeight,
             width: containerWidth,
             padding: EdgeInsets.all(padSize),
-            child: discardEntity.cards.length == 0
+            child: widget.discardEntity.cards.length == 0
                 ? Opacity(
                     opacity: 0.7,
                     child: Container(
@@ -67,26 +66,37 @@ class DiscardedDeckState extends State<DiscardedDeck> {
                 : Container(
                     height: containerHeight - 2 * padSize,
                     width: containerWidth - 2 * padSize,
-                    child: Stack(
-                        children: discardEntity.cards.map((card) {
-                      return TransformedCard(
-                        playingCard: card,
-                        entity: discardEntity,
-                      );
-                    }).toList()),
+                    child: Stack(children: buildDiscardedDeck()),
                   ),
           );
         },
         onWillAccept: (value) {
-          return widget.onWillAcceptAdded(value["sourceCard"], value["entity"],
-              discardEntity.cards.isNotEmpty ? discardEntity.cards.last : null);
+          return widget.onWillAcceptAdded(
+              value["sourceCard"],
+              value["entity"],
+              widget.discardEntity.cards.isNotEmpty
+                  ? widget.discardEntity.cards.last
+                  : null);
         },
         onAccept: (value) {
-          widget.onCardAdded(value["sourceCard"], value["entity"],
-              discardEntity.cards.isNotEmpty ? discardEntity.cards.last : null);
+          widget.onCardAdded(
+              value["sourceCard"],
+              value["entity"],
+              widget.discardEntity.cards.isNotEmpty
+                  ? widget.discardEntity.cards.last
+                  : null);
         },
       );
     });
+  }
+
+  List<TransformedCard> buildDiscardedDeck() {
+    return widget.discardEntity.cards.map((card) {
+      return TransformedCard(
+        playingCard: card,
+        entity: widget.discardEntity,
+      );
+    }).toList();
   }
 
   PlayingCard throwToDeck(PlayingCard discarded) {
@@ -95,7 +105,7 @@ class DiscardedDeckState extends State<DiscardedDeck> {
       ..isDraggable = true
       ..opened = true;
     setState(() {
-      discardEntity.cards.add(result);
+      widget.discardEntity.cards.add(result);
     });
     return result;
   }
@@ -103,12 +113,13 @@ class DiscardedDeckState extends State<DiscardedDeck> {
   /// Creates a copy of all discarded cards and returns the copy
   /// it also deletes the original list that is getting rendered
   List<PlayingCard> recycleDeck() {
-    if (discardEntity.cards.isEmpty) {
+    if (widget.discardEntity.cards.isEmpty) {
       return [];
     }
-    var result = discardEntity.cards.map((e) => PlayingCard.clone(e)).toList();
+    var result =
+        widget.discardEntity.cards.map((e) => PlayingCard.clone(e)).toList();
     setState(() {
-      discardEntity.cards.clear();
+      widget.discardEntity.cards.clear();
     });
     return result;
   }
@@ -116,8 +127,8 @@ class DiscardedDeckState extends State<DiscardedDeck> {
   PlayingCard getLastCard() {
     var result;
     setState(() {
-      result = discardEntity.cards.isNotEmpty
-          ? discardEntity.cards.removeLast()
+      result = widget.discardEntity.cards.isNotEmpty
+          ? widget.discardEntity.cards.removeLast()
           : null;
     });
     return result;

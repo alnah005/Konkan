@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
+import 'package:solitaire/utils/enums.dart';
 import 'package:solitaire/utils/groups.dart';
 
 import 'card_column.dart';
@@ -9,9 +10,13 @@ class PlayerWidget extends StatefulWidget {
   final Player player;
   final horizontal;
   final reverseOrder;
+  final CardAcceptCallback onCardAdded;
+  final CardWillAcceptCallback onWillAcceptAdded;
   PlayerWidget({
     Key key,
     @required this.player,
+    @required this.onCardAdded,
+    @required this.onWillAcceptAdded,
     this.horizontal = false,
     this.reverseOrder = false,
   }) : super(key: key);
@@ -79,28 +84,10 @@ class PlayerWidgetState extends State<PlayerWidget> {
     return CardColumn(
       cards: widget.player.cards,
       onWillAcceptAdded: (card, player, destinationCard) {
-        if (player.identifier == widget.player.identifier) {
-          if (card != destinationCard) {
-            setState(() {
-              List<PlayingCard> currentCards = player.cards;
-              int cardIndex = currentCards.indexOf(card);
-              int newIndex = currentCards.indexOf(destinationCard);
-              currentCards.insert(
-                  cardIndex >= newIndex ? newIndex : newIndex + 1, card);
-              currentCards.removeAt(
-                  cardIndex >= (newIndex + 1) ? cardIndex + 1 : cardIndex);
-            });
-            return true;
-          }
-        }
-        return false;
+        return widget.onWillAcceptAdded(card, player, destinationCard);
       },
       onCardsAdded: (sourceCard, player, destinationCard) {
-        if (sourceCard != destinationCard) {
-          setState(() {
-            /// logic for lighting cards based on groups
-          });
-        }
+        widget.onCardAdded(sourceCard, player, destinationCard);
       },
       entity: widget.player,
     );
@@ -115,7 +102,13 @@ class PlayerWidgetState extends State<PlayerWidget> {
             child: CardColumn(
               cards: listCards,
               onWillAcceptAdded: (card, player, destinationCard) {
-                return true;
+                if (player.identifier == CardList.DROPPED ||
+                    player.identifier == widget.player.identifier) {
+                  if (widget.player.isCurrentPlayer) {
+                    return true;
+                  }
+                }
+                return false;
               },
               onCardsAdded: (sourceCard, player, destinationCard) {
                 var melds = validate(listCards);
@@ -135,6 +128,10 @@ class PlayerWidgetState extends State<PlayerWidget> {
                       returnDeck.remove(sourceCard);
                     });
                   }
+                }
+                if (player.identifier == CardList.DROPPED) {
+                  widget.player.eligibleToDraw = false;
+                  widget.player.discarded = false;
                 }
               },
               setCards: true,

@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:solitaire/models/base_entity.dart';
 import 'package:solitaire/models/konkan_game_state.dart';
 import 'package:solitaire/models/player.dart';
+import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/utils/enums.dart';
 import 'package:solitaire/widgets/discarded_deck.dart';
 import 'package:solitaire/widgets/konkan_deck.dart';
@@ -76,6 +78,12 @@ class _GameScreenState extends State<GameScreen> {
             child: PlayerWidget(
               player: gameState.getTopPlayer(),
               horizontal: true,
+              onWillAcceptAdded: (PlayingCard sourceCard, BaseEntity fromPlayer,
+                  PlayingCard destinationCard) {
+                return false;
+              },
+              onCardAdded: (PlayingCard sourceCard, BaseEntity fromPlayer,
+                  PlayingCard destinationCard) {},
             ),
           ),
           Expanded(child: Container()),
@@ -91,6 +99,13 @@ class _GameScreenState extends State<GameScreen> {
                     fit: FlexFit.loose,
                     child: PlayerWidget(
                       player: gameState.getLeftPlayer(),
+                      onWillAcceptAdded: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer, PlayingCard destinationCard) {
+                        return false;
+                      },
+                      onCardAdded: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer,
+                          PlayingCard destinationCard) {},
                     ),
                   ),
                   Expanded(child: Container()),
@@ -101,6 +116,13 @@ class _GameScreenState extends State<GameScreen> {
                     fit: FlexFit.loose,
                     child: PlayerWidget(
                       player: gameState.getRightPlayer(),
+                      onWillAcceptAdded: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer, PlayingCard destinationCard) {
+                        return false;
+                      },
+                      onCardAdded: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer,
+                          PlayingCard destinationCard) {},
                       reverseOrder: true,
                     ),
                   ),
@@ -128,6 +150,15 @@ class _GameScreenState extends State<GameScreen> {
               fit: FlexFit.loose,
               child: PlayerWidget(
                 player: gameState.getMainPlayer(),
+                onWillAcceptAdded: (PlayingCard sourceCard,
+                    BaseEntity fromPlayer, PlayingCard destinationCard) {
+                  return _handlePlayerOnDrag(
+                      sourceCard, fromPlayer, destinationCard);
+                },
+                onCardAdded: (PlayingCard sourceCard, BaseEntity fromPlayer,
+                    PlayingCard destinationCard) {
+                  _handlePlayerDragged(sourceCard, fromPlayer, destinationCard);
+                },
                 horizontal: true,
                 reverseOrder: true,
               )),
@@ -208,6 +239,7 @@ class _GameScreenState extends State<GameScreen> {
               }
             }
           },
+          discardEntity: gameState.getDiscardedDeck(),
         ),
       ),
     );
@@ -240,5 +272,59 @@ class _GameScreenState extends State<GameScreen> {
         );
       },
     );
+  }
+
+  /// method that controls what happens when a card is dragged towards
+  /// players deck
+  ///
+  /// return true when a card can be accepted by a player
+  /// return false when a player is not eligible to move a card onto deck
+  bool _handlePlayerOnDrag(PlayingCard sourceCard, BaseEntity fromPlayer,
+      PlayingCard destinationCard) {
+    var player = gameState.getMainPlayer();
+    if (fromPlayer.identifier == player.identifier) {
+      if (sourceCard != destinationCard) {
+        setState(() {
+          List<PlayingCard> currentCards = player.cards;
+          int cardIndex = currentCards.indexOf(sourceCard);
+          int newIndex = currentCards.indexOf(destinationCard);
+          currentCards.insert(
+              cardIndex >= newIndex ? newIndex : newIndex + 1, sourceCard);
+          currentCards.removeAt(
+              cardIndex >= (newIndex + 1) ? cardIndex + 1 : cardIndex);
+        });
+        return true;
+      }
+    }
+    if (gameState.roundState.currentPlayer != player) {
+      return false;
+    }
+    if (fromPlayer.identifier == CardList.DROPPED) {
+      if (player.eligibleToDraw && player.isCurrentPlayer) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// method that controls what happens when a card is dropped on
+  /// players deck
+  void _handlePlayerDragged(PlayingCard sourceCard, BaseEntity fromPlayer,
+      PlayingCard destinationCard) {
+    var player = gameState.getMainPlayer();
+    if (fromPlayer.identifier == CardList.DROPPED) {
+      setState(() {
+        List<PlayingCard> currentCards = player.cards;
+        int cardIndex = currentCards.indexOf(sourceCard);
+        int newIndex = currentCards.indexOf(destinationCard);
+        currentCards.insert(
+            cardIndex >= newIndex ? newIndex : newIndex + 1, sourceCard);
+        player.extraCard = sourceCard;
+        player.discarded = false;
+        player.eligibleToDraw = false;
+        player.mustSetCards = true;
+        gameState.discardedDeck.cards.remove(sourceCard);
+      });
+    }
   }
 }
