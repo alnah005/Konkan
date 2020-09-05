@@ -29,6 +29,7 @@ class KonkanDeckState extends State<KonkanDeck> {
   Widget build(BuildContext context) {
     maxDeckCards =
         widget.numberOfDecks * 52 + widget.numberOfJokers - numOfPlayers * 14;
+    maxDeckCards = maxDeckCards > _cards.length ? maxDeckCards : _cards.length;
     return Opacity(
       opacity: (_cards.length / maxDeckCards) * 0.6 + 0.4,
       child: Padding(

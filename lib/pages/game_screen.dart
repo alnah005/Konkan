@@ -274,6 +274,9 @@ class _GameScreenState extends State<GameScreen> {
   /// Initialise a new game in a new round
   void _initialiseGame() {
     setState(() {
+      gameState.roundState.recycleDecks();
+    });
+    setState(() {
       gameState.initializeRound(gameState.players);
     });
   }
