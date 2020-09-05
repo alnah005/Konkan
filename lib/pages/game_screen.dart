@@ -279,7 +279,11 @@ class _GameScreenState extends State<GameScreen> {
   ///
   /// return true when a card can be accepted by a player
   /// return false when a player is not eligible to move a card onto deck
-  bool _handlePlayerOnDrag(PlayingCard sourceCard, BaseEntity fromPlayer,
+  bool _handlePlayerOnDrag(
+      PlayingCard sourceCard,
+      BaseEntity fromPlayer,
+
+      /// Todo make a method in konkan gamestate to take care of this
       PlayingCard destinationCard) {
     var player = gameState.getMainPlayer();
     if (fromPlayer.identifier == player.identifier) {
@@ -311,6 +315,7 @@ class _GameScreenState extends State<GameScreen> {
   /// players deck
   void _handlePlayerDragged(PlayingCard sourceCard, BaseEntity fromPlayer,
       PlayingCard destinationCard) {
+    /// Todo make a method in konkan gamestate to take care of this
     var player = gameState.getMainPlayer();
     if (fromPlayer.identifier == CardList.DROPPED) {
       setState(() {
