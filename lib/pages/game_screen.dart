@@ -84,6 +84,11 @@ class _GameScreenState extends State<GameScreen> {
               },
               onCardAdded: (PlayingCard sourceCard, BaseEntity fromPlayer,
                   PlayingCard destinationCard) {},
+              onWillAcceptAddedSet: (PlayingCard sourceCard,
+                  BaseEntity fromPlayer, PlayingCard destinationCard) {
+                return _handlePlayerSetOnDrag(
+                    sourceCard, fromPlayer, destinationCard);
+              },
             ),
           ),
           Expanded(child: Container()),
@@ -106,6 +111,11 @@ class _GameScreenState extends State<GameScreen> {
                       onCardAdded: (PlayingCard sourceCard,
                           BaseEntity fromPlayer,
                           PlayingCard destinationCard) {},
+                      onWillAcceptAddedSet: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer, PlayingCard destinationCard) {
+                        return _handlePlayerSetOnDrag(
+                            sourceCard, fromPlayer, destinationCard);
+                      },
                     ),
                   ),
                   Expanded(child: Container()),
@@ -123,6 +133,11 @@ class _GameScreenState extends State<GameScreen> {
                       onCardAdded: (PlayingCard sourceCard,
                           BaseEntity fromPlayer,
                           PlayingCard destinationCard) {},
+                      onWillAcceptAddedSet: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer, PlayingCard destinationCard) {
+                        return _handlePlayerSetOnDrag(
+                            sourceCard, fromPlayer, destinationCard);
+                      },
                       reverseOrder: true,
                     ),
                   ),
@@ -158,6 +173,11 @@ class _GameScreenState extends State<GameScreen> {
                 onCardAdded: (PlayingCard sourceCard, BaseEntity fromPlayer,
                     PlayingCard destinationCard) {
                   _handlePlayerDragged(sourceCard, fromPlayer, destinationCard);
+                },
+                onWillAcceptAddedSet: (PlayingCard sourceCard,
+                    BaseEntity fromPlayer, PlayingCard destinationCard) {
+                  return _handlePlayerSetOnDrag(
+                      sourceCard, fromPlayer, destinationCard);
                 },
                 horizontal: true,
                 reverseOrder: true,
@@ -228,18 +248,24 @@ class _GameScreenState extends State<GameScreen> {
             if (player.identifier ==
                     gameState.roundState.currentPlayer.identifier &&
                 !gameState.roundState.currentPlayer.discarded) {
-              setState(() {
-                gameState.roundState
-                    .throwToDeck(sourceCard..isDraggable = true);
-              });
-              if (gameState.checkRoundWin()) {
-                _handleWin(gameState.roundState.currentPlayer);
+              if (!gameState.getMainPlayer().mustSetCards) {
+                setState(() {
+                  gameState.roundState
+                      .throwToDeck(sourceCard..isDraggable = true);
+                });
+                if (gameState.checkRoundWin()) {
+                  _handleWin(gameState.roundState.currentPlayer);
+                } else {
+                  gameState.nextPlayer();
+                }
               } else {
-                gameState.nextPlayer();
+                setState(() {
+                  gameState.roundState.returnDiscardedDeckCard();
+                });
               }
             }
           },
-          discardEntity: gameState.getDiscardedDeck(),
+          discardEntity: gameState.roundState.discardedDeck,
         ),
       ),
     );
@@ -328,8 +354,21 @@ class _GameScreenState extends State<GameScreen> {
         player.discarded = false;
         player.eligibleToDraw = false;
         player.mustSetCards = true;
-        gameState.discardedDeck.cards.remove(sourceCard);
+        gameState.roundState.discardedDeck.cards.remove(sourceCard);
       });
     }
+  }
+
+  bool _handlePlayerSetOnDrag(PlayingCard sourceCard, BaseEntity fromPlayer,
+      PlayingCard destinationCard) {
+    if (gameState.roundState.currentPlayer != gameState.getMainPlayer()) {
+      return false;
+    }
+    if (fromPlayer.identifier == CardList.DROPPED) {
+      {
+        return true;
+      }
+    }
+    return false;
   }
 }

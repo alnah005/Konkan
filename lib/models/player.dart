@@ -75,7 +75,7 @@ class Player extends BaseEntity {
   }
 
   double setCards(double settingScore, [PlayingCard extraCard]) {
-    if (openCards.expand((i) => i).toList().length == 0) {
+    if (hasSetCards()) {
       return _firstTime(settingScore, extraCard);
     }
     return _afterFirstTime(settingScore, extraCard);
@@ -204,5 +204,9 @@ class Player extends BaseEntity {
     this.eligibleToDraw = false;
     this.isCurrentPlayer = false;
     return true;
+  }
+
+  bool hasSetCards() {
+    return openCards.expand((i) => i).toList().length == 0;
   }
 }

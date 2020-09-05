@@ -40,7 +40,6 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
   List<int> _playerIndexes = [0, 1, 2, 3];
   KonkanRoundState<Y> roundState;
 
-  BaseEntity discardedDeck;
   KonkanGameState(
       {int numOfPlayers,
       List<Player> playerList,
@@ -90,14 +89,13 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
         "Gamestate must have at least 1 player");
     assert(numberOfPlayers < 5 && playerList.length < 5,
         "Gamestate must have at most 4 players");
-    this.discardedDeck = BaseEntity(CardList.DROPPED);
     if (playerList.isEmpty) {
       this.initializePlayers();
     }
     if (roundState == null) {
       print("keys synced");
-      this.roundState =
-          KonkanRoundState(deckKey, discardedDeckKey, settingScore);
+      this.roundState = KonkanRoundState(deckKey, discardedDeckKey,
+          settingScore, BaseEntity(CardList.DROPPED));
     }
   }
 
@@ -121,6 +119,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     roundState.currentPlayer = playerList[3];
     roundState.playerGameInfo = playerGameInfo[3];
     roundState.initializeRound();
+    roundState.currentPlayer.initializeForNextTurn();
     return roundState.currentPlayer;
   }
 
@@ -227,9 +226,5 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
               );
       }
     }
-  }
-
-  BaseEntity getDiscardedDeck() {
-    return discardedDeck;
   }
 }

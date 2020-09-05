@@ -6,15 +6,19 @@ import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/widgets/discarded_deck.dart';
 import 'package:solitaire/widgets/konkan_deck.dart';
 
+import 'base_entity.dart';
+
 class KonkanRoundState<Y> extends BaseRoundState<Y> {
   /// Widget keys are saved here for the same reason as in
   /// [KonkanGameState]
   final GlobalKey<KonkanDeckState> deckKey;
   final GlobalKey<DiscardedDeckState> discardedDeckKey;
+  BaseEntity discardedDeck;
 
   /// saves current rounds setting score
   double settingScore;
   KonkanRoundState(this.deckKey, this.discardedDeckKey, this.settingScore,
+      this.discardedDeck,
       {Player currentPlayer, Y playerGameInfo})
       : super(currentPlayer: currentPlayer, playerGameInfo: playerGameInfo);
   @override
@@ -106,5 +110,14 @@ class KonkanRoundState<Y> extends BaseRoundState<Y> {
       ..isDraggable = true;
     throwToDeck(throwCard);
     return true;
+  }
+
+  void returnDiscardedDeckCard() {
+    discardedDeck.cards.add(currentPlayer.extraCard);
+    currentPlayer.cards.remove(currentPlayer.extraCard);
+    currentPlayer.extraCard = null;
+    currentPlayer.mustSetCards = false;
+    currentPlayer.discarded = true;
+    currentPlayer.eligibleToDraw = true;
   }
 }

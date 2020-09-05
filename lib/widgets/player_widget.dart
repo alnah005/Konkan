@@ -10,13 +10,24 @@ class PlayerWidget extends StatefulWidget {
   final Player player;
   final horizontal;
   final reverseOrder;
+
+  /// regular column
   final CardAcceptCallback onCardAdded;
+
+  /// set column
+/*  final CardAcceptCallback onCardAddedSet;*/
+
+  /// regular column
   final CardWillAcceptCallback onWillAcceptAdded;
+
+  /// set column
+  final CardWillAcceptCallback onWillAcceptAddedSet;
   PlayerWidget({
     Key key,
     @required this.player,
     @required this.onCardAdded,
     @required this.onWillAcceptAdded,
+    @required this.onWillAcceptAddedSet,
     this.horizontal = false,
     this.reverseOrder = false,
   }) : super(key: key);
@@ -102,13 +113,8 @@ class PlayerWidgetState extends State<PlayerWidget> {
             child: CardColumn(
               cards: listCards,
               onWillAcceptAdded: (card, player, destinationCard) {
-                if (player.identifier == CardList.DROPPED ||
-                    player.identifier == widget.player.identifier) {
-                  if (widget.player.isCurrentPlayer) {
-                    return true;
-                  }
-                }
-                return false;
+                return widget.onWillAcceptAddedSet(
+                    card, player, destinationCard);
               },
               onCardsAdded: (sourceCard, player, destinationCard) {
                 var melds = validate(listCards);
