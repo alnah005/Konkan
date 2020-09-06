@@ -55,10 +55,11 @@ void main() {
         PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.king);
     print(meld);
     test("dropping joker on meld", () {
-      meld.dropCard(joker);
-      print(meld.cards[3].cardType);
+      var r = meld.dropCard(joker);
       assert(meld.cards[3].cardType == CardType.joker);
       assert(meld.cards[3].cardSuit == CardSuit.joker);
+      assert(meld.cardsList[3].cardType == CardType.king);
+      assert(meld.cardsList[3].cardSuit == CardSuit.diamonds);
     });
     test("retrieving the joker from meld", () {
       var r = meld.dropCard(card);
@@ -66,6 +67,37 @@ void main() {
       assert(r.cardSuit == CardSuit.joker);
       assert(meld.cards[3].cardType == CardType.king);
       assert(meld.cards[3].cardSuit == CardSuit.diamonds);
+    });
+    test("Dropping joker on a full suit meld", () {
+      var cards = [
+        PlayingCard(cardType: CardType.queen, cardSuit: CardSuit.diamonds),
+        PlayingCard(cardType: CardType.queen, cardSuit: CardSuit.hearts),
+        PlayingCard(cardType: CardType.queen, cardSuit: CardSuit.clubs),
+        PlayingCard(cardType: CardType.queen, cardSuit: CardSuit.spades),
+      ];
+      var joker =
+          PlayingCard(cardSuit: CardSuit.joker, cardType: CardType.joker);
+      var meld = validate(cards);
+      var result = meld[0].dropCard(joker);
+      assert(result == joker);
+    });
+    test("Dropping two jokers on a suit meld of three cards ", () {
+      var cards = [
+        PlayingCard(cardType: CardType.queen, cardSuit: CardSuit.diamonds),
+        PlayingCard(cardType: CardType.queen, cardSuit: CardSuit.hearts),
+        PlayingCard(cardType: CardType.queen, cardSuit: CardSuit.clubs),
+      ];
+      var joker =
+          PlayingCard(cardSuit: CardSuit.joker, cardType: CardType.joker);
+      var meld = validate(cards);
+      var result = meld[0].dropCard(joker);
+
+      /// returns nothing when the meld is not full.
+      assert(result == null);
+      var result2 = meld[0].dropCard(joker);
+
+      /// returns the joker when the meld is full.
+      assert(result2 == joker);
     });
   });
 }

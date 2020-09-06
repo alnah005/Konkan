@@ -41,6 +41,8 @@ abstract class MeldClass extends Object {
 
   PlayingCard meldCard(PlayingCard card);
 
+  PlayingCard dropJoker(PlayingCard card);
+
   List<PlayingCard> get cardsList;
 
   Map<int, PlayingCard> get meldMap;
@@ -100,6 +102,24 @@ class Meld extends MeldClass {
     }
   }
 
+  PlayingCard dropJoker(PlayingCard card) {
+    var melds = this.meldMap.entries.toList();
+    melds.sort((e, r) => e.value.position.compareTo(r.value.position));
+    var swapIn = melds.last;
+    int index;
+    switch (swapIn.key) {
+      case 0:
+        index = 0;
+        break;
+      case 1:
+        index = this.cards.length;
+        break;
+    }
+    this.insertCard(card, index);
+    this.jokers.add(JokerPlaceHolder.fromCard(swapIn.value, index));
+    return null;
+  }
+
   PlayingCard dropCard(PlayingCard card) {
     print("\ndropping ${card.string} on ${this.cards.map((e) => e.string)}");
     var swap = this.swapCard(card);
@@ -107,7 +127,8 @@ class Meld extends MeldClass {
       return swap;
     }
     var meld = this.meldCard(card);
-    print("${this.cards.map((e) => e.string)} return ${meld}");
+    print(
+        "${this.cards.map((e) => e.string)} return ${meld == null ? null : meld.string}");
     return meld;
   }
 
@@ -131,21 +152,8 @@ class Meld extends MeldClass {
   PlayingCard meldCard(PlayingCard card) {
 //    print(this.meldMap);
     if (card.cardType == CardType.joker) {
-      var melds = this.meldMap.entries.toList();
-      melds.sort((e, r) => e.value.position.compareTo(r.value.position));
-      var swapIn = melds.last;
-      int index;
-      switch (swapIn.key) {
-        case 0:
-          index = 0;
-          break;
-        case 1:
-          index = this.cards.length;
-          break;
-      }
-      this.insertCard(card, index);
-      this.jokers.add(JokerPlaceHolder.fromCard(swapIn.value, index));
-      return null;
+      var result = this.dropJoker(card);
+      return result;
     } else {
       var result = meldMap.entries.firstWhere(
           (element) =>
@@ -244,6 +252,13 @@ class MeldSuit extends Meld with SuitMixin {
     result.addAll(remaining.asMap().map((key, value) => MapEntry(
         key, PlayingCard(cardType: cardsList[0].cardType, cardSuit: value))));
     return result;
+  }
+
+  /// checks if the suit meld has space to accept a joker
+  /// if not returns the joker
+  @override
+  PlayingCard dropJoker(PlayingCard card) {
+    return this.cards.length < 4 ? super.dropJoker(card) : card;
   }
 
   MeldSuit(List<PlayingCard> cards, List<JokerPlaceHolder> jokers)
