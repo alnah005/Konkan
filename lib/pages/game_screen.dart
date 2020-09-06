@@ -201,7 +201,6 @@ class _GameScreenState extends State<GameScreen> {
             ),
             onTap: () {
               setState(() {
-                /// Todo make a method in konkan gamestate to take care of this
                 gameState.roundState
                     .drawFromDeckToCurrentPlayer(gameState.getMainPlayer());
               });
@@ -342,12 +341,13 @@ class _GameScreenState extends State<GameScreen> {
         player.extraCard = sourceCard;
         player.discarded = false;
         player.eligibleToDraw = false;
-        player.mustSetCards = true;
         gameState.roundState.discardedDeck.cards.remove(sourceCard);
       });
     }
   }
 
+  /// Method that determines whether a card from a certain entity should
+  /// meld into a player's set cards
   bool _handlePlayerSetOnDrag(PlayingCard sourceCard, BaseEntity fromPlayer,
       PlayingCard destinationCard) {
     if (gameState.roundState.currentPlayer != gameState.getMainPlayer()) {

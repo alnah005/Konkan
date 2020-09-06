@@ -42,7 +42,6 @@ class Player extends BaseEntity {
   bool discarded = true;
   bool eligibleToDraw = true;
   bool isAI = false;
-  bool mustSetCards = false;
 
   void recordGame(CardList winnerPosition) {
     personalInfo.avgScore =
@@ -73,30 +72,80 @@ class Player extends BaseEntity {
     return this.personalInfo.playerName;
   }
 
-  double setCards(double settingScore, [PlayingCard extraCard]) {
+  double setCards(double settingScore) {
     if (!hasSetCards()) {
-      return _firstTime(settingScore, extraCard);
+      if (extraCard != null) {
+        return _firstTime(settingScore);
+      }
+    } else {
+      _afterFirstTime(settingScore);
     }
-    return _afterFirstTime(settingScore, extraCard);
+    return settingScore;
+  }
+
+  double _firstTime(double settingScore) {
+    if (extraCard == null) {
+      print("you need to draw a card from discarded deck to set");
+      return settingScore;
+    }
+    List<List<PlayingCard>> groups;
+    groups = PlayerUtil.getOptimalGroups(cards);
+    double settingRes = PlayerUtil.getGroupScore(groups);
+    if (settingRes < settingScore) {
+      print("Your score is not enough");
+      return settingScore;
+    }
+    if (groups.expand((i) => i).toList().length == cards.length) {
+      print("you need to have at least a card left");
+      return settingScore;
+    }
+    if (groups.expand((i) => i).toList().contains(extraCard)) {
+      this.eligibleToDraw = false;
+      this.extraCard = null;
+      this.discarded = false;
+    } else {
+      print("You didn't use the card from discarded deck");
+      return settingScore;
+    }
+    openCards = groups
+      ..forEach((element) {
+        element
+          ..forEach((element2) {
+            element2
+              ..faceUp = true
+              ..opened = true
+              ..isDraggable = false;
+          });
+      });
+    this._delCardsFromMain(groups.expand((element) => element).toList());
+    return settingRes;
   }
 
   // todo make a function that transfers cards from cards to openCards
   // todo test not only grouping but also melding to identify winning
-  // todo draw card from discarded deck into places other than end of cards
-  double _afterFirstTime(double settingScore, PlayingCard extraCard) {
+  void _afterFirstTime(double settingScore) {
     List<List<PlayingCard>> groups;
+    groups = PlayerUtil.getOptimalGroups(cards);
     if (extraCard != null) {
-      groups = PlayerUtil.getOptimalGroups(cards + [extraCard]);
       if (groups.expand((i) => i).toList().length < 1) {
         print("You have nothing to set");
-        return settingScore;
+        return;
       }
-    } else {
-      groups = PlayerUtil.getOptimalGroups(cards);
-    }
-    if (extraCard != null) {
+      if (groups.expand((i) => i).toList().length == cards.length) {
+        print("you need to have at least a card left");
+        return;
+      }
       if (groups.expand((i) => i).toList().contains(extraCard)) {
         this.eligibleToDraw = false;
+        this.extraCard = null;
+        this.discarded = false;
+      }
+    } else {
+      if (!this.eligibleToDraw) {
+        if (groups.expand((i) => i).toList().length == cards.length) {
+          print("you need to have at least a card left");
+          return;
+        }
       }
     }
     for (int i = 0; i < groups.length; i++) {
@@ -111,74 +160,6 @@ class Player extends BaseEntity {
       }
     }
     this._delCardsFromMain(groups.expand((element) => element).toList());
-    return settingScore;
-  }
-
-  double _firstTime(double settingScore, PlayingCard extraCard) {
-    List<List<PlayingCard>> groups;
-    bool setSuccessful = false;
-    if (extraCard != null) {
-      groups = PlayerUtil.getOptimalGroups(cards + [extraCard]);
-      if (groups.expand((i) => i).toList().length == (cards.length)) {
-        print("You have won");
-        setSuccessful = true;
-      }
-    } else {
-      groups = PlayerUtil.getOptimalGroups(cards);
-      if (groups.expand((i) => i).toList().length == (cards.length - 1)) {
-        print("You have won");
-        setSuccessful = true;
-      }
-    }
-    double settingRes = PlayerUtil.getGroupScore(groups);
-    if (setSuccessful) {
-      openCards = groups
-        ..forEach((element) {
-          element
-            ..forEach((element2) {
-              element2
-                ..faceUp = true
-                ..opened = true
-                ..isDraggable = false;
-            });
-        });
-      this._delCardsFromMain(groups.expand((element) => element).toList());
-      return settingRes;
-    }
-    if (!setSuccessful && !(extraCard != null)) {
-      print("draw a card you have not won");
-      return settingScore;
-    }
-    if (settingRes >= settingScore) {
-      if (groups.expand((i) => i).toList().contains(extraCard)) {
-        this.eligibleToDraw = false;
-        openCards = groups
-          ..forEach((element) {
-            element
-              ..forEach((element2) {
-                element2
-                  ..faceUp = true
-                  ..opened = true
-                  ..isDraggable = false;
-              });
-          });
-        this._delCardsFromMain(groups.expand((element) => element).toList());
-        print("new set score is " + settingRes.toString());
-        setSuccessful = true;
-      } else {
-        print("you didn't use the discarded drawn card");
-        this.eligibleToDraw = true;
-        setSuccessful = false;
-      }
-    } else {
-      print("your set score is not enough");
-      this.eligibleToDraw = true;
-      setSuccessful = false;
-    }
-    if (setSuccessful) {
-      return settingRes;
-    }
-    return settingScore;
   }
 
   void _delCardsFromMain(List<PlayingCard> movedCards) {
@@ -195,7 +176,7 @@ class Player extends BaseEntity {
   }
 
   bool endTurn() {
-    if (this.mustSetCards) {
+    if (this.extraCard != null) {
       return false;
     }
     this.discarded = true;
@@ -205,5 +186,9 @@ class Player extends BaseEntity {
 
   bool hasSetCards() {
     return openCards.expand((i) => i).toList().length > 0;
+  }
+
+  int numSetCards() {
+    return openCards.expand((i) => i).toList().length;
   }
 }

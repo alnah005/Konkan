@@ -57,7 +57,9 @@ void main() {
         PlayingCard(cardSuit: CardSuit.hearts, cardType: CardType.jack);
     test("set cards for first time", () {
       player.cards = List.from(cards);
-      double setScore = player.setCards(0, extraCard);
+      player.extraCard = extraCard;
+      player.cards.add(extraCard);
+      double setScore = player.setCards(0);
       expect(setScore, 30.0);
       expect(player.openCards, [
         [cards[1], cards[2], extraCard]
@@ -68,7 +70,9 @@ void main() {
       player.initialize("");
       player.cards = List.from(cards);
       player.openCards = [List.from(cards)];
-      double setScore = player.setCards(0, extraCard);
+      player.extraCard = extraCard;
+      player.cards.add(extraCard);
+      double setScore = player.setCards(0);
       expect(player.openCards, [
         cards,
         [cards[1], cards[2], extraCard]
@@ -90,7 +94,9 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards2);
       expect(player.cards, cards2);
-      double setScore = player.setCards(0, extraCard);
+      player.extraCard = extraCard;
+      player.cards.add(extraCard);
+      double setScore = player.setCards(0);
       expect(setScore, 69.0);
       expect(player.openCards, [
         (cards2.skip(5).toList() + [extraCard])
@@ -104,7 +110,9 @@ void main() {
       player.initialize("");
       player.cards = List.from(cards2);
       player.openCards = [List.from(cards2)];
-      double setScore = player.setCards(0, extraCard);
+      player.extraCard = extraCard;
+      player.cards.add(extraCard);
+      double setScore = player.setCards(0);
       expect(player.openCards, [
         cards2,
         (cards2.skip(5).toList() + [extraCard])
@@ -129,7 +137,9 @@ void main() {
     test("No groups are valid", () {
       player.initialize("");
       player.cards = List.from(cards3);
-      double setScore = player.setCards(0, extraCard2);
+      player.extraCard = extraCard2;
+      player.cards.add(extraCard2);
+      double setScore = player.setCards(0);
       expect(setScore, 0);
       expect(player.openCards, [[]]);
     });
@@ -152,7 +162,9 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards);
       expect(player.cards, cards);
-      double setScore = player.setCards(0, extraCard);
+      player.extraCard = extraCard;
+      player.cards.add(extraCard);
+      double setScore = player.setCards(0);
       expect(setScore, 48.0);
       for (int i = 0; i < 3; i++) {
         expect(player.openCards[0][i], cards[i + 1]);
@@ -175,7 +187,9 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards2);
       expect(player.cards, cards2);
-      double setScore = player.setCards(0, extraCard2);
+      player.extraCard = extraCard2;
+      player.cards.add(extraCard2);
+      double setScore = player.setCards(0);
       expect(setScore, 45.0);
 
       expect(player.openCards[0][0], cards2[4]);
@@ -205,7 +219,9 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards3);
       expect(player.cards, cards3);
-      double setScore = player.setCards(0, extraCard3);
+      player.extraCard = extraCard3;
+      player.cards.add(extraCard3);
+      double setScore = player.setCards(0);
       expect(setScore, 90);
       for (int i = 0; i < 3; i++) {
         expect(player.openCards[0][i], cards3[i]);
@@ -231,7 +247,9 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards4);
       expect(player.cards, cards4);
-      double setScore = player.setCards(0, extraCard3);
+      player.extraCard = cards4[3];
+      player.cards.add(cards4[3]);
+      double setScore = player.setCards(0);
       expect(setScore, 63.0);
       for (int i = 0; i < 3; i++) {
         expect(player.openCards[0][i], cards4[i]);
@@ -264,6 +282,8 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards5);
       expect(player.cards, cards5);
+      player.extraCard = cards5[3];
+      player.cards.add(cards5[3]);
       double setScore = player.setCards(0);
       expect(setScore, 144);
       expect(player.openCards, [
@@ -309,6 +329,8 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards6);
       expect(player.cards, cards6);
+      player.extraCard = cards6[2];
+      player.cards.add(cards6[2]);
       double setScore = player.setCards(0);
       expect(setScore, 142);
       expect(player.openCards, [

@@ -64,7 +64,8 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
 
   @override
   bool checkRoundWin() {
-    if (roundState.currentPlayer.cards.length == 0) {
+    if (roundState.currentPlayer.cards.length == 0 &&
+        !roundState.currentPlayer.eligibleToDraw) {
       this.trackRoundStats();
       this.nextRound();
       return true;
@@ -238,7 +239,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     }
     print("dope");
     if (!roundState.currentPlayer.discarded) {
-      if (!roundState.currentPlayer.mustSetCards) {
+      if (roundState.currentPlayer.extraCard == null) {
         roundState.throwToDeck(sourceCard
           ..isDraggable = true
           ..faceUp = true);
@@ -260,8 +261,16 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     if (!currentAI.isAI) {
       return false;
     }
-    currentAI.cards.shuffle();
-    bool cardsSet = roundState.handleSetCards(currentAI);
+    bool cardsSet = false;
+    for (int k = 0; k < 100; k++) {
+      roundState.receiveDiscardedDeckCard();
+      currentAI.cards.shuffle();
+      cardsSet = roundState.handleSetCards(currentAI);
+      if (cardsSet) {
+        break;
+      }
+      roundState.returnDiscardedDeckCard();
+    }
     if (!cardsSet) {
       roundState.drawFromDeckToCurrentPlayer(getMainPlayer());
     }
@@ -276,7 +285,11 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     //sleep(const Duration(seconds:1));
     currentAI.cards.shuffle();
     if (dropCardToDiscardedDeck(
-        currentAI.cards.last, currentAI, roundState.discardedDeck.cards.last)) {
+        currentAI.cards.last,
+        currentAI,
+        roundState.discardedDeck.cards.isNotEmpty
+            ? roundState.discardedDeck.cards.last
+            : null)) {
       print('bot finished its turn');
     }
     return true;

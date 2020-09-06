@@ -127,9 +127,13 @@ class PlayerWidgetState extends State<PlayerWidget> {
                     var returnDeck = player.cards;
                     if (result != null) {
                       if (player.identifier == CardList.DROPPED) {
-                        widget.player.cards.add(result);
+                        widget.player.cards.add(result
+                          ..isDraggable = true
+                          ..faceUp = true);
                       } else {
-                        returnDeck.add(result);
+                        returnDeck.add(result
+                          ..isDraggable = true
+                          ..faceUp = true);
                       }
                     }
                     returnDeck.remove(sourceCard);

@@ -70,40 +70,34 @@ class KonkanRoundState<Y> extends BaseRoundState<Y> {
   /// This must be called either before a card is drawn, or after
   /// if the player will win
   bool handleSetCards(Player settingPlayer) {
-    /// todo if player set cards then mustset is false and remove extracard
-    /// todo player must have one card left when setting
     var result = false;
     if (settingPlayer != currentPlayer) {
       print("Its not your turn");
       return result;
     }
-    if (settingPlayer.discarded) {
-      var lastCard = discardedDeckKey.currentState.getLastCard();
-      settingScore = settingPlayer.setCards(settingScore, lastCard);
-      if (!settingPlayer.eligibleToDraw) {
-        settingPlayer.discarded = false;
-      } else {
-        result = true;
-        discardedDeckKey.currentState.throwToDeck(lastCard);
-      }
-    } else {
-      settingScore = settingPlayer.setCards(settingScore);
-      result = settingPlayer.mustSetCards;
+    var beforeSetCards = settingPlayer.numSetCards();
+    settingScore = settingPlayer.setCards(settingScore);
+    result = beforeSetCards != settingPlayer.numSetCards();
+    if (!result) {
+      returnDiscardedDeckCard();
     }
     return result;
   }
 
+  /// This method is called when a player drew a card from the discarded deck
+  /// but didn't use it to either meld or set cards
   void returnDiscardedDeckCard() {
     if (currentPlayer.extraCard != null) {
       discardedDeck.cards.add(currentPlayer.extraCard);
       currentPlayer.cards.remove(currentPlayer.extraCard);
       currentPlayer.extraCard = null;
-      currentPlayer.mustSetCards = false;
       currentPlayer.discarded = true;
       currentPlayer.eligibleToDraw = true;
     }
   }
 
+  /// This method is called when the current player wants to draw a card from
+  /// the main deck
   void drawFromDeckToCurrentPlayer(Player mainPlayer) {
     if (currentPlayer.eligibleToDraw) {
       var newCard = this.drawFromDeck();
@@ -115,6 +109,19 @@ class KonkanRoundState<Y> extends BaseRoundState<Y> {
       currentPlayer.eligibleToDraw = false;
     } else {
       print("you need to throw a card");
+    }
+  }
+
+  /// This method is called to return the card from [returnDiscardedDeckCard]
+  /// into the discarded deck and setting the appropriate booleans in [Player]
+  void receiveDiscardedDeckCard() {
+    currentPlayer.extraCard = discardedDeck.cards.isNotEmpty
+        ? discardedDeck.cards.removeLast()
+        : null;
+    if (currentPlayer.extraCard != null) {
+      currentPlayer.cards.add(currentPlayer.extraCard);
+      currentPlayer.discarded = false;
+      currentPlayer.eligibleToDraw = false;
     }
   }
 }
