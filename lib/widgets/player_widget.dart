@@ -123,21 +123,21 @@ class PlayerWidgetState extends State<PlayerWidget> {
                   result = melds[0].dropCard(sourceCard);
                 }
                 if (result != sourceCard) {
-                  var returnDeck = player.cards;
-                  if (result != null) {
-                    setState(() {
-                      returnDeck.add(result);
-                      returnDeck.remove(sourceCard);
-                    });
-                  } else {
-                    setState(() {
-                      returnDeck.remove(sourceCard);
-                    });
-                  }
-                }
-                if (player.identifier == CardList.DROPPED) {
-                  widget.player.eligibleToDraw = false;
-                  widget.player.discarded = false;
+                  setState(() {
+                    var returnDeck = player.cards;
+                    if (result != null) {
+                      if (player.identifier == CardList.DROPPED) {
+                        widget.player.cards.add(result);
+                      } else {
+                        returnDeck.add(result);
+                      }
+                    }
+                    returnDeck.remove(sourceCard);
+                    if (player.identifier == CardList.DROPPED) {
+                      widget.player.eligibleToDraw = false;
+                      widget.player.discarded = false;
+                    }
+                  });
                 }
               },
               setCards: true,

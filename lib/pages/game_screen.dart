@@ -202,15 +202,8 @@ class _GameScreenState extends State<GameScreen> {
             onTap: () {
               setState(() {
                 /// Todo make a method in konkan gamestate to take care of this
-                if (gameState.roundState.currentPlayer.eligibleToDraw) {
-                  var newCard = gameState.roundState.drawFromDeck()..faceUp;
-                  newCard.faceUp = true;
-                  gameState.roundState.currentPlayer.cards.add(newCard);
-                  gameState.roundState.currentPlayer.discarded = false;
-                  gameState.roundState.currentPlayer.eligibleToDraw = false;
-                } else {
-                  print("you need to throw a card");
-                }
+                gameState.roundState
+                    .drawFromDeckToCurrentPlayer(gameState.getMainPlayer());
               });
             },
           ),
@@ -245,25 +238,17 @@ class _GameScreenState extends State<GameScreen> {
             return false;
           },
           onCardAdded: (sourceCard, player, destinationCard) {
-            if (player.identifier ==
-                    gameState.roundState.currentPlayer.identifier &&
-                !gameState.roundState.currentPlayer.discarded) {
-              if (!gameState.getMainPlayer().mustSetCards) {
-                setState(() {
-                  gameState.roundState
-                      .throwToDeck(sourceCard..isDraggable = true);
-                });
+            setState(() {
+              bool endedTurn = gameState.dropCardToDiscardedDeck(
+                  sourceCard, player, destinationCard);
+              if (endedTurn) {
                 if (gameState.checkRoundWin()) {
                   _handleWin(gameState.roundState.currentPlayer);
                 } else {
                   gameState.nextPlayer();
                 }
-              } else {
-                setState(() {
-                  gameState.roundState.returnDiscardedDeckCard();
-                });
               }
-            }
+            });
           },
           discardEntity: gameState.roundState.discardedDeck,
         ),
@@ -333,7 +318,8 @@ class _GameScreenState extends State<GameScreen> {
       return false;
     }
     if (fromPlayer.identifier == CardList.DROPPED) {
-      if (player.eligibleToDraw && player.isCurrentPlayer) {
+      if (player.eligibleToDraw &&
+          player == gameState.roundState.currentPlayer) {
         return true;
       }
     }
@@ -367,10 +353,11 @@ class _GameScreenState extends State<GameScreen> {
     if (gameState.roundState.currentPlayer != gameState.getMainPlayer()) {
       return false;
     }
+    if (gameState.roundState.currentPlayer.hasSetCards()) {
+      return true;
+    }
     if (fromPlayer.identifier == CardList.DROPPED) {
-      {
-        return true;
-      }
+      return true;
     }
     return false;
   }

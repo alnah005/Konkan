@@ -69,10 +69,13 @@ class KonkanRoundState<Y> extends BaseRoundState<Y> {
   /// This method handles setting the cards of the current player
   /// This must be called either before a card is drawn, or after
   /// if the player will win
-  void handleSetCards(Player settingPlayer) {
+  bool handleSetCards(Player settingPlayer) {
+    /// todo if player set cards then mustset is false and remove extracard
+    /// todo player must have one card left when setting
+    var result = false;
     if (settingPlayer != currentPlayer) {
       print("Its not your turn");
-      return;
+      return result;
     }
     if (settingPlayer.discarded) {
       var lastCard = discardedDeckKey.currentState.getLastCard();
@@ -80,44 +83,38 @@ class KonkanRoundState<Y> extends BaseRoundState<Y> {
       if (!settingPlayer.eligibleToDraw) {
         settingPlayer.discarded = false;
       } else {
+        result = true;
         discardedDeckKey.currentState.throwToDeck(lastCard);
       }
     } else {
       settingScore = settingPlayer.setCards(settingScore);
+      result = settingPlayer.mustSetCards;
     }
-  }
-
-  /// if current player is an AI, finish a turn and return true
-  /// otherwise do nothing and return false
-  bool handleAITurns() {
-    if (!currentPlayer.isAI) {
-      return false;
-    }
-    currentPlayer.cards.shuffle();
-    this.handleSetCards(currentPlayer);
-
-    /// in the commented line below, I tried to add some time before
-    /// the AI makes a decision but it needs to have an asynchronous
-    /// environment. This needs a lot of refactoring to the code.
-    //await new Future.delayed(const Duration(seconds: 5));
-
-    /// We can use this code however this freezes everything for the
-    /// set period of time, making the screen seem laggy or glitched.
-    //sleep(const Duration(seconds:1));
-    currentPlayer.cards.add(drawFromDeck());
-    var throwCard = currentPlayer.cards[1]
-      ..faceUp = true
-      ..isDraggable = true;
-    throwToDeck(throwCard);
-    return true;
+    return result;
   }
 
   void returnDiscardedDeckCard() {
-    discardedDeck.cards.add(currentPlayer.extraCard);
-    currentPlayer.cards.remove(currentPlayer.extraCard);
-    currentPlayer.extraCard = null;
-    currentPlayer.mustSetCards = false;
-    currentPlayer.discarded = true;
-    currentPlayer.eligibleToDraw = true;
+    if (currentPlayer.extraCard != null) {
+      discardedDeck.cards.add(currentPlayer.extraCard);
+      currentPlayer.cards.remove(currentPlayer.extraCard);
+      currentPlayer.extraCard = null;
+      currentPlayer.mustSetCards = false;
+      currentPlayer.discarded = true;
+      currentPlayer.eligibleToDraw = true;
+    }
+  }
+
+  void drawFromDeckToCurrentPlayer(Player mainPlayer) {
+    if (currentPlayer.eligibleToDraw) {
+      var newCard = this.drawFromDeck();
+      if (currentPlayer == mainPlayer) {
+        newCard.faceUp = true;
+      }
+      currentPlayer.cards.add(newCard);
+      currentPlayer.discarded = false;
+      currentPlayer.eligibleToDraw = false;
+    } else {
+      print("you need to throw a card");
+    }
   }
 }

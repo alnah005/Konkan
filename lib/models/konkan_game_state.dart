@@ -133,7 +133,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     playerIndex = playerIndex % this.players.length;
     roundState.nextTurnVariables(
         this.players[playerIndex], this.playerGameInfo[playerIndex]);
-    while (roundState.handleAITurns()) {
+    while (handleAITurns()) {
       playerIndex += 1;
       playerIndex = playerIndex % this.players.length;
       roundState.nextTurnVariables(
@@ -162,6 +162,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
   /// Called after a round is won
   @override
   void nextRound() {
+    roundState.recycleDecks();
     redistributeCards();
     roundState = roundState.nextRound(roundState);
     roundState.settingScore = this.settingScore;
@@ -226,5 +227,58 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
               );
       }
     }
+  }
+
+  bool dropCardToDiscardedDeck(
+      PlayingCard sourceCard, BaseEntity player, PlayingCard destinationCard) {
+    bool result = false;
+    if (player.identifier != roundState.currentPlayer.identifier) {
+      roundState.returnDiscardedDeckCard();
+      return result;
+    }
+    print("dope");
+    if (!roundState.currentPlayer.discarded) {
+      if (!roundState.currentPlayer.mustSetCards) {
+        roundState.throwToDeck(sourceCard
+          ..isDraggable = true
+          ..faceUp = true);
+        result = true;
+        print("dope2");
+      } else {
+        print("dope3");
+        roundState.returnDiscardedDeckCard();
+      }
+    }
+    return result;
+  }
+
+  /// if current player is an AI, finish a turn and return true
+  /// otherwise do nothing and return false
+  bool handleAITurns() {
+    /// todo add extra card to deck then return it if AI did not set cards
+    var currentAI = roundState.currentPlayer;
+    if (!currentAI.isAI) {
+      return false;
+    }
+    currentAI.cards.shuffle();
+    bool cardsSet = roundState.handleSetCards(currentAI);
+    if (!cardsSet) {
+      roundState.drawFromDeckToCurrentPlayer(getMainPlayer());
+    }
+
+    /// in the commented line below, I tried to add some time before
+    /// the AI makes a decision but it needs to have an asynchronous
+    /// environment. This needs a lot of refactoring to the code.
+    //await new Future.delayed(const Duration(seconds: 5));
+
+    /// We can use this code however this freezes everything for the
+    /// set period of time, making the screen seem laggy or glitched.
+    //sleep(const Duration(seconds:1));
+    currentAI.cards.shuffle();
+    if (dropCardToDiscardedDeck(
+        currentAI.cards.last, currentAI, roundState.discardedDeck.cards.last)) {
+      print('bot finished its turn');
+    }
+    return true;
   }
 }

@@ -42,7 +42,6 @@ class Player extends BaseEntity {
   bool discarded = true;
   bool eligibleToDraw = true;
   bool isAI = false;
-  bool isCurrentPlayer = false;
   bool mustSetCards = false;
 
   void recordGame(CardList winnerPosition) {
@@ -75,7 +74,7 @@ class Player extends BaseEntity {
   }
 
   double setCards(double settingScore, [PlayingCard extraCard]) {
-    if (hasSetCards()) {
+    if (!hasSetCards()) {
       return _firstTime(settingScore, extraCard);
     }
     return _afterFirstTime(settingScore, extraCard);
@@ -193,7 +192,6 @@ class Player extends BaseEntity {
   void initializeForNextTurn() {
     this.discarded = true;
     this.eligibleToDraw = true;
-    this.isCurrentPlayer = true;
   }
 
   bool endTurn() {
@@ -202,11 +200,10 @@ class Player extends BaseEntity {
     }
     this.discarded = true;
     this.eligibleToDraw = false;
-    this.isCurrentPlayer = false;
     return true;
   }
 
   bool hasSetCards() {
-    return openCards.expand((i) => i).toList().length == 0;
+    return openCards.expand((i) => i).toList().length > 0;
   }
 }
