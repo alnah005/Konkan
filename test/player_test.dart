@@ -1,31 +1,33 @@
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
+import 'package:solitaire/utils/enums.dart';
+import 'package:solitaire/utils/playing_card_util.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('recording game', () {
     test('recording losses and wins', () {
-      final player = Player(PositionOnScreen.bottom);
+      final player = Player(CardList.P1);
       expect(player.personalInfo.wins, 0);
       expect(player.personalInfo.losses, 0);
-      player.recordGame(PositionOnScreen.bottom);
+      player.recordGame(CardList.P1);
       expect(player.personalInfo.wins, 1);
       expect(player.personalInfo.losses, 0);
-      player.recordGame(PositionOnScreen.right);
+      player.recordGame(CardList.P2);
       expect(player.personalInfo.wins, 1);
       expect(player.personalInfo.losses, 1);
     });
     test('avg score', () {
-      final player = Player(PositionOnScreen.bottom);
+      final player = Player(CardList.P1);
       List<PlayingCard> cards = [
         PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
         PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
         PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
       ];
       player.cards = cards;
-      player.recordGame(PositionOnScreen.bottom);
+      player.recordGame(CardList.P1);
       expect(player.personalInfo.avgScore, 30.0);
-      player.recordGame(PositionOnScreen.bottom);
+      player.recordGame(CardList.P1);
       expect(player.personalInfo.avgScore, 30.0);
       player.cards.add(
           PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five));
@@ -39,13 +41,13 @@ void main() {
           PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five));
       player.cards.add(
           PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five));
-      player.recordGame(PositionOnScreen.bottom);
+      player.recordGame(CardList.P1);
       expect(player.personalInfo.avgScore, 40.0);
     });
   });
 
   group("Setting cards", () {
-    Player player = Player(PositionOnScreen.bottom);
+    Player player = Player(CardList.P1);
     final cards = [
       PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.five),
       PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.jack),
@@ -55,7 +57,9 @@ void main() {
         PlayingCard(cardSuit: CardSuit.hearts, cardType: CardType.jack);
     test("set cards for first time", () {
       player.cards = List.from(cards);
-      double setScore = player.setCards(0, extraCard);
+      player.extraCard = extraCard;
+      player.cards.add(extraCard);
+      double setScore = player.setCards(0);
       expect(setScore, 30.0);
       expect(player.openCards, [
         [cards[1], cards[2], extraCard]
@@ -66,7 +70,9 @@ void main() {
       player.initialize("");
       player.cards = List.from(cards);
       player.openCards = [List.from(cards)];
-      double setScore = player.setCards(0, extraCard);
+      player.extraCard = extraCard;
+      player.cards.add(extraCard);
+      double setScore = player.setCards(0);
       expect(player.openCards, [
         cards,
         [cards[1], cards[2], extraCard]
@@ -88,7 +94,9 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards2);
       expect(player.cards, cards2);
-      double setScore = player.setCards(0, extraCard);
+      player.extraCard = extraCard;
+      player.cards.add(extraCard);
+      double setScore = player.setCards(0);
       expect(setScore, 69.0);
       expect(player.openCards, [
         (cards2.skip(5).toList() + [extraCard])
@@ -102,7 +110,9 @@ void main() {
       player.initialize("");
       player.cards = List.from(cards2);
       player.openCards = [List.from(cards2)];
-      double setScore = player.setCards(0, extraCard);
+      player.extraCard = extraCard;
+      player.cards.add(extraCard);
+      double setScore = player.setCards(0);
       expect(player.openCards, [
         cards2,
         (cards2.skip(5).toList() + [extraCard])
@@ -127,14 +137,16 @@ void main() {
     test("No groups are valid", () {
       player.initialize("");
       player.cards = List.from(cards3);
-      double setScore = player.setCards(0, extraCard2);
+      player.extraCard = extraCard2;
+      player.cards.add(extraCard2);
+      double setScore = player.setCards(0);
       expect(setScore, 0);
       expect(player.openCards, [[]]);
     });
   });
 
   group("Optimality of setting cards", () {
-    Player player = Player(PositionOnScreen.bottom);
+    Player player = Player(CardList.P1);
     final cards = [
       PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.queen),
       PlayingCard(cardSuit: CardSuit.diamonds, cardType: CardType.one),
@@ -150,7 +162,9 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards);
       expect(player.cards, cards);
-      double setScore = player.setCards(0, extraCard);
+      player.extraCard = extraCard;
+      player.cards.add(extraCard);
+      double setScore = player.setCards(0);
       expect(setScore, 48.0);
       for (int i = 0; i < 3; i++) {
         expect(player.openCards[0][i], cards[i + 1]);
@@ -173,7 +187,9 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards2);
       expect(player.cards, cards2);
-      double setScore = player.setCards(0, extraCard2);
+      player.extraCard = extraCard2;
+      player.cards.add(extraCard2);
+      double setScore = player.setCards(0);
       expect(setScore, 45.0);
 
       expect(player.openCards[0][0], cards2[4]);
@@ -203,7 +219,9 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards3);
       expect(player.cards, cards3);
-      double setScore = player.setCards(0, extraCard3);
+      player.extraCard = extraCard3;
+      player.cards.add(extraCard3);
+      double setScore = player.setCards(0);
       expect(setScore, 90);
       for (int i = 0; i < 3; i++) {
         expect(player.openCards[0][i], cards3[i]);
@@ -229,7 +247,9 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards4);
       expect(player.cards, cards4);
-      double setScore = player.setCards(0, extraCard3);
+      player.extraCard = cards4[3];
+      player.cards.add(cards4[3]);
+      double setScore = player.setCards(0);
       expect(setScore, 63.0);
       for (int i = 0; i < 3; i++) {
         expect(player.openCards[0][i], cards4[i]);
@@ -262,6 +282,8 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards5);
       expect(player.cards, cards5);
+      player.extraCard = cards5[3];
+      player.cards.add(cards5[3]);
       double setScore = player.setCards(0);
       expect(setScore, 144);
       expect(player.openCards, [
@@ -307,6 +329,8 @@ void main() {
       expect(player.cards, []);
       player.cards = List.from(cards6);
       expect(player.cards, cards6);
+      player.extraCard = cards6[2];
+      player.cards.add(cards6[2]);
       double setScore = player.setCards(0);
       expect(setScore, 142);
       expect(player.openCards, [

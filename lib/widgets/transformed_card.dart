@@ -1,18 +1,18 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:solitaire/models/base_entity.dart';
 import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/pages/game_screen.dart';
 
 // TransformedCard makes the card draggable and translates it according to
 // position in the stack.
 class TransformedCard extends StatefulWidget {
   final PlayingCard playingCard;
-  final CardList columnIndex;
+  final BaseEntity entity;
 
   TransformedCard({
     @required this.playingCard,
-    this.columnIndex,
+    @required this.entity,
   });
 
   @override
@@ -38,15 +38,13 @@ class _TransformedCardState extends State<TransformedCard> {
           )
         : widget.playingCard.isDraggable
             ? Draggable<Map>(
-                child: _buildFaceUpCard(),
-                feedback: _buildFaceUpCard(),
-                childWhenDragging: Container(
-                  width: 40.0,
-                  height: 60.0,
-                ),
+                child: Opacity(opacity: 1, child: _buildFaceUpCard()),
+                feedback: Opacity(opacity: 0.8, child: _buildFaceUpCard()),
+                childWhenDragging:
+                    Opacity(opacity: 0.8, child: _buildFaceUpCard()),
                 data: {
-                  "cards": [widget.playingCard],
-                  "fromIndex": widget.columnIndex,
+                  "sourceCard": widget.playingCard,
+                  "entity": widget.entity,
                 },
               )
             : _buildFaceUpCard();

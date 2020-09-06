@@ -1,6 +1,6 @@
 import 'package:solitaire/models/playing_card.dart';
-
-import 'meld.dart';
+import 'package:solitaire/utils/meld.dart';
+import 'package:solitaire/utils/playing_card_util.dart';
 
 List<Meld> validate(List<PlayingCard> cards) {
   Map<int, PlayingCard> cardsMap = cards.asMap();
@@ -208,7 +208,7 @@ List<Meld> getJokerSuitGroups(List<PlayingCard> cards, List<int> jokerPositions,
         var joker1 = new JokerPlaceHolder(
             groupType, remainingSuits.toList()[0], jokerPositions[0]);
         var joker2 = new JokerPlaceHolder(
-            groupType, remainingSuits.toList()[1], jokerPositions[0]);
+            groupType, remainingSuits.toList()[1], jokerPositions[1]);
 
         result.add(MeldSuit(cards, [joker1, joker2]));
         break;

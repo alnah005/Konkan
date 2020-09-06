@@ -1,17 +1,16 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:solitaire/models/groups.dart';
+import 'package:solitaire/models/base_entity.dart';
+import 'package:solitaire/models/konkan_game_state.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/widgets/card_column.dart';
-import 'package:solitaire/widgets/empty_card.dart';
-import 'package:solitaire/widgets/transformed_card.dart';
-
-enum CardList { P1, P2, P3, P4, P1SET, P2SET, P3SET, P4SET, DROPPED, REMAINING }
+import 'package:solitaire/utils/enums.dart';
+import 'package:solitaire/widgets/discarded_deck.dart';
+import 'package:solitaire/widgets/konkan_deck.dart';
+import 'package:solitaire/widgets/player_widget.dart';
 
 class GameScreen extends StatefulWidget {
+  /// to differentiate players from other entities
   static final List<CardList> playerCardLists = [
     CardList.P1,
     CardList.P2,
@@ -24,52 +23,22 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  // Stores the cards on the seven columns
-  List<Player> playersList = [
-    new Player(PositionOnScreen.left, isAI: true),
-    new Player(PositionOnScreen.top, isAI: true),
-    new Player(PositionOnScreen.right, isAI: true),
-    new Player(PositionOnScreen.bottom)
-  ];
-  Player currentTurn;
-
-  // Stores the card deck
-  List<PlayingCard> cardDeckClosed = [];
-  double settingScore = 51;
-
-  // Stores the card in the upper boxes
-  List<PlayingCard> droppedCards = [];
-
-  PlayingCard drawFromDeck() {
-    print(cardDeckClosed.length);
-    var result = this.cardDeckClosed.removeLast()
-      ..faceUp = false
-      ..isDraggable = true
-      ..opened = true;
-    if (this.cardDeckClosed.length == 0) {
-      setState(() {
-        recycleDeck();
-      });
-    }
-    return result;
-  }
-
-  void recycleDeck() {
-    print("recycling the deck..");
-    this.cardDeckClosed.addAll(this.droppedCards.map((e) => e
-      ..opened = false
-      ..isDraggable = false
-      ..faceUp = false));
-    this.droppedCards.clear();
-    this.cardDeckClosed.shuffle();
-  }
+  KonkanGameState gameState;
 
   @override
   void initState() {
     super.initState();
-    _initialiseGame();
-    settingScore = 51;
-    currentTurn = playersList[3];
+    gameState = KonkanGameState.initializeGame(
+      4,
+      [],
+      [null, null, null, null],
+    );
+
+    /// Build must be called at least once for widget keys to work
+    Future.delayed(const Duration(milliseconds: 30), () {
+      /// Anything that uses a widget key will go here.
+      _initialiseGame();
+    });
   }
 
   @override
@@ -106,196 +75,130 @@ class _GameScreenState extends State<GameScreen> {
           Flexible(
             flex: 7,
             fit: FlexFit.loose,
-            child: _getPlayerColumn(playersList[1].cards, CardList.P2),
-          ),
-          Flexible(
-            flex: 10,
-            fit: FlexFit.tight,
-            child: Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _getSetListFromIndex(CardList.P2)
-                            .expand((i) => i)
-                            .toList()
-                            .length >
-                        0
-                    ? _getPlayerSetColumn(CardList.P2)
-                    : [
-                        Container(
-                          height: 0,
-                          width: 0,
-                        )
-                      ],
-              ),
+            child: PlayerWidget(
+              player: gameState.getTopPlayer(),
+              horizontal: true,
+              onWillAcceptAdded: (PlayingCard sourceCard, BaseEntity fromPlayer,
+                  PlayingCard destinationCard) {
+                return false;
+              },
+              onCardAdded: (PlayingCard sourceCard, BaseEntity fromPlayer,
+                  PlayingCard destinationCard) {},
+              onWillAcceptAddedSet: (PlayingCard sourceCard,
+                  BaseEntity fromPlayer, PlayingCard destinationCard) {
+                return _handlePlayerSetOnDrag(
+                    sourceCard, fromPlayer, destinationCard);
+              },
+              onCardAddedSet: (PlayingCard sourceCard, BaseEntity fromPlayer,
+                  PlayingCard destinationCard) {
+                setState(() {});
+              },
             ),
           ),
+          Expanded(child: Container()),
           Flexible(
             flex: 30,
-            fit: FlexFit.tight,
+            fit: FlexFit.loose,
             child: Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Flexible(
-                    flex: 3,
+                    flex: 7,
                     fit: FlexFit.loose,
-                    child: _getPlayerColumn(playersList[0].cards, CardList.P1),
-                  ),
-                  Flexible(
-                    flex: 10,
-                    fit: FlexFit.tight,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          fit: FlexFit.tight,
-                          child: Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: _getSetListFromIndex(CardList.P1)
-                                          .expand((i) => i)
-                                          .toList()
-                                          .length >
-                                      0
-                                  ? _getPlayerSetColumn(CardList.P1)
-                                      .sublist(0, 2)
-                                  : [
-                                      Container(
-                                        height: 0,
-                                        width: 0,
-                                      )
-                                    ],
-                            ),
-                          ),
-                        ),
-                        Flexible(
-                          flex: 1,
-                          fit: FlexFit.tight,
-                          child: Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: _getSetListFromIndex(CardList.P1)
-                                          .expand((i) => i)
-                                          .toList()
-                                          .length >
-                                      2
-                                  ? _getPlayerSetColumn(CardList.P1)
-                                      .sublist(2, 4)
-                                  : [
-                                      Container(
-                                        height: 0,
-                                        width: 0,
-                                      )
-                                    ],
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: PlayerWidget(
+                      player: gameState.getLeftPlayer(),
+                      onWillAcceptAdded: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer, PlayingCard destinationCard) {
+                        return false;
+                      },
+                      onCardAdded: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer,
+                          PlayingCard destinationCard) {},
+                      onWillAcceptAddedSet: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer, PlayingCard destinationCard) {
+                        return _handlePlayerSetOnDrag(
+                            sourceCard, fromPlayer, destinationCard);
+                      },
+                      onCardAddedSet: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer, PlayingCard destinationCard) {
+                        setState(() {});
+                      },
                     ),
                   ),
+                  Expanded(child: Container()),
                   Flexible(
                       flex: 10, fit: FlexFit.loose, child: _buildFinalDecks()),
                   Flexible(
-                    flex: 10,
-                    fit: FlexFit.tight,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          fit: FlexFit.tight,
-                          child: Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: _getSetListFromIndex(CardList.P3)
-                                          .expand((i) => i)
-                                          .toList()
-                                          .length >
-                                      0
-                                  ? _getPlayerSetColumn(CardList.P3)
-                                      .sublist(0, 2)
-                                  : [
-                                      Container(
-                                        height: 0,
-                                        width: 0,
-                                      )
-                                    ],
-                            ),
-                          ),
-                        ),
-                        Flexible(
-                          flex: 1,
-                          fit: FlexFit.tight,
-                          child: Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: _getSetListFromIndex(CardList.P3)
-                                          .expand((i) => i)
-                                          .toList()
-                                          .length >
-                                      2
-                                  ? _getPlayerSetColumn(CardList.P3)
-                                      .sublist(2, 4)
-                                  : [
-                                      Container(
-                                        height: 0,
-                                        width: 0,
-                                      )
-                                    ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Flexible(
-                    flex: 2,
+                    flex: 7,
                     fit: FlexFit.loose,
-                    child: _getPlayerColumn(playersList[2].cards, CardList.P3),
+                    child: PlayerWidget(
+                      player: gameState.getRightPlayer(),
+                      onWillAcceptAdded: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer, PlayingCard destinationCard) {
+                        return false;
+                      },
+                      onCardAdded: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer,
+                          PlayingCard destinationCard) {},
+                      onWillAcceptAddedSet: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer, PlayingCard destinationCard) {
+                        return _handlePlayerSetOnDrag(
+                            sourceCard, fromPlayer, destinationCard);
+                      },
+                      onCardAddedSet: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer, PlayingCard destinationCard) {
+                        setState(() {});
+                      },
+                      reverseOrder: true,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
           Flexible(flex: 7, fit: FlexFit.tight, child: _buildCardDeck()),
+          Expanded(child: Container()),
           Flexible(
             flex: 3,
-            fit: FlexFit.tight,
+            fit: FlexFit.loose,
             child: IconButton(
               icon: Icon(Icons.add_circle),
               tooltip: 'Set cards',
               onPressed: () {
-                _handleSetCards(playersList[3]);
+                setState(() {
+                  gameState.setCards(gameState.getMainPlayer());
+                });
               },
             ),
           ),
           Flexible(
-            flex: 10,
-            fit: FlexFit.tight,
-            child: Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _getSetListFromIndex(CardList.P4)
-                            .expand((i) => i)
-                            .toList()
-                            .length >
-                        0
-                    ? _getPlayerSetColumn(CardList.P4)
-                    : [
-                        Container(
-                          height: 0,
-                          width: 0,
-                        )
-                      ],
-              ),
-            ),
-          ),
-          Flexible(
-            flex: 10,
-            fit: FlexFit.tight,
-            child: _getPlayerColumn(playersList[3].cards, CardList.P4),
-          ),
+              flex: 7,
+              fit: FlexFit.loose,
+              child: PlayerWidget(
+                player: gameState.getMainPlayer(),
+                onWillAcceptAdded: (PlayingCard sourceCard,
+                    BaseEntity fromPlayer, PlayingCard destinationCard) {
+                  return _handlePlayerOnDrag(
+                      sourceCard, fromPlayer, destinationCard);
+                },
+                onCardAdded: (PlayingCard sourceCard, BaseEntity fromPlayer,
+                    PlayingCard destinationCard) {
+                  _handlePlayerDragged(sourceCard, fromPlayer, destinationCard);
+                },
+                onWillAcceptAddedSet: (PlayingCard sourceCard,
+                    BaseEntity fromPlayer, PlayingCard destinationCard) {
+                  return _handlePlayerSetOnDrag(
+                      sourceCard, fromPlayer, destinationCard);
+                },
+                onCardAddedSet: (PlayingCard sourceCard, BaseEntity fromPlayer,
+                    PlayingCard destinationCard) {
+                  setState(() {});
+                },
+                horizontal: true,
+                reverseOrder: true,
+              )),
+          Expanded(child: Container()),
         ],
       ),
     );
@@ -307,36 +210,15 @@ class _GameScreenState extends State<GameScreen> {
       child: Row(
         children: <Widget>[
           InkWell(
-            child: Opacity(
-              opacity: ((cardDeckClosed.length) / 50) * 0.6 + 0.4,
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: TransformedCard(
-                  // random card
-                  playingCard: cardDeckClosed.last,
-                ),
-              ),
+            child: KonkanDeck(
+              key: gameState.deckKey,
+              numberOfDecks: 2,
+              numberOfJokers: 2,
             ),
             onTap: () {
               setState(() {
-                if (cardDeckClosed.isEmpty) {
-                  cardDeckClosed.addAll(droppedCards.map((card) {
-                    return card
-                      ..opened = false
-                      ..faceUp = false;
-                  }));
-                  droppedCards.clear();
-                } else {
-                  if (currentTurn.eligibleToDraw) {
-                    var newCard = this.drawFromDeck();
-                    newCard.faceUp = true;
-                    currentTurn.cards.add(newCard);
-                    currentTurn.discarded = false;
-                    currentTurn.eligibleToDraw = false;
-                  } else {
-                    print("you need to throw a card");
-                  }
-                }
+                gameState.roundState
+                    .drawFromDeckToCurrentPlayer(gameState.getMainPlayer());
               });
             },
           ),
@@ -361,142 +243,52 @@ class _GameScreenState extends State<GameScreen> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(4.0),
-        child: EmptyCardDeck(
-          cardSuit: CardSuit.hearts,
-          cardsAdded: droppedCards,
-          onCardAdded: (cards, index, card) {
-            if (_getPositionFromIndex(index) == currentTurn.position &&
-                !currentTurn.discarded) {
-              droppedCards.add(cards.first..isDraggable = true);
-              _getListFromIndex(index)
-                  .removeAt(_getListFromIndex(index).indexOf(cards.first));
-              _refreshList(index);
-              currentTurn = _getNextPlayer(currentTurn);
-
-              while (currentTurn.isAI) {
-                currentTurn.cards.shuffle();
-                _handleSetCards(currentTurn);
-
-                /// in the commented line below, I tried to add some time before
-                /// the AI makes a decision but it needs to have an asynchronous
-                /// environment. This needs a lot of refactoring to the code.
-                //await new Future.delayed(const Duration(seconds: 5));
-
-                /// We can use this code however this freezes everything for the
-                /// set period of time, making the screen seem laggy or glitched.
-                //sleep(const Duration(seconds:1));
-
-                currentTurn.cards.add(this.drawFromDeck());
-                var throwCard = currentTurn.cards[1];
-                throwCard.faceUp = true;
-                throwCard.isDraggable = true;
-                droppedCards.add(throwCard);
-                currentTurn.cards.removeAt(1);
-                currentTurn = _getNextPlayer(currentTurn);
-                currentTurn.initializeForNextTurn();
-              }
-
-              currentTurn.initializeForNextTurn();
+        child: DiscardedDeck(
+          key: gameState.discardedDeckKey,
+          onWillAcceptAdded: (sourceCard, player, destinationCard) {
+            print(player.identifier);
+            if (GameScreen.playerCardLists.contains(player.identifier)) {
+              return true;
             }
+            return false;
           },
-          columnIndex: CardList.DROPPED,
+          onCardAdded: (sourceCard, player, destinationCard) {
+            setState(() {
+              bool endedTurn = gameState.dropCardToDiscardedDeck(
+                  sourceCard, player, destinationCard);
+              if (endedTurn) {
+                if (gameState.checkRoundWin()) {
+                  _handleWin(gameState.roundState.currentPlayer);
+                } else {
+                  gameState.nextPlayer();
+                }
+              }
+            });
+          },
+          discardEntity: gameState.roundState.discardedDeck,
         ),
       ),
     );
   }
 
-  // Initialise a new game
+  /// Initialise a new game in a new round
   void _initialiseGame() {
-    for (int i = 0; i < playersList.length; i++) {
-      playersList[i].initialize("Player " + (i + 1).toString());
-    }
-    // Stores the card deck
-    cardDeckClosed = [];
-
-    // Stores the card in the upper boxes
-    droppedCards = [];
-
-    List<PlayingCard> allCards = [];
-
-    // Add all cards to deck
-    for (var i = 0; i < 2; i++) {
-      /// This adds one joker per loop (per deck.)
-      allCards.add(PlayingCard(
-        cardType: CardType.joker,
-        cardSuit: CardSuit.joker,
-        faceUp: false,
-      ));
-      CardSuit.values.forEach((suit) {
-        CardType.values.forEach((type) {
-          /// if the card is a joker then it is discarded.
-          if ((type != CardType.joker) && (suit != CardSuit.joker)) {
-            allCards.add(PlayingCard(
-              cardType: type,
-              cardSuit: suit,
-              faceUp: false,
-            ));
-          }
-        });
-      });
-    }
-
-    Random random = Random();
-    for (int cards = 0; cards < 14; cards++) {
-      for (int players = 0;
-          players < GameScreen.playerCardLists.length;
-          players++) {
-        int randomNumber = random.nextInt(allCards.length);
-        var cardList = _getListFromIndex(GameScreen.playerCardLists[players]);
-        PlayingCard card = allCards[randomNumber];
-        playersList[players].isAI
-            ? cardList.add(
-                card
-                  ..opened = true
-                  ..faceUp = false,
-              )
-            : cardList.add(
-                card
-                  ..opened = true
-                  ..faceUp = true
-                  ..isDraggable = true,
-              );
-
-        allCards.removeAt(randomNumber);
-      }
-    }
-    cardDeckClosed = allCards;
-    _refreshList();
+    setState(() {
+      gameState.roundState.recycleDecks();
+    });
+    setState(() {
+      gameState.initializeRound(gameState.players);
+    });
   }
 
-  void _refreshList([CardList index]) {
-    for (int players = 0;
-        players < GameScreen.playerCardLists.length;
-        players++) {
-      if (_getListFromIndex(GameScreen.playerCardLists[players]).length == 0) {
-        _handleWin(GameScreen.playerCardLists[players]);
-      }
-    }
-    if (index != null) {
-      setState(() {
-        _getListFromIndex(index);
-      });
-    } else {
-      setState(() {});
-    }
-  }
-
-  // Handle a win condition
-  void _handleWin(CardList whichPlayer) {
-    PositionOnScreen winnerPosition = _getPositionFromIndex(whichPlayer);
-    for (int i = 0; i < playersList.length; i++) {
-      playersList[i].recordGame(winnerPosition);
-    }
+  /// Handle a win condition
+  void _handleWin(Player whichPlayer) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text("Game Over"),
-          content: Text(_getNameFromIndex(whichPlayer) + " won!"),
+          content: Text(whichPlayer.name + " won!"),
           actions: <Widget>[
             FlatButton(
               onPressed: () {
@@ -511,177 +303,76 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  String _getNameFromIndex(CardList index) {
-    switch (index) {
-      case CardList.P1:
-        return playersList[0].name;
-      case CardList.P2:
-        return playersList[1].name;
-      case CardList.P3:
-        return playersList[2].name;
-      case CardList.P4:
-        return playersList[3].name;
-      default:
-        return "Null";
-    }
-  }
+  /// method that controls what happens when a card is dragged towards
+  /// players deck
+  ///
+  /// return true when a card can be accepted by a player
+  /// return false when a player is not eligible to move a card onto deck
+  bool _handlePlayerOnDrag(
+      PlayingCard sourceCard,
+      BaseEntity fromPlayer,
 
-  PositionOnScreen _getPositionFromIndex(CardList index) {
-    switch (index) {
-      case CardList.P1:
-        return PositionOnScreen.left;
-      case CardList.P2:
-        return PositionOnScreen.top;
-      case CardList.P3:
-        return PositionOnScreen.right;
-      case CardList.P4:
-        return PositionOnScreen.bottom;
-      default:
-        return null;
-    }
-  }
-
-  Player _getNextPlayer(Player currentPlayer) {
-    switch (currentPlayer.position) {
-      case PositionOnScreen.left:
-        return playersList[1];
-      case PositionOnScreen.top:
-        return playersList[2];
-      case PositionOnScreen.right:
-        return playersList[3];
-      case PositionOnScreen.bottom:
-        return playersList[0];
-      default:
-        return playersList[0];
-    }
-  }
-
-  List<List<PlayingCard>> _getSetListFromIndex(CardList index) {
-    switch (index) {
-      case CardList.P1:
-        return playersList[0].openCards;
-      case CardList.P2:
-        return playersList[1].openCards;
-      case CardList.P3:
-        return playersList[2].openCards;
-      case CardList.P4:
-        return playersList[3].openCards;
-      default:
-        return [];
-    }
-  }
-
-  List<PlayingCard> _getListFromIndex(CardList index) {
-    switch (index) {
-      case CardList.REMAINING:
-        return cardDeckClosed;
-      case CardList.P1:
-        return playersList[0].cards;
-      case CardList.P2:
-        return playersList[1].cards;
-      case CardList.P3:
-        return playersList[2].cards;
-      case CardList.P4:
-        return playersList[3].cards;
-      case CardList.DROPPED:
-        return droppedCards;
-      default:
-        return [];
-    }
-  }
-
-  CardList _cardListFromPlayer(PositionOnScreen pos) {
-    switch (pos) {
-      case PositionOnScreen.left:
-        return CardList.P1;
-      case PositionOnScreen.top:
-        return CardList.P2;
-      case PositionOnScreen.right:
-        return CardList.P3;
-      case PositionOnScreen.bottom:
-        return CardList.P4;
-      default:
-        return null;
-    }
-  }
-
-  void _handleSetCards(Player settingPlayer) {
-    if (settingPlayer != currentTurn) {
-      print("Its not your turn");
-      return;
-    }
-    if (settingPlayer.discarded) {
-      droppedCards.isEmpty
-          ? settingScore = settingPlayer.setCards(settingScore)
-          : settingScore =
-              settingPlayer.setCards(settingScore, droppedCards.last);
-
-      if (!settingPlayer.eligibleToDraw) {
-        droppedCards.removeAt(droppedCards.indexOf(droppedCards.last));
-        settingPlayer.discarded = false;
+      /// Todo make a method in konkan gamestate to take care of this
+      PlayingCard destinationCard) {
+    var player = gameState.getMainPlayer();
+    if (fromPlayer.identifier == player.identifier) {
+      if (sourceCard != destinationCard) {
+        setState(() {
+          List<PlayingCard> currentCards = player.cards;
+          int cardIndex = currentCards.indexOf(sourceCard);
+          int newIndex = currentCards.indexOf(destinationCard);
+          currentCards.insert(
+              cardIndex >= newIndex ? newIndex : newIndex + 1, sourceCard);
+          currentCards.removeAt(
+              cardIndex >= (newIndex + 1) ? cardIndex + 1 : cardIndex);
+        });
+        return true;
       }
-    } else {
-      settingScore = settingPlayer.setCards(settingScore);
     }
-    _refreshList(_cardListFromPlayer(settingPlayer.position));
+    if (gameState.roundState.currentPlayer != player) {
+      return false;
+    }
+    if (fromPlayer.identifier == CardList.DROPPED) {
+      if (player.eligibleToDraw &&
+          player == gameState.roundState.currentPlayer) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  Widget _getPlayerColumn(List<PlayingCard> playerCards, CardList whichPlayer) {
-    return CardColumn(
-      cards: playerCards,
-      onCardsAdded: (cards, index, card) {
-        if (cards.first != card) {
-          setState(() {
-            List<PlayingCard> currentCards = _getListFromIndex(index);
-            int cardIndex = currentCards.indexOf(cards.first);
-            int newIndex = currentCards.indexOf(card);
-            currentCards.insert(
-                cardIndex >= newIndex ? newIndex : newIndex + 1, cards.first);
-            currentCards.removeAt(
-                cardIndex >= (newIndex + 1) ? cardIndex + 1 : cardIndex);
-            _refreshList(index);
-          });
-        }
-      },
-      columnIndex: whichPlayer,
-    );
+  /// method that controls what happens when a card is dropped on
+  /// players deck
+  void _handlePlayerDragged(PlayingCard sourceCard, BaseEntity fromPlayer,
+      PlayingCard destinationCard) {
+    /// Todo make a method in konkan gamestate to take care of this
+    var player = gameState.getMainPlayer();
+    if (fromPlayer.identifier == CardList.DROPPED) {
+      setState(() {
+        List<PlayingCard> currentCards = player.cards;
+        int cardIndex = currentCards.indexOf(sourceCard);
+        int newIndex = currentCards.indexOf(destinationCard);
+        currentCards.insert(
+            cardIndex >= newIndex ? newIndex : newIndex + 1, sourceCard);
+        player.extraCard = sourceCard;
+        player.discarded = false;
+        player.eligibleToDraw = false;
+        gameState.roundState.discardedDeck.cards.remove(sourceCard);
+      });
+    }
   }
 
-  List<Flexible> _getPlayerSetColumn(CardList whichPlayer) {
-    return _getSetListFromIndex(whichPlayer)
-        .map(
-          (listCards) => Flexible(
-            flex: listCards.length,
-            fit: FlexFit.loose,
-            child: CardColumn(
-              cards: listCards,
-              onCardsAdded: (cards, index, card) {
-                var melds = validate(listCards);
-                PlayingCard result = cards.first;
-                if (melds.length > 0) {
-                  result = melds[0].dropCard(cards.first);
-                }
-                if (result != cards.first) {
-                  var returnDeck = _getListFromIndex(index);
-                  if (result != null) {
-                    setState(() {
-                      returnDeck.add(result);
-                      returnDeck.remove(cards.first);
-                      _refreshList(index);
-                    });
-                  } else {
-                    setState(() {
-                      returnDeck.remove(cards.first);
-                      _refreshList(index);
-                    });
-                  }
-                }
-              },
-              columnIndex: whichPlayer,
-              setCards: true,
-            ),
-          ),
-        )
-        .toList();
+  /// Method that determines whether a card from a certain entity should
+  /// meld into a player's set cards
+  bool _handlePlayerSetOnDrag(PlayingCard sourceCard, BaseEntity fromPlayer,
+      PlayingCard destinationCard) {
+    if (gameState.roundState.currentPlayer != gameState.getMainPlayer()) {
+      return false;
+    }
+    if (gameState.roundState.currentPlayer.hasSetCards()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
