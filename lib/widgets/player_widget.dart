@@ -15,7 +15,7 @@ class PlayerWidget extends StatefulWidget {
   final CardAcceptCallback onCardAdded;
 
   /// set column
-/*  final CardAcceptCallback onCardAddedSet;*/
+  final CardAcceptCallback onCardAddedSet;
 
   /// regular column
   final CardWillAcceptCallback onWillAcceptAdded;
@@ -28,6 +28,7 @@ class PlayerWidget extends StatefulWidget {
     @required this.onCardAdded,
     @required this.onWillAcceptAdded,
     @required this.onWillAcceptAddedSet,
+    @required this.onCardAddedSet,
     this.horizontal = false,
     this.reverseOrder = false,
   }) : super(key: key);
@@ -141,6 +142,9 @@ class PlayerWidgetState extends State<PlayerWidget> {
                       widget.player.eligibleToDraw = false;
                       widget.player.discarded = false;
                     }
+
+                    /// call to update player through gamescreen to refresh state
+                    widget.onCardAddedSet(sourceCard, player, destinationCard);
                   });
                 }
               },

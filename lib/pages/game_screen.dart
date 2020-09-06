@@ -89,6 +89,10 @@ class _GameScreenState extends State<GameScreen> {
                 return _handlePlayerSetOnDrag(
                     sourceCard, fromPlayer, destinationCard);
               },
+              onCardAddedSet: (PlayingCard sourceCard, BaseEntity fromPlayer,
+                  PlayingCard destinationCard) {
+                setState(() {});
+              },
             ),
           ),
           Expanded(child: Container()),
@@ -116,6 +120,10 @@ class _GameScreenState extends State<GameScreen> {
                         return _handlePlayerSetOnDrag(
                             sourceCard, fromPlayer, destinationCard);
                       },
+                      onCardAddedSet: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer, PlayingCard destinationCard) {
+                        setState(() {});
+                      },
                     ),
                   ),
                   Expanded(child: Container()),
@@ -137,6 +145,10 @@ class _GameScreenState extends State<GameScreen> {
                           BaseEntity fromPlayer, PlayingCard destinationCard) {
                         return _handlePlayerSetOnDrag(
                             sourceCard, fromPlayer, destinationCard);
+                      },
+                      onCardAddedSet: (PlayingCard sourceCard,
+                          BaseEntity fromPlayer, PlayingCard destinationCard) {
+                        setState(() {});
                       },
                       reverseOrder: true,
                     ),
@@ -178,6 +190,10 @@ class _GameScreenState extends State<GameScreen> {
                     BaseEntity fromPlayer, PlayingCard destinationCard) {
                   return _handlePlayerSetOnDrag(
                       sourceCard, fromPlayer, destinationCard);
+                },
+                onCardAddedSet: (PlayingCard sourceCard, BaseEntity fromPlayer,
+                    PlayingCard destinationCard) {
+                  setState(() {});
                 },
                 horizontal: true,
                 reverseOrder: true,
@@ -355,10 +371,8 @@ class _GameScreenState extends State<GameScreen> {
     }
     if (gameState.roundState.currentPlayer.hasSetCards()) {
       return true;
+    } else {
+      return false;
     }
-    if (fromPlayer.identifier == CardList.DROPPED) {
-      return true;
-    }
-    return false;
   }
 }
