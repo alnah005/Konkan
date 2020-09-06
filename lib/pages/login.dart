@@ -3,18 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'auth.dart';
 
-class LoginPage2 extends StatefulWidget {
-  @override
-  _LoginPage2State createState() => _LoginPage2State();
-}
-
-class _LoginPage2State extends State<LoginPage2> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
 class EmailFieldValidator {
   static String validate(String value) {
     return value.isEmpty ? 'Email can\'t be empty' : null;

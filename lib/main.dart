@@ -5,6 +5,7 @@ import 'package:solitaire/pages/root_page.dart';
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
+  static bool debugGame = true;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: RootPage(),
+        home: RootPage(straightToGame: debugGame),
       ),
     );
   }

@@ -6,6 +6,9 @@ import 'auth.dart';
 import 'login.dart';
 
 class RootPage extends StatefulWidget {
+  final bool straightToGame;
+
+  const RootPage({Key key, this.straightToGame}) : super(key: key);
   @override
   State<StatefulWidget> createState() => _RootPageState();
 }
@@ -35,13 +38,11 @@ class _RootPageState extends State<RootPage> {
   void _signedIn() {
     setState(() {
       authStatus = AuthStatus.signedIn;
-      print("buils");
       this.build(context);
     });
   }
 
   void _signedOut() {
-    print("oso11");
     setState(() {
       authStatus = AuthStatus.notSignedIn;
       this.build(context);
@@ -59,24 +60,26 @@ class _RootPageState extends State<RootPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(authStatus);
-    print("Pp");
-    switch (authStatus) {
-      case AuthStatus.notDetermined:
-        return _buildWaitingScreen();
-      case AuthStatus.notSignedIn:
-        return LoginPage(
-          onSignedIn: _signedIn,
-        );
-      case AuthStatus.signedIn:
-        if (_game) {
-          return GameScreen();
-        } else {
-          return HomePage(
-            onSignedOut: _signedOut,
-            playGame: _playGame,
+    if (widget.straightToGame) {
+      return GameScreen();
+    } else {
+      switch (authStatus) {
+        case AuthStatus.notDetermined:
+          return _buildWaitingScreen();
+        case AuthStatus.notSignedIn:
+          return LoginPage(
+            onSignedIn: _signedIn,
           );
-        }
+        case AuthStatus.signedIn:
+          if (_game) {
+            return GameScreen();
+          } else {
+            return HomePage(
+              onSignedOut: _signedOut,
+              playGame: _playGame,
+            );
+          }
+      }
     }
     return null;
   }
