@@ -262,7 +262,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
       return false;
     }
     bool cardsSet = false;
-    for (int k = 0; k < 100; k++) {
+    for (int k = 0; k < 500; k++) {
       roundState.receiveDiscardedDeckCard();
       currentAI.cards.shuffle();
       cardsSet = roundState.handleSetCards(currentAI);
