@@ -24,6 +24,11 @@ class JokerPlaceHolder {
     this.suit = card.cardSuit;
     this.index = index;
   }
+
+  @override
+  String toString() {
+    return "Joker as ${type.data["BodyString"]}${suit.string} at $index";
+  }
 }
 
 enum MeldType { sequence, suit }

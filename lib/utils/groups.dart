@@ -208,7 +208,7 @@ List<Meld> getJokerSuitGroups(List<PlayingCard> cards, List<int> jokerPositions,
         var joker1 = new JokerPlaceHolder(
             groupType, remainingSuits.toList()[0], jokerPositions[0]);
         var joker2 = new JokerPlaceHolder(
-            groupType, remainingSuits.toList()[1], jokerPositions[0]);
+            groupType, remainingSuits.toList()[1], jokerPositions[1]);
 
         result.add(MeldSuit(cards, [joker1, joker2]));
         break;

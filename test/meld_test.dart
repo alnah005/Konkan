@@ -91,6 +91,7 @@ void main() {
           PlayingCard(cardSuit: CardSuit.joker, cardType: CardType.joker);
       var meld = validate(cards);
       var result = meld[0].dropCard(joker);
+      print(meld);
 
       /// returns nothing when the meld is not full.
       assert(result == null);
@@ -98,6 +99,20 @@ void main() {
 
       /// returns the joker when the meld is full.
       assert(result2 == joker);
+    });
+    test("Joker place holders", () {
+      var t = [
+        PlayingCard(cardType: CardType.five, cardSuit: CardSuit.diamonds),
+        PlayingCard(cardType: CardType.five, cardSuit: CardSuit.clubs),
+        PlayingCard(cardType: CardType.joker, cardSuit: CardSuit.joker),
+        PlayingCard(cardType: CardType.joker, cardSuit: CardSuit.joker),
+      ];
+      var tr = validate(t);
+//      print(
+//          "${tr.length} Penalty = ${tr[0].penalty}, ${tr[0].cardsList.map((e) =>
+//          e.string + " ")}, ${tr[0].jokers.map((e) => e.toString() + " ")}");
+//
+      assert(tr[0].penalty == 20);
     });
   });
 }
