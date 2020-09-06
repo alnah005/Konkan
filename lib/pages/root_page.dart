@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:solitaire/pages/game_screen.dart';
+import 'package:solitaire/pages/home_page.dart';
 
 import 'auth.dart';
 import 'login.dart';
@@ -22,7 +23,7 @@ class _RootPageState extends State<RootPage> {
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
     final BaseAuth auth = AuthProvider.of(context).auth;
-    await auth.signOut();
+//    await auth.signOut();
     auth.currentUser().then((String userId) {
       setState(() {
         authStatus =
@@ -34,18 +35,32 @@ class _RootPageState extends State<RootPage> {
   void _signedIn() {
     setState(() {
       authStatus = AuthStatus.signedIn;
+      print("buils");
       this.build(context);
     });
   }
 
   void _signedOut() {
+    print("oso11");
     setState(() {
       authStatus = AuthStatus.notSignedIn;
+      this.build(context);
+    });
+  }
+
+  bool _game = false;
+
+  void _playGame() {
+    setState(() {
+      _game = true;
+      this.build(context);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    print(authStatus);
+    print("Pp");
     switch (authStatus) {
       case AuthStatus.notDetermined:
         return _buildWaitingScreen();
@@ -54,7 +69,14 @@ class _RootPageState extends State<RootPage> {
           onSignedIn: _signedIn,
         );
       case AuthStatus.signedIn:
-        return GameScreen();
+        if (_game) {
+          return GameScreen();
+        } else {
+          return HomePage(
+            onSignedOut: _signedOut,
+            playGame: _playGame,
+          );
+        }
     }
     return null;
   }

@@ -4,14 +4,18 @@ import 'auth.dart';
 
 class HomePage extends StatelessWidget {
   final VoidCallback onSignedOut;
-  const HomePage({this.onSignedOut});
+  final VoidCallback playGame;
+  const HomePage({this.onSignedOut, this.playGame});
 
   Future<void> _signOut(BuildContext context) async {
+    print("so2");
     try {
       final BaseAuth auth = AuthProvider.of(context).auth;
+      auth.signOut();
       onSignedOut();
     } catch (e) {
       print(e);
+      print("e");
     }
   }
 
@@ -22,10 +26,15 @@ class HomePage extends StatelessWidget {
         title: Text('Welcome'),
         actions: <Widget>[
           FlatButton(
+            child: Text("Play game",
+                style: TextStyle(fontSize: 17.0, color: Colors.white)),
+            onPressed: () => playGame(),
+          ),
+          FlatButton(
             child: Text('Logout',
                 style: TextStyle(fontSize: 17.0, color: Colors.white)),
             onPressed: () => _signOut(context),
-          )
+          ),
         ],
       ),
       body: Container(

@@ -29,8 +29,10 @@ class Auth implements BaseAuth {
   @override
   Future<String> signInWithEmailAndPassword(
       String email, String password) async {
+    print("si");
     final FirebaseUser user = (await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password)) as FirebaseUser;
+            email: email, password: password))
+        .user;
     return user?.uid;
   }
 
@@ -51,6 +53,7 @@ class Auth implements BaseAuth {
 
   @override
   Future<void> signOut() async {
+    print("so");
     return _firebaseAuth.signOut();
   }
 }

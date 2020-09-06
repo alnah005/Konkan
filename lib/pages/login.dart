@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'auth.dart';
@@ -27,8 +28,9 @@ class PasswordFieldValidator {
 }
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({this.onSignedIn});
+  const LoginPage({this.onSignedIn, this.onLoading});
   final VoidCallback onSignedIn;
+  final VoidCallback onLoading;
 
   @override
   State<StatefulWidget> createState() => _LoginPageState();
@@ -56,7 +58,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> validateAndSubmit() async {
+    print("validateAndSubmit");
+    setState(() {
+      loading = true;
+      this.build(context);
+    });
     if (validateAndSave()) {
+      print("validateAndSave");
       try {
         final BaseAuth auth = AuthProvider.of(context).auth;
         if (_formType == FormType.login) {
@@ -71,6 +79,10 @@ class _LoginPageState extends State<LoginPage> {
         widget.onSignedIn();
       } catch (e) {
         print('Error: $e');
+        setState(() {
+          loading = false;
+          this.build(context);
+        });
       }
     }
   }
@@ -89,23 +101,30 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  bool loading = false;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter login demo'),
-      ),
-      body: Container(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: buildInputs() + buildSubmitButtons(),
+    switch (loading) {
+      case true:
+        return Loading();
+      case false:
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Flutter login'),
           ),
-        ),
-      ),
-    );
+          body: Container(
+            padding: EdgeInsets.all(16.0),
+            child: Form(
+              key: formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: buildInputs() + buildSubmitButtons(),
+              ),
+            ),
+          ),
+        );
+    }
   }
 
   List<Widget> buildInputs() {
@@ -154,5 +173,28 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ];
     }
+  }
+}
+
+class Loading extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                "Loading",
+                style: TextStyle(fontSize: 40),
+              )
+            ],
+          ),
+        ],
+      ),
+    ));
   }
 }
