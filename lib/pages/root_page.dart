@@ -6,9 +6,7 @@ import 'auth.dart';
 import 'login.dart';
 
 class RootPage extends StatefulWidget {
-  final bool straightToGame;
-
-  const RootPage({Key key, this.straightToGame}) : super(key: key);
+  const RootPage({Key key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => _RootPageState();
 }
@@ -60,28 +58,23 @@ class _RootPageState extends State<RootPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.straightToGame) {
-      return GameScreen();
-    } else {
-      switch (authStatus) {
-        case AuthStatus.notDetermined:
-          return _buildWaitingScreen();
-        case AuthStatus.notSignedIn:
-          return LoginPage(
-            onSignedIn: _signedIn,
+    switch (authStatus) {
+      case AuthStatus.notDetermined:
+        return _buildWaitingScreen();
+      case AuthStatus.notSignedIn:
+        return LoginPage(
+          onSignedIn: _signedIn,
+        );
+      case AuthStatus.signedIn:
+        if (_game) {
+          return GameScreen();
+        } else {
+          return HomePage(
+            onSignedOut: _signedOut,
+            playGame: _playGame,
           );
-        case AuthStatus.signedIn:
-          if (_game) {
-            return GameScreen();
-          } else {
-            return HomePage(
-              onSignedOut: _signedOut,
-              playGame: _playGame,
-            );
-          }
-      }
+        }
     }
-    return null;
   }
 
   Widget _buildWaitingScreen() {

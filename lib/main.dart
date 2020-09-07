@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:solitaire/pages/auth.dart';
+import 'package:solitaire/pages/game_screen.dart';
 import 'package:solitaire/pages/root_page.dart';
 
 void main() => runApp(new MyApp());
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: RootPage(straightToGame: debugGame),
+        home: debugGame ? GameScreen() : RootPage(),
       ),
     );
   }
