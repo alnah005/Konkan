@@ -95,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     switch (loading) {
       case true:
-        return Loading();
+        return _buildWaitingScreen();
       case false:
         return Scaffold(
           appBar: AppBar(
@@ -164,25 +164,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class Loading extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                "Loading",
-                style: TextStyle(fontSize: 40),
-              )
-            ],
-          ),
-        ],
-      ),
-    ));
-  }
+Widget _buildWaitingScreen() {
+  return Scaffold(
+    body: Container(
+      alignment: Alignment.center,
+      child: CircularProgressIndicator(),
+    ),
+  );
 }
