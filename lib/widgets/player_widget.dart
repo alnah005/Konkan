@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:solitaire/models/base_entity.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/utils/enums.dart';
-import 'package:solitaire/utils/groups.dart';
 
 import 'card_column.dart';
+
+/// new type def in order to save card being dragged, discarded deck,
+/// card that was dragged to, and set card group
+typedef Null CardAcceptCallbackSetCards(
+    PlayingCard sourceCard,
+    BaseEntity fromPlayer,
+    PlayingCard destinationCard,
+    List<PlayingCard> group);
 
 class PlayerWidget extends StatefulWidget {
   final Player player;
@@ -15,7 +22,7 @@ class PlayerWidget extends StatefulWidget {
   final CardAcceptCallback onCardAdded;
 
   /// set column
-  final CardAcceptCallback onCardAddedSet;
+  final CardAcceptCallbackSetCards onCardAddedSet;
 
   /// regular column
   final CardWillAcceptCallback onWillAcceptAdded;
@@ -118,35 +125,11 @@ class PlayerWidgetState extends State<PlayerWidget> {
                     card, player, destinationCard);
               },
               onCardsAdded: (sourceCard, player, destinationCard) {
-                var melds = validate(listCards);
-                PlayingCard result = sourceCard;
-                if (melds.length > 0) {
-                  result = melds[0].dropCard(sourceCard);
-                }
-                if (result != sourceCard) {
-                  setState(() {
-                    var returnDeck = player.cards;
-                    if (result != null) {
-                      if (player.identifier == CardList.DROPPED) {
-                        widget.player.cards.add(result
-                          ..isDraggable = true
-                          ..faceUp = true);
-                      } else {
-                        returnDeck.add(result
-                          ..isDraggable = true
-                          ..faceUp = true);
-                      }
-                    }
-                    returnDeck.remove(sourceCard);
-                    if (player.identifier == CardList.DROPPED) {
-                      widget.player.eligibleToDraw = false;
-                      widget.player.discarded = false;
-                    }
-
-                    /// call to update player through gamescreen to refresh state
-                    widget.onCardAddedSet(sourceCard, player, destinationCard);
-                  });
-                }
+                setState(() {
+                  /// call to update player through gamescreen to refresh state
+                  widget.onCardAddedSet(
+                      sourceCard, player, destinationCard, listCards);
+                });
               },
               setCards: true,
               entity: widget.player,
