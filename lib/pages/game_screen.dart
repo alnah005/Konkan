@@ -390,6 +390,8 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
+  /// Method that determines what happens when a card is melded into a group
+  /// by the current player.
   void _handlePlayerSetDragged(PlayingCard sourceCard, BaseEntity fromPlayer,
       PlayingCard destinationCard, List<PlayingCard> group) {
     if (gameState.swapMeldingCards(sourceCard, fromPlayer, group)) {

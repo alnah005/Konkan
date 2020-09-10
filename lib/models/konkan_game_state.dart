@@ -303,6 +303,13 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     return true;
   }
 
+  /// This method drops cards from [fromPlayer] and puts them into [group]
+  ///
+  /// Since the current player is the one adding to the group, certain
+  /// consequences occur depending on the situation. For example, If the
+  /// dropped card is from discarded deck, current player doesn't get
+  /// to draw a card from the main deck.
+  /// This method returns true if a card was dropped into group.
   bool swapMeldingCards(
       PlayingCard sourceCard, BaseEntity fromPlayer, List<PlayingCard> group) {
     PlayingCard result = sourceCard;
