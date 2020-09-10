@@ -269,7 +269,13 @@ class _GameScreenState extends State<GameScreen> {
                 if (gameState.checkRoundWin()) {
                   _handleWin(gameState.roundState.currentPlayer);
                 } else {
-                  gameState.nextPlayer();
+                  while (gameState.nextPlayer().isAI) {
+                    setState(() {
+                      if (gameState.checkRoundWin()) {
+                        _handleWin(gameState.roundState.currentPlayer);
+                      }
+                    });
+                  }
                 }
               }
             });
@@ -387,31 +393,11 @@ class _GameScreenState extends State<GameScreen> {
 
   void _handlePlayerSetDragged(PlayingCard sourceCard, BaseEntity fromPlayer,
       PlayingCard destinationCard, List<PlayingCard> group) {
-    /// Todo make a method in konkan gamestate to take care of this
-    var melds = validate(group);
     PlayingCard result = sourceCard;
-    if (melds.length > 0) {
-      result = melds[0].dropCard(sourceCard);
-    }
+    result = dropToGroup(group, sourceCard);
     if (result != sourceCard) {
       setState(() {
-        var returnDeck = fromPlayer.cards;
-        if (result != null) {
-          if (fromPlayer.identifier == CardList.DROPPED) {
-            gameState.getMainPlayer().cards.add(result
-              ..isDraggable = true
-              ..faceUp = true);
-          } else {
-            returnDeck.add(result
-              ..isDraggable = true
-              ..faceUp = true);
-          }
-        }
-        returnDeck.remove(sourceCard);
-        if (fromPlayer.identifier == CardList.DROPPED) {
-          gameState.getMainPlayer().eligibleToDraw = false;
-          gameState.getMainPlayer().discarded = false;
-        }
+        gameState.swapMeldingCards(sourceCard, fromPlayer, result);
         if (gameState.checkRoundWin()) {
           _handleWin(gameState.roundState.currentPlayer);
         }

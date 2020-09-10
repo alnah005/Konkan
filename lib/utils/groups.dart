@@ -2,6 +2,15 @@ import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/utils/meld.dart';
 import 'package:solitaire/utils/playing_card_util.dart';
 
+PlayingCard dropToGroup(List<PlayingCard> group, PlayingCard droppedCard) {
+  var melds = validate(group);
+  PlayingCard result = droppedCard;
+  if (melds.length > 0) {
+    result = melds[0].dropCard(droppedCard);
+  }
+  return result;
+}
+
 List<Meld> validate(List<PlayingCard> cards) {
   Map<int, PlayingCard> cardsMap = cards.asMap();
   Map<int, PlayingCard> jokersMap = new Map<int, PlayingCard>();

@@ -134,7 +134,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     playerIndex = playerIndex % this.players.length;
     roundState.nextTurnVariables(
         this.players[playerIndex], this.playerGameInfo[playerIndex]);
-    while (handleAITurns()) {
+    if (handleAITurns()) {
       playerIndex += 1;
       playerIndex = playerIndex % this.players.length;
       roundState.nextTurnVariables(
@@ -293,5 +293,25 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
       print('bot finished its turn');
     }
     return true;
+  }
+
+  void swapMeldingCards(
+      PlayingCard sourceCard, BaseEntity fromPlayer, PlayingCard result) {
+    if (result != null) {
+      if (fromPlayer.identifier == CardList.DROPPED) {
+        getMainPlayer().cards.add(result
+          ..isDraggable = true
+          ..faceUp = true);
+      } else {
+        fromPlayer.cards.add(result
+          ..isDraggable = true
+          ..faceUp = true);
+      }
+    }
+    fromPlayer.cards.remove(sourceCard);
+    if (fromPlayer.identifier == CardList.DROPPED) {
+      getMainPlayer().eligibleToDraw = false;
+      getMainPlayer().discarded = false;
+    }
   }
 }
