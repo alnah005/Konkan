@@ -126,6 +126,9 @@ class Meld extends MeldClass {
   }
 
   PlayingCard dropCard(PlayingCard card) {
+    if (card == null) {
+      return null;
+    }
     print("\ndropping ${card.string} on ${this.cards.map((e) => e.string)}");
     var swap = this.swapCard(card);
     if (swap != null) {
@@ -184,8 +187,10 @@ class Meld extends MeldClass {
   }
 
   int get penalty {
-    return this.cardsList.fold(0,
-        (previousValue, element) => previousValue + element.penaltyVal.round());
+    return this.cardsList.fold(
+        0,
+        (previousValue, element) =>
+            previousValue + (element != null ? element.penaltyVal.round() : 0));
   }
 
   Meld(this.cards, this.jokers) {

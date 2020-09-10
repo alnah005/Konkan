@@ -103,10 +103,12 @@ class _CardColumnState extends State<CardColumn> {
   }
 
   Widget transformedCard(PlayingCard card, int index) {
-    return TransformedCard(
-      playingCard: card,
-      entity: widget.entity,
-    );
+    return card != null
+        ? TransformedCard(
+            playingCard: card,
+            entity: widget.entity,
+          )
+        : Container();
   }
 
   bool isAPlayerDeck(CardList index) {

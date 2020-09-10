@@ -111,10 +111,12 @@ class Player extends BaseEntity {
       ..forEach((element) {
         element
           ..forEach((element2) {
-            element2
-              ..faceUp = true
-              ..opened = true
-              ..isDraggable = false;
+            if (element2 != null) {
+              element2
+                ..faceUp = true
+                ..opened = true
+                ..isDraggable = false;
+            }
           });
       });
     this._delCardsFromMain(groups.expand((element) => element).toList());

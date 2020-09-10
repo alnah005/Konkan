@@ -115,10 +115,10 @@ class KonkanRoundState<Y> extends BaseRoundState<Y> {
   /// This method is called to return the card from [returnDiscardedDeckCard]
   /// into the discarded deck and setting the appropriate booleans in [Player]
   void receiveDiscardedDeckCard() {
-    currentPlayer.extraCard = discardedDeck.cards.isNotEmpty
-        ? discardedDeck.cards.removeLast()
-        : null;
-    if (currentPlayer.extraCard != null) {
+    if (currentPlayer.extraCard == null && currentPlayer.eligibleToDraw) {
+      currentPlayer.extraCard = discardedDeck.cards.isNotEmpty
+          ? discardedDeck.cards.removeLast()
+          : null;
       currentPlayer.cards.add(currentPlayer.extraCard);
       currentPlayer.discarded = false;
       currentPlayer.eligibleToDraw = false;

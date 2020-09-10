@@ -119,7 +119,11 @@ class PlayerWidgetState extends State<PlayerWidget> {
             flex: listCards.length,
             fit: FlexFit.loose,
             child: CardColumn(
-              cards: listCards,
+              cards: listCards.map((e) {
+                if (e != null) {
+                  return e..faceUp = true;
+                }
+              }).toList(),
               onWillAcceptAdded: (card, player, destinationCard) {
                 return widget.onWillAcceptAddedSet(
                     card, player, destinationCard);

@@ -22,7 +22,7 @@ class PlayerUtil {
   static double getPenalty(List<PlayingCard> cardsList) {
     double result = 0.0;
     for (int i = 0; i < cardsList.length; i++) {
-      result += cardsList[i].penaltyVal;
+      result += cardsList[i] != null ? cardsList[i].penaltyVal : 0;
     }
     return result;
   }

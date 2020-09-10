@@ -6,6 +6,7 @@ import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/pages/game_screen.dart';
 import 'package:solitaire/utils/enums.dart';
+import 'package:solitaire/utils/groups.dart';
 import 'package:solitaire/widgets/discarded_deck.dart';
 import 'package:solitaire/widgets/konkan_deck.dart';
 
@@ -134,12 +135,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     playerIndex = playerIndex % this.players.length;
     roundState.nextTurnVariables(
         this.players[playerIndex], this.playerGameInfo[playerIndex]);
-    if (handleAITurns()) {
-      playerIndex += 1;
-      playerIndex = playerIndex % this.players.length;
-      roundState.nextTurnVariables(
-          this.players[playerIndex], this.playerGameInfo[playerIndex]);
-    }
+    handleAITurns();
     return roundState.currentPlayer;
   }
 
@@ -232,6 +228,9 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
 
   bool dropCardToDiscardedDeck(
       PlayingCard sourceCard, BaseEntity player, PlayingCard destinationCard) {
+    if (sourceCard == null) {
+      return false;
+    }
     bool result = false;
     if (player.identifier != roundState.currentPlayer.identifier) {
       roundState.returnDiscardedDeckCard();
@@ -271,6 +270,15 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
       }
       roundState.returnDiscardedDeckCard();
     }
+    if (roundState.currentPlayer.hasSetCards()) {
+      for (var p in players) {
+        for (var g in p.openCards) {
+          for (var c in roundState.currentPlayer.cards) {
+            swapMeldingCards(c, roundState.currentPlayer, g);
+          }
+        }
+      }
+    }
     if (!cardsSet) {
       roundState.drawFromDeckToCurrentPlayer(getMainPlayer());
     }
@@ -285,7 +293,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     //sleep(const Duration(seconds:1));
     currentAI.cards.shuffle();
     if (dropCardToDiscardedDeck(
-        currentAI.cards.last,
+        currentAI.cards.isNotEmpty ? currentAI.cards.last : null,
         currentAI,
         roundState.discardedDeck.cards.isNotEmpty
             ? roundState.discardedDeck.cards.last
@@ -295,23 +303,37 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     return true;
   }
 
-  void swapMeldingCards(
-      PlayingCard sourceCard, BaseEntity fromPlayer, PlayingCard result) {
-    if (result != null) {
-      if (fromPlayer.identifier == CardList.DROPPED) {
-        getMainPlayer().cards.add(result
-          ..isDraggable = true
-          ..faceUp = true);
-      } else {
-        fromPlayer.cards.add(result
-          ..isDraggable = true
-          ..faceUp = true);
+  bool swapMeldingCards(
+      PlayingCard sourceCard, BaseEntity fromPlayer, List<PlayingCard> group) {
+    PlayingCard result = sourceCard;
+    result = dropToGroup(group, sourceCard);
+    if (result != sourceCard) {
+      if (result != null) {
+        if (fromPlayer.identifier == CardList.DROPPED) {
+          roundState.currentPlayer.cards.add(result
+            ..isDraggable = true
+            ..faceUp = true);
+        } else {
+          fromPlayer.cards.add(result
+            ..isDraggable = true
+            ..faceUp = true);
+        }
       }
+      fromPlayer.cards.remove(sourceCard);
+      if (fromPlayer.identifier == CardList.DROPPED) {
+        roundState.currentPlayer.eligibleToDraw = false;
+        roundState.currentPlayer.discarded = false;
+        if (roundState.currentPlayer.extraCard != null) {
+          if (roundState.currentPlayer.cards
+              .contains(roundState.currentPlayer.extraCard)) {
+            roundState.currentPlayer.cards
+                .remove(roundState.currentPlayer.extraCard);
+          }
+          roundState.currentPlayer.extraCard = null;
+        }
+      }
+      return true;
     }
-    fromPlayer.cards.remove(sourceCard);
-    if (fromPlayer.identifier == CardList.DROPPED) {
-      getMainPlayer().eligibleToDraw = false;
-      getMainPlayer().discarded = false;
-    }
+    return false;
   }
 }

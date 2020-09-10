@@ -5,7 +5,6 @@ import 'package:solitaire/models/konkan_game_state.dart';
 import 'package:solitaire/models/player.dart';
 import 'package:solitaire/models/playing_card.dart';
 import 'package:solitaire/utils/enums.dart';
-import 'package:solitaire/utils/groups.dart';
 import 'package:solitaire/widgets/discarded_deck.dart';
 import 'package:solitaire/widgets/konkan_deck.dart';
 import 'package:solitaire/widgets/player_widget.dart';
@@ -393,11 +392,8 @@ class _GameScreenState extends State<GameScreen> {
 
   void _handlePlayerSetDragged(PlayingCard sourceCard, BaseEntity fromPlayer,
       PlayingCard destinationCard, List<PlayingCard> group) {
-    PlayingCard result = sourceCard;
-    result = dropToGroup(group, sourceCard);
-    if (result != sourceCard) {
+    if (gameState.swapMeldingCards(sourceCard, fromPlayer, group)) {
       setState(() {
-        gameState.swapMeldingCards(sourceCard, fromPlayer, result);
         if (gameState.checkRoundWin()) {
           _handleWin(gameState.roundState.currentPlayer);
         }

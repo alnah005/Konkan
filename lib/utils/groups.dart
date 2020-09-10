@@ -23,15 +23,17 @@ List<Meld> validate(List<PlayingCard> cards) {
   final List<Meld> result = new List<Meld>();
 
   cardsMap.forEach((key, value) {
-    if (value.cardType != CardType.joker) {
-      nonJokersMap[key] = value;
-      if (value.cardType == CardType.one) {
-        hasAce = true;
-        aceIndex = key;
+    if (value != null) {
+      if (value.cardType != CardType.joker) {
+        nonJokersMap[key] = value;
+        if (value.cardType == CardType.one) {
+          hasAce = true;
+          aceIndex = key;
+        }
+      } else {
+        jokersMap[key] = value;
+        hasJoker = true;
       }
-    } else {
-      jokersMap[key] = value;
-      hasJoker = true;
     }
   });
 
@@ -174,41 +176,46 @@ List<Meld> getJokerSuitGroups(List<PlayingCard> cards, List<int> jokerPositions,
   if (remainingSuits.length > jokerPositions.length) {
     switch (remainingSuits.length) {
       case 3:
-        var joker1 = new JokerPlaceHolder(
-            groupType, remainingSuits.toList()[0], jokerPositions[0]);
-        var joker2 = new JokerPlaceHolder(
-            groupType, remainingSuits.toList()[1], jokerPositions[1]);
-        var joker3 = new JokerPlaceHolder(
-            groupType, remainingSuits.toList()[2], jokerPositions[1]);
-        var joker3rep = new JokerPlaceHolder(
-            groupType, remainingSuits.toList()[2], jokerPositions[0]);
         List<JokerPlaceHolder> group1 = new List<JokerPlaceHolder>();
-        group1.add(joker1);
-        group1.add(joker2);
-        result.add(new MeldSuit(cards, group1));
         List<JokerPlaceHolder> group2 = new List<JokerPlaceHolder>();
-        group2.add(joker1);
-        group2.add(joker3);
-        result.add(new MeldSuit(cards, group2));
-
         List<JokerPlaceHolder> group3 = new List<JokerPlaceHolder>();
-        group3.add(joker3rep);
-        group3.add(joker2);
+        var joker1;
+        var joker3rep;
+        if (jokerPositions.length == 1) {
+          joker1 = new JokerPlaceHolder(
+              groupType, remainingSuits.toList()[0], jokerPositions[0]);
+          group1.add(joker1);
+          group2.add(joker1);
+          joker3rep = new JokerPlaceHolder(
+              groupType, remainingSuits.toList()[2], jokerPositions[0]);
+          group3.add(joker3rep);
+        }
+        if (jokerPositions.length > 1) {
+          var joker2 = new JokerPlaceHolder(
+              groupType, remainingSuits.toList()[1], jokerPositions[1]);
+          var joker3 = new JokerPlaceHolder(
+              groupType, remainingSuits.toList()[2], jokerPositions[1]);
+          group1.add(joker2);
+          group2.add(joker3);
+          group3.add(joker2);
+        }
+        result.add(new MeldSuit(cards, group1));
+        result.add(new MeldSuit(cards, group2));
         result.add(new MeldSuit(cards, group3));
-
         return result;
       case 2:
-        var joker1 = new JokerPlaceHolder(
-            groupType, remainingSuits.toList()[0], jokerPositions[0]);
-        var joker2 = new JokerPlaceHolder(
-            groupType, remainingSuits.toList()[1], jokerPositions[0]);
-        List<JokerPlaceHolder> group1 = new List<JokerPlaceHolder>();
-        group1.add(joker1);
-        result.add(new MeldSuit(cards, group1));
-        List<JokerPlaceHolder> group2 = new List<JokerPlaceHolder>();
-        group2.add(joker2);
-        result.add(new MeldSuit(cards, group2));
-
+        if (jokerPositions.isNotEmpty) {
+          var joker1 = new JokerPlaceHolder(
+              groupType, remainingSuits.toList()[0], jokerPositions[0]);
+          var joker2 = new JokerPlaceHolder(
+              groupType, remainingSuits.toList()[1], jokerPositions[0]);
+          List<JokerPlaceHolder> group1 = new List<JokerPlaceHolder>();
+          group1.add(joker1);
+          result.add(new MeldSuit(cards, group1));
+          List<JokerPlaceHolder> group2 = new List<JokerPlaceHolder>();
+          group2.add(joker2);
+          result.add(new MeldSuit(cards, group2));
+        }
         return result;
     }
   } else if (remainingSuits.length == jokerPositions.length) {

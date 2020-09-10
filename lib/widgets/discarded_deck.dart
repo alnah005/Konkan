@@ -100,14 +100,17 @@ class DiscardedDeckState extends State<DiscardedDeck> {
   }
 
   PlayingCard throwToDeck(PlayingCard discarded) {
-    var result = discarded
-      ..faceUp = true
-      ..isDraggable = true
-      ..opened = true;
-    setState(() {
-      widget.discardEntity.cards.add(result);
-    });
-    return result;
+    if (discarded != null) {
+      var result = discarded
+        ..faceUp = true
+        ..isDraggable = true
+        ..opened = true;
+      setState(() {
+        widget.discardEntity.cards.add(result);
+      });
+      return result;
+    }
+    return null;
   }
 
   /// Creates a copy of all discarded cards and returns the copy
