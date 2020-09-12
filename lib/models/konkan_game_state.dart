@@ -15,6 +15,7 @@ import 'konkan_round_state.dart';
 class KonkanGameState<Y> extends BaseGameState<Y> {
   List<PlayingCard> cardDeckClosed = [];
   final double settingScore = 51;
+  bool gameOver = false;
 
   /// this is necessary because it saves the states of the deck and discarded
   /// deck widgets to be able to call the methods within them
@@ -135,7 +136,12 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     playerIndex = playerIndex % this.players.length;
     roundState.nextTurnVariables(
         this.players[playerIndex], this.playerGameInfo[playerIndex]);
-    handleAITurns();
+    if (!gameOver) {
+      handleAITurns();
+    }
+    if (roundState.currentPlayer.cards.length == 0) {
+      gameOver = true;
+    }
     return roundState.currentPlayer;
   }
 
@@ -163,6 +169,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     redistributeCards();
     roundState = roundState.nextRound(roundState);
     roundState.settingScore = this.settingScore;
+    gameOver = false;
   }
 
   /// called when current human player wants to set cards
