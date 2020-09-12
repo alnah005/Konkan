@@ -100,6 +100,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
       this.roundState = KonkanRoundState(deckKey, discardedDeckKey,
           settingScore, BaseEntity(CardList.DROPPED));
     }
+    gameOver = false;
   }
 
   /// This is only called when an array of players wasn't passed
@@ -123,6 +124,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     roundState.playerGameInfo = playerGameInfo[3];
     roundState.initializeRound();
     roundState.currentPlayer.initializeForNextTurn();
+    gameOver = false;
     return roundState.currentPlayer;
   }
 
@@ -132,15 +134,15 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
   @override
   Player nextPlayer() {
     assert(roundState.currentPlayer.cards.length < 15);
-    playerIndex += 1;
-    playerIndex = playerIndex % this.players.length;
-    roundState.nextTurnVariables(
-        this.players[playerIndex], this.playerGameInfo[playerIndex]);
     if (!gameOver) {
+      playerIndex += 1;
+      playerIndex = playerIndex % this.players.length;
+      roundState.nextTurnVariables(
+          this.players[playerIndex], this.playerGameInfo[playerIndex]);
       handleAITurns();
-    }
-    if (roundState.currentPlayer.cards.length == 0) {
-      gameOver = true;
+      if (roundState.currentPlayer.cards.length == 0) {
+        gameOver = true;
+      }
     }
     return roundState.currentPlayer;
   }
@@ -210,7 +212,8 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
 
     /// clear all player decks
     for (int i = 0; i < this.players.length; i++) {
-      this.players[i].initialize(this.players[i].name);
+      this.players[i].initialize(
+          (this.players[i].isAI ? "CPU " : "Human") + (i + 1).toString());
     }
 
     /// redistribute cards to players
@@ -268,7 +271,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
       return false;
     }
     bool cardsSet = false;
-    for (int k = 0; k < 500; k++) {
+    for (int k = 0; k < 100; k++) {
       roundState.receiveDiscardedDeckCard();
       currentAI.cards.shuffle();
       cardsSet = roundState.handleSetCards(currentAI);

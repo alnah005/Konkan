@@ -268,13 +268,12 @@ class _GameScreenState extends State<GameScreen> {
                 if (gameState.checkRoundWin()) {
                   _handleWin(gameState.roundState.currentPlayer);
                 } else {
-                  while (gameState.nextPlayer().isAI) {
-                    setState(() {
-                      if (gameState.checkRoundWin()) {
-                        _handleWin(gameState.roundState.currentPlayer);
-                      }
-                    });
-                  }
+                  while (gameState.nextPlayer().isAI && !gameState.gameOver) {}
+                  setState(() {
+                    if (gameState.checkRoundWin()) {
+                      _handleWin(gameState.roundState.currentPlayer);
+                    }
+                  });
                 }
               }
             });
