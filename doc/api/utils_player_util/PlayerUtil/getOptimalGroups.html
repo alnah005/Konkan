@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the getOptimalGroups method from the PlayerUtil class, for the Dart programming language.">
+  <title>getOptimalGroups method - PlayerUtil class - player_util library - Dart API</title>
+
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../static-assets/github.css">
+  <link rel="stylesheet" href="../../static-assets/styles.css">
+  <link rel="icon" href="../../static-assets/favicon.png">
+
+</head>
+
+<body data-base-href="../../"
+      data-using-base-href="false">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">solitaire</a></li>
+    <li><a href="../../utils_player_util/utils_player_util-library.html">player_util</a></li>
+    <li><a href="../../utils_player_util/PlayerUtil-class.html">PlayerUtil</a></li>
+    <li class="self-crumb">getOptimalGroups method</li>
+  </ol>
+  <div class="self-name">getOptimalGroups</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+  <div id="dartdoc-sidebar-left" class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+      <form class="search-sidebar" role="search">
+        <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+      </form>
+    </header>
+    
+    <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+      <li><a href="../../index.html">solitaire</a></li>
+      <li><a href="../../utils_player_util/utils_player_util-library.html">player_util</a></li>
+      <li><a href="../../utils_player_util/PlayerUtil-class.html">PlayerUtil</a></li>
+      <li class="self-crumb">getOptimalGroups method</li>
+    </ol>
+    
+    <h5>PlayerUtil class</h5>
+    <ol>
+    
+        <li class="section-title"><a href="../../utils_player_util/PlayerUtil-class.html#constructors">Constructors</a></li>
+        <li><a href="../../utils_player_util/PlayerUtil/PlayerUtil.html">PlayerUtil</a></li>
+    
+        <li class="section-title inherited">
+            <a href="../../utils_player_util/PlayerUtil-class.html#instance-properties">Properties</a>
+        </li>
+        <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></li>
+        <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></li>
+    
+        <li class="section-title inherited"><a href="../../utils_player_util/PlayerUtil-class.html#instance-methods">Methods</a></li>
+        <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
+        <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></li>
+    
+        <li class="section-title inherited"><a href="../../utils_player_util/PlayerUtil-class.html#operators">Operators</a></li>
+        <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></li>
+    
+    
+        <li class="section-title"><a href="../../utils_player_util/PlayerUtil-class.html#static-methods">Static methods</a></li>
+        <li><a href="../../utils_player_util/PlayerUtil/getGroupScore.html">getGroupScore</a></li>
+        <li><a href="../../utils_player_util/PlayerUtil/getOptimalGroups.html">getOptimalGroups</a></li>
+        <li><a href="../../utils_player_util/PlayerUtil/getPenalty.html">getPenalty</a></li>
+        <li><a href="../../utils_player_util/PlayerUtil/getScore.html">getScore</a></li>
+    
+    
+    
+    </ol>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-main-content" class="col-xs-12 col-sm-9 col-md-8 main-content">
+      <div><h1><span class="kind-method">getOptimalGroups</span> method </h1></div>
+
+    <section class="multi-line-signature">
+      <span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../models_playing_card/PlayingCard-class.html">PlayingCard</a></span>&gt;</span></span>&gt;</span></span>
+            <span class="name ">getOptimalGroups</span>
+(<wbr><ol class="parameter-list"><li><span class="parameter" id="getOptimalGroups-param-settingCards"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../models_playing_card/PlayingCard-class.html">PlayingCard</a></span>&gt;</span></span> <span class="parameter-name">settingCards</span></span></li>
+</ol>)
+      
+    </section>
+    <section class="desc markdown">
+      <p>This method identifies the best grouping of <code>player.cards</code></p>
+<p>This method check groups from left to right
+Then it checks groups from right to left
+Then it calculates the overlap between the groups
+and picks groups that have a higher score.
+if combining left and right groups gives a higher
+score, the groups that gave that score are returned,
+otherwise the higher between the left and right groups
+is returned instead</p>
+    </section>
+    
+    <section class="summary source-code" id="source">
+      <h2><span>Implementation</span></h2>
+      <pre class="language-dart"><code class="language-dart">static List&lt;List&lt;PlayingCard&gt;&gt; getOptimalGroups(
+    List&lt;PlayingCard&gt; settingCards) {
+  if (settingCards.length &lt; 3) {
+    return [[]];
+  }
+
+  &#47;&#47; begin generating groups from left to right and right to left
+  List&lt;List&lt;PlayingCard&gt;&gt; result = [];
+  List&lt;List&lt;PlayingCard&gt;&gt; leftGroups = _getGroups(settingCards);
+  List&lt;PlayingCard&gt; reversedSettingCards =
+      List.from(settingCards).reversed.toList().cast&lt;PlayingCard&gt;();
+  List&lt;List&lt;PlayingCard&gt;&gt; rightGroups = _getGroups(reversedSettingCards);
+  List&lt;List&lt;int&gt;&gt; leftRange = _getRangeFromGroups(leftGroups, settingCards);
+  List&lt;List&lt;int&gt;&gt; rightRange =
+      _getRangeFromGroups(rightGroups, reversedSettingCards);
+
+  &#47;&#47; fix the range because of reversing cards
+  for (int i = 0; i &lt; rightRange.length; i++) {
+    rightRange[i] = rightRange[i].reversed.toList().cast&lt;int&gt;();
+    rightRange[i] = [
+      settingCards.length - rightRange[i][0],
+      settingCards.length - rightRange[i][1]
+    ];
+  }
+  &#47;&#47; end generating groups from left to right and right to left
+
+  &#47;&#47; begin combining left and right groups
+  var left = new List&lt;int&gt;.generate(leftRange.length, (i) =&gt; i);
+  var right = new List&lt;int&gt;.generate(rightRange.length, (i) =&gt; i);
+  int i = 0;
+  int j = 0;
+  while (true) {
+    bool finishedGroup = true;
+    if (i &gt;= left.length) {
+      break;
+    }
+    while (finishedGroup) {
+      if (j &gt;= right.length) {
+        finishedGroup = false;
+        j = 0;
+        continue;
+      }
+      if (_rangeCollision(leftRange[left[i]], rightRange[right[j]])) {
+        if (getScore(leftGroups[left[i]]) &gt; getScore(rightGroups[right[j]])) {
+          right.removeAt(j);
+        } else {
+          left.removeAt(i);
+          j = 0;
+          if (i &gt;= left.length) {
+            break;
+          }
+        }
+      } else {
+        j += 1;
+      }
+    }
+    i += 1;
+  }
+  &#47;&#47; end combining left and right groups
+  left.forEach((element) {
+    result.add(leftGroups[element]);
+  });
+  right.forEach((element) {
+    &#47;&#47; fix the cards because of reversing cards
+    result.add(rightGroups[element].reversed.toList().cast&lt;PlayingCard&gt;());
+  });
+  double leftScore = getGroupScore(leftGroups);
+  double rightScore = getGroupScore(rightGroups);
+  double combined = getGroupScore(result);
+  if (leftScore &gt; combined) {
+    if (leftScore &gt; rightScore) {
+      return leftGroups;
+    }
+  }
+  {
+    if (rightScore &gt; combined) {
+      return rightGroups;
+    }
+  }
+  if (result.length &lt; 1) {
+    return [[]];
+  }
+  return result;
+}</code></pre>
+    </section>
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-right" class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    solitaire
+      1.0.0+1
+  </span>
+
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="../../static-assets/typeahead.bundle.min.js"></script>
+<script src="../../static-assets/highlight.pack.js"></script>
+<script src="../../static-assets/URI.js"></script>
+<script src="../../static-assets/script.js"></script>
+
+
+</body>
+
+</html>
