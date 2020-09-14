@@ -213,7 +213,7 @@ class KonkanGameState<Y> extends BaseGameState<Y> {
     /// clear all player decks
     for (int i = 0; i < this.players.length; i++) {
       this.players[i].initialize(
-          (this.players[i].isAI ? "CPU " : "Human") + (i + 1).toString());
+          (this.players[i].isAI ? "CPU " : "Human ") + (i + 1).toString());
     }
 
     /// redistribute cards to players

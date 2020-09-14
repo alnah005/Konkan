@@ -268,12 +268,7 @@ class _GameScreenState extends State<GameScreen> {
                 if (gameState.checkRoundWin()) {
                   _handleWin(gameState.roundState.currentPlayer);
                 } else {
-                  while (gameState.nextPlayer().isAI && !gameState.gameOver) {}
-                  setState(() {
-                    if (gameState.checkRoundWin()) {
-                      _handleWin(gameState.roundState.currentPlayer);
-                    }
-                  });
+                  handleBots();
                 }
               }
             });
@@ -281,6 +276,24 @@ class _GameScreenState extends State<GameScreen> {
           discardEntity: gameState.roundState.discardedDeck,
         ),
       ),
+    );
+  }
+
+  Future<void> handleBots() async {
+    Future.delayed(
+      Duration(seconds: 1),
+      () {
+        Player currentPlayer;
+        setState(() {
+          currentPlayer = gameState.nextPlayer();
+          if (gameState.checkRoundWin()) {
+            _handleWin(gameState.roundState.currentPlayer);
+          }
+        });
+        if (currentPlayer.isAI && !gameState.gameOver) {
+          handleBots();
+        }
+      },
     );
   }
 
