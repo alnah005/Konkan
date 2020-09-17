@@ -1,1 +1,0 @@
- build\\web\\favicon.png build\\web\\icons\\Icon-192.png build\\web\\icons\\Icon-512.png build\\web\\index.html build\\web\\manifest.json:  D:\\app\\solitaire\\konkan\\web\\favicon.png D:\\app\\solitaire\\konkan\\web\\icons\\Icon-192.png D:\\app\\solitaire\\konkan\\web\\icons\\Icon-512.png D:\\app\\solitaire\\konkan\\web\\index.html D:\\app\\solitaire\\konkan\\web\\manifest.json
