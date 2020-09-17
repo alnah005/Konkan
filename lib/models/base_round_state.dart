@@ -1,4 +1,4 @@
-import 'package:solitaire/models/player.dart';
+import 'package:konkan/models/player.dart';
 
 /// This class template encapsulates what is necessary for a round
 /// in this app

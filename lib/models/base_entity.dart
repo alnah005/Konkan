@@ -1,5 +1,5 @@
-import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/utils/enums.dart';
+import 'package:konkan/models/playing_card.dart';
+import 'package:konkan/utils/enums.dart';
 
 /// This class encapsulates a collection of cards and
 ///  collection identifier

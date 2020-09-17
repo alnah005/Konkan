@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:solitaire/pages/game_screen.dart';
-import 'package:solitaire/pages/home_page.dart';
+import 'package:konkan/pages/game_screen.dart';
+import 'package:konkan/pages/home_page.dart';
 
 import 'auth.dart';
 import 'login.dart';

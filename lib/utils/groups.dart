@@ -1,6 +1,6 @@
-import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/utils/meld.dart';
-import 'package:solitaire/utils/playing_card_util.dart';
+import 'package:konkan/models/playing_card.dart';
+import 'package:konkan/utils/meld.dart';
+import 'package:konkan/utils/playing_card_util.dart';
 
 PlayingCard dropToGroup(List<PlayingCard> group, PlayingCard droppedCard) {
   var melds = validate(group);

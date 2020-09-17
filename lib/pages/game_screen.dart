@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:solitaire/models/base_entity.dart';
-import 'package:solitaire/models/konkan_game_state.dart';
-import 'package:solitaire/models/player.dart';
-import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/utils/enums.dart';
-import 'package:solitaire/widgets/discarded_deck.dart';
-import 'package:solitaire/widgets/konkan_deck.dart';
-import 'package:solitaire/widgets/player_widget.dart';
+import 'package:konkan/models/base_entity.dart';
+import 'package:konkan/models/konkan_game_state.dart';
+import 'package:konkan/models/player.dart';
+import 'package:konkan/models/playing_card.dart';
+import 'package:konkan/utils/enums.dart';
+import 'package:konkan/widgets/discarded_deck.dart';
+import 'package:konkan/widgets/konkan_deck.dart';
+import 'package:konkan/widgets/player_widget.dart';
 
 class GameScreen extends StatefulWidget {
   /// to differentiate players from other entities
@@ -395,7 +395,8 @@ class _GameScreenState extends State<GameScreen> {
     if (gameState.roundState.currentPlayer != gameState.getMainPlayer()) {
       return false;
     }
-    if (gameState.roundState.currentPlayer.hasSetCards()) {
+    if (gameState.roundState.currentPlayer.hasSetCards() &&
+        gameState.roundState.currentPlayer.eligibleToDraw) {
       return true;
     } else {
       return false;

@@ -1,5 +1,5 @@
-import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/utils/playing_card_util.dart';
+import 'package:konkan/models/playing_card.dart';
+import 'package:konkan/utils/playing_card_util.dart';
 
 class JokerPlaceHolder {
   int index;

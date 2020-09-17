@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:solitaire/models/base_round_state.dart';
-import 'package:solitaire/models/konkan_game_state.dart';
-import 'package:solitaire/models/player.dart';
-import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/widgets/discarded_deck.dart';
-import 'package:solitaire/widgets/konkan_deck.dart';
+import 'package:konkan/models/base_round_state.dart';
+import 'package:konkan/models/konkan_game_state.dart';
+import 'package:konkan/models/player.dart';
+import 'package:konkan/models/playing_card.dart';
+import 'package:konkan/widgets/discarded_deck.dart';
+import 'package:konkan/widgets/konkan_deck.dart';
 
 import 'base_entity.dart';
 

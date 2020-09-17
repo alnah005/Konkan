@@ -1,6 +1,6 @@
-import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/utils/groups.dart';
-import 'package:solitaire/utils/meld.dart';
+import 'package:konkan/models/playing_card.dart';
+import 'package:konkan/utils/groups.dart';
+import 'package:konkan/utils/meld.dart';
 
 class PlayerUtil {
   static double getScore(List<PlayingCard> cardsList) {

@@ -1,7 +1,7 @@
-import 'package:solitaire/models/base_entity.dart';
-import 'package:solitaire/models/playing_card.dart';
-import 'package:solitaire/utils/enums.dart';
-import 'package:solitaire/utils/player_util.dart';
+import 'package:konkan/models/base_entity.dart';
+import 'package:konkan/models/playing_card.dart';
+import 'package:konkan/utils/enums.dart';
+import 'package:konkan/utils/player_util.dart';
 
 class PlayerInfo {
   String avatarPath;

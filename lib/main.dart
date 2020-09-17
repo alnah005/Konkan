@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:solitaire/pages/auth.dart';
-import 'package:solitaire/pages/game_screen.dart';
-import 'package:solitaire/pages/root_page.dart';
+import 'package:konkan/pages/auth.dart';
+import 'package:konkan/pages/game_screen.dart';
+import 'package:konkan/pages/root_page.dart';
 
 void main() => runApp(new MyApp());
 

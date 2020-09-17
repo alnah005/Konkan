@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:solitaire/models/base_entity.dart';
-import 'package:solitaire/models/player.dart';
-import 'package:solitaire/models/playing_card.dart';
+import 'package:konkan/models/base_entity.dart';
+import 'package:konkan/models/player.dart';
+import 'package:konkan/models/playing_card.dart';
 
 import 'card_column.dart';
 

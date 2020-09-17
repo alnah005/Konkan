@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
-project(solitaire LANGUAGES CXX)
+project(konkan LANGUAGES CXX)
 
-set(BINARY_NAME "solitaire")
+set(BINARY_NAME "konkan")
 
 cmake_policy(SET CMP0063 NEW)
 

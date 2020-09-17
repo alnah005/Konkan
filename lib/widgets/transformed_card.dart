@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:solitaire/models/base_entity.dart';
-import 'package:solitaire/models/playing_card.dart';
+import 'package:konkan/models/base_entity.dart';
+import 'package:konkan/models/playing_card.dart';
 
 // TransformedCard makes the card draggable and translates it according to
 // position in the stack.

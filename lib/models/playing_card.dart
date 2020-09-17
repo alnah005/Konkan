@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:solitaire/utils/playing_card_util.dart';
+import 'package:konkan/utils/playing_card_util.dart';
 
 // Simple playing card model
 abstract class Card {
