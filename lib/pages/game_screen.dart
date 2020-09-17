@@ -9,6 +9,8 @@ import 'package:konkan/widgets/discarded_deck.dart';
 import 'package:konkan/widgets/konkan_deck.dart';
 import 'package:konkan/widgets/player_widget.dart';
 
+import '../utils/enums.dart';
+
 class GameScreen extends StatefulWidget {
   /// to differentiate players from other entities
   static final List<CardList> playerCardLists = [
@@ -395,12 +397,16 @@ class _GameScreenState extends State<GameScreen> {
     if (gameState.roundState.currentPlayer != gameState.getMainPlayer()) {
       return false;
     }
-    if (gameState.roundState.currentPlayer.hasSetCards() &&
-        gameState.roundState.currentPlayer.eligibleToDraw) {
-      return true;
-    } else {
-      return false;
+    if (gameState.roundState.currentPlayer.hasSetCards()) {
+      if (fromPlayer.identifier == CardList.DROPPED &&
+          gameState.roundState.currentPlayer.eligibleToDraw) {
+        return true;
+      }
+      if (fromPlayer.identifier != CardList.DROPPED) {
+        return true;
+      }
     }
+    return false;
   }
 
   /// Method that determines what happens when a card is melded into a group
